@@ -5,8 +5,6 @@ import HireMe from "@/components/HireMe";
 export default function Home() {
   return (
     <main className="relative flex min-h-screen w-full flex-col items-center justify-center bg-white text-black overflow-x-hidden">
-      
-      {/* 💡 關鍵點：lg:px-48，這會把左側文字往右推，避免被 Hire Me 圓盤遮擋 */}
       <div className="flex flex-col lg:flex-row items-center justify-between w-full px-8 lg:px-48 py-20 lg:py-0">
         
         {/* 左側：文字區 */}
@@ -31,30 +29,32 @@ export default function Home() {
 
         {/* 右側：核心技能視覺區 */}
         <div className="w-full lg:w-1/2 flex justify-center lg:justify-end order-1 lg:order-2 mb-12 lg:mb-0">
-          <div className="relative flex flex-wrap justify-center gap-2 w-full h-auto lg:h-[500px] lg:w-[500px] lg:block items-center">
-            
+          <div className="relative w-full max-w-[450px] lg:max-w-[550px] aspect-square flex flex-wrap content-start justify-center gap-2 lg:block">
             <div className="absolute hidden lg:block w-full h-full rounded-full bg-blue-50/50 border border-blue-100 animate-pulse"></div>
-            
-            <div className="hidden lg:flex z-0 text-[180px] font-black text-blue-600/5 select-none absolute items-center justify-center w-full h-full">
+            <div className="hidden lg:flex z-0 text-[150px] lg:text-[180px] font-black text-blue-600/5 select-none absolute items-center justify-center w-full h-full">
               {"< / >"}
             </div>
+            {/* 💻 Technical Skills */}
+            <SkillBadge text="Next.js" className="lg:top-2 lg:left-33 lg:-translate-x-1/2 bg-black text-white" />
+            <SkillBadge text="React" className="lg:top-14 lg:left-10 bg-blue-600 text-white" />
+            <SkillBadge text="Tailwind CSS" className="lg:top-[40%] lg:-left-10 bg-cyan-500 text-white" />
+            <SkillBadge text="TypeScript" className="lg:top-[53%] lg:-left-16 bg-blue-600 text-white lg:-translate-y-1/2" />
+            <SkillBadge text="Python" className="lg:bottom-[31%] lg:-left-8 bg-blue-400 text-white" />
+            <SkillBadge text="Django" className="lg:bottom-[13%] lg:left-10 bg-green-700 text-white" />
+            <SkillBadge text="SQL" className="lg:bottom-[4%] lg:left-25 bg-slate-600 text-white" />
+            <SkillBadge text="Java" className="lg:top-[20%] lg:-left-[-8%] lg:-translate-x-1/2 bg-gray-800 text-white" />
+            <SkillBadge text="GitHub" className="lg:bottom-[22%] lg:left-[0%] bg-black text-white" />
+            <SkillBadge text="Power Platform" className="lg:top-[33%] lg:-left-5 bg-cyan-500 text-white lg:-translate-y-1/2" />
+            <SkillBadge text="Figma" className="lg:bottom-[-2%] lg:left-[32%] bg-cyan-500 text-white" />
 
-            <SkillBadge text="Python" className="lg:top-10 lg:left-1/4 bg-blue-600 text-white" />
-            <SkillBadge text="React" className="lg:top-1/4 lg:right-10 bg-blue-500 text-white" />
-            <SkillBadge text="Java" className="lg:bottom-20 lg:left-10 bg-gray-800 text-white" />
-            <SkillBadge text="TypeScript" className="lg:top-1/2 lg:-right-4 bg-blue-400 text-white" />
-            <SkillBadge text="Django" className="lg:bottom-10 lg:right-1/4 bg-green-700 text-white" />
-
-            <SkillBadge text="SQL" className="lg:top-1/2 lg:left-0 bg-white border border-blue-200 text-gray-700" />
-            <SkillBadge text="Power Platform" className="lg:top-[15%] lg:left-[10%] bg-white border border-blue-200 text-gray-700" />
-            <SkillBadge text="Figma" className="lg:bottom-[35%] lg:right-[5%] bg-white border border-blue-200 text-gray-700" />
-            <SkillBadge text="Process Analysis" className="lg:bottom-[10%] lg:left-[20%] bg-white border border-blue-200 text-gray-700" />
-            <SkillBadge text="Stakeholder Engagement" className="lg:top-[5%] lg:right-[20%] bg-white border border-blue-200 text-gray-700" />
+            {/* 🤝 Professional Skills */}
+            <SkillBadge text="Stakeholder Engagement" className="lg:top-12 lg:right-0 bg-white border border-blue-200 text-gray-700" />
+            <SkillBadge text="Process Analysis" className="lg:top-[30%] lg:-right-15 bg-white border border-blue-200 text-gray-700" />
+            <SkillBadge text="Business Documentation" className="lg:top-1/2 lg:-right-25 bg-white border border-blue-200 text-gray-700 lg:-translate-y-1/2" />
+            <SkillBadge text="Cross-cultural Communication" className="lg:bottom-[30%] lg:-right-20 bg-white border border-blue-200 text-gray-700" />
           </div>
         </div>
       </div>
-
-      {/* 底部裝飾 */}
       <HireMe />
     </main>
   );
