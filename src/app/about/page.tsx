@@ -7,7 +7,7 @@ export default function AboutPage() {
         <main className="flex w-full flex-col items-center justify-center py-20 px-8 lg:px-32 bg-white text-black scroll-smooth">
         
         {/* 1. Hero Section: The Career Pivot Story */}
-        <section className="grid w-full grid-cols-1 lg:grid-cols-2 gap-16 mb-24">
+        <section className="grid w-full grid-cols-1 lg:grid-cols-2 gap-16 mb-24 items-center">
             <div className="flex flex-col items-start justify-start">
                 <AnimatedText text="Bridging Strategy and Code." className="!text-5xl !text-left mb-8" />
                 <p className="font-medium text-gray-600 mb-4 text-lg">
@@ -21,28 +21,43 @@ export default function AboutPage() {
                 </p>
                 
                 <div className="flex items-center gap-4 mt-6">
-                    {/* 確保你的檔名與 public 資料夾下的一致 */}
                     <a href="/StevenSu_Resume.docx" download className="bg-black text-white p-3 px-8 rounded-lg font-semibold hover:bg-white hover:text-black border-2 border-transparent hover:border-black transition-all">
                     Download CV
                     </a>
                 </div>
             </div>
             
-            {/* Profile Image Container */}
-            <div className="relative h-max rounded-2xl border-2 border-solid border-black bg-white p-8">
-            <div className="absolute top-0 -right-3 -z-10 w-[102%] h-[103%] rounded-[2rem] bg-black" />
-            <div className="w-full h-80 bg-gray-100 rounded-2xl flex items-center justify-center overflow-hidden">
-                {/* Replace with your actual photo later */}
-                <p className="text-gray-400 font-medium">[ Insert Professional Photo ]</p>
-            </div>
+            {/* Tech terminal */}
+            <div className="relative group">
+                <div className="absolute top-0 -right-3 -z-10 w-[102%] h-[103%] rounded-[2rem] bg-black" />
+                <div className="w-full h-80 bg-[#1e1e1e] rounded-2xl p-6 font-mono text-sm shadow-2xl flex flex-col">
+                    <div className="flex gap-2 mb-4">
+                        <div className="w-3 h-3 rounded-full bg-[#ff5f56]" />
+                        <div className="w-3 h-3 rounded-full bg-[#ffbd2e]" />
+                        <div className="w-3 h-3 rounded-full bg-[#27c93f]" />
+                    </div>
+                    <div className="flex-1 space-y-2">
+                        <p className="text-blue-400">const <span className="text-yellow-200">developer</span> = &#123;</p>
+                        <p className="pl-4 text-gray-300">background: <span className="text-green-400">&quot;Economics & Finance&quot;</span>,</p>
+                        <p className="pl-4 text-gray-300">education: <span className="text-green-400">&quot;Master of IT @ UQ&quot;</span>,</p>
+                        <p className="pl-4 text-gray-300">specialization: [<span className="text-orange-400">&quot;Full-stack&quot;, &quot;Automation&quot;</span>],</p>
+                        <p className="pl-4 text-gray-300">focus: <span className="text-green-400">&quot;User-Centered Design&quot;</span></p>
+                        <p className="text-blue-400">&#125;;</p>
+                        <p className="mt-4 text-gray-500">// Ready to bridge strategy and code...</p>
+                    </div>
+                </div>
             </div>
         </section>
 
         {/* Anchor Links */}
-        <div className="flex gap-6 mt-8 font-bold text-sm uppercase tracking-widest">
-            <a href="#education" className="text-gray-400 hover:text-blue-600 transition-colors">Education</a>
-            <a href="#experience" className="text-gray-400 hover:text-blue-600 transition-colors">Experience</a>
-            <a href="#activities" className="text-gray-400 hover:text-blue-600 transition-colors">Activities</a>
+        <div className="flex items-center justify-center w-full mb-24">
+            <nav className="flex gap-4 p-2 px-6 bg-gray-50/50 backdrop-blur-sm border border-gray-200 rounded-full shadow-sm">
+                <NavLink href="#education" text="Education" />
+                <div className="w-[1px] h-4 bg-gray-300 self-center" /> {/* 分隔線 */}
+                <NavLink href="#experience" text="Experience" />
+                <div className="w-[1px] h-4 bg-gray-300 self-center" /> {/* 分隔線 */}
+                <NavLink href="#activities" text="Activities" />
+            </nav>
         </div>
 
         {/* 2. Education Section */}
@@ -119,14 +134,14 @@ export default function AboutPage() {
                 company="UQ Ventures Program"
                 location="The University of Queensland"
                 time="2024 - 2025"
-                work="Completed innovation and growth modules, utilising creative problem-solving and collaborative approaches to tackle entrepreneurial challenges. [cite: 40]"
+                work="Completed innovation and growth modules, utilising creative problem-solving and collaborative approaches to tackle entrepreneurial challenges."
                 />
                 <ActivityItem
                 title="Volunteer"
                 company="Australia Career Forum (ACF)"
                 location="Brisbane, Australia"
                 time="2025 - 2026"
-                work="Supported large-scale community events like 'ACF Brisbane Squid Game', fostering community ties for 50+ attendees through inclusive cultural activities. [cite: 39]"
+                work="Supported large-scale community events like 'ACF Brisbane Squid Game', fostering community ties for 50+ attendees through inclusive cultural activities."
                 />
             </div>
         </section>
@@ -158,10 +173,7 @@ function ExperienceItem({title, company, location, time, work}: any) {
     return (
         <div className="my-8 first:mt-0 last:mb-0 border-l-4 border-black pl-8 relative">
             <div className="absolute -left-[13px] top-0 w-6 h-6 bg-blue-600 rounded-full border-4 border-white shadow-sm" />
-            {/* 💡 移除 mb-1 改用 mb-0，並縮小行高 */}
             <h3 className="font-bold text-2xl mb-0 leading-tight">{title} <span className="text-blue-600">@{company}</span></h3>
-            
-            {/* 💡 這裡就是關鍵：讓地點和時間緊貼標題 */}
             <div className="flex flex-wrap items-center gap-x-2 font-semibold text-gray-500 mb-2 text-sm md:text-base leading-none">
                 <span>{location}</span>
                 {location && <span>•</span>}
@@ -184,5 +196,18 @@ function ActivityItem({title, company, location, time, work}: any) {
             </div>
             <p className="font-medium w-full text-gray-700 leading-relaxed">{work}</p>
         </div>
+    );
+}
+
+function NavLink({ href, text }: { href: string; text: string }) {
+    return (
+        <a 
+            href={href} 
+            className="group relative px-2 py-1 text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-blue-600 transition-colors"
+        >
+            {text}
+            {/* 動態底線動畫 */}
+            <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-blue-600 transition-all duration-300 group-hover:w-full" />
+        </a>
     );
 }

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from '@/components/Navbar';
+import Footer from "@/components/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,22 +21,21 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">
-        {/* 1. 把 Navbar 放這裡，它就會出現在每一頁的最上方 */}
-        <Navbar /> 
+    <html lang="en">
+      {/* 💡 確保 body 是 flex 容器且高度至少為 100vh */}
+      <body className="flex flex-col min-h-screen bg-white">
+        <Navbar />
         
-        {/* 2. children 代表的是每一頁的內容（例如 page.tsx） */}
+        {/* 💡 main 標籤使用 flex-grow，這會把 Footer 推到最底部 */}
         <main className="flex-grow">
           {children}
         </main>
+
+        <Footer />
       </body>
     </html>
   );

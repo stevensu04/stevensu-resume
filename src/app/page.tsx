@@ -1,6 +1,7 @@
 "use client";
 import AnimatedText from "@/components/AnimatedText";
-import HireMe from "@/components/HireMe";
+import ContactMe from "@/components/ContactMe";
+import Link from 'next/link';
 
 export default function Home() {
   return (
@@ -17,13 +18,16 @@ export default function Home() {
             Hi, I'm Steven, a Master of IT student @ UQ passionate about Full-stack development.
           </p>
           
-          <div className="flex items-center self-center lg:self-start mt-8 z-10">
-            <button className="bg-blue-600 text-white px-8 py-3 rounded-lg font-bold shadow-lg hover:bg-blue-700 hover:shadow-blue-200 transition-all duration-300">
-              Resume
-            </button>
-            <button className="ml-4 text-gray-600 font-semibold underline underline-offset-4 hover:text-blue-600 transition-colors">
-              Contact
-            </button>
+          <div className="flex items-center self-center lg:self-start mt-8 z-10 gap-6">
+            {/* Resume 按鈕：連結至 About 頁面或下載 */}
+            <Link 
+              href="/about" 
+              className="group relative flex items-center bg-black text-white px-8 py-3 rounded-lg font-bold shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 overflow-hidden"
+            >
+              <span className="relative z-10">View Resume</span>
+              {/* 懸停時的發光背景動畫 */}
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0" />
+            </Link>
           </div>
         </div>
 
@@ -34,7 +38,7 @@ export default function Home() {
             <div className="hidden lg:flex z-0 text-[150px] lg:text-[180px] font-black text-blue-600/5 select-none absolute items-center justify-center w-full h-full">
               {"< / >"}
             </div>
-            {/* 💻 Technical Skills */}
+            {/* Technical Skills */}
             <SkillBadge text="Next.js" className="lg:top-2 lg:left-33 lg:-translate-x-1/2 bg-black text-white" />
             <SkillBadge text="React" className="lg:top-14 lg:left-10 bg-blue-600 text-white" />
             <SkillBadge text="Tailwind CSS" className="lg:top-[40%] lg:-left-10 bg-cyan-500 text-white" />
@@ -47,7 +51,7 @@ export default function Home() {
             <SkillBadge text="Power Platform" className="lg:top-[33%] lg:-left-5 bg-cyan-500 text-white lg:-translate-y-1/2" />
             <SkillBadge text="Figma" className="lg:bottom-[-2%] lg:left-[32%] bg-cyan-500 text-white" />
 
-            {/* 🤝 Professional Skills */}
+            {/* Professional Skills */}
             <SkillBadge text="Stakeholder Engagement" className="lg:top-12 lg:right-0 bg-white border border-blue-200 text-gray-700" />
             <SkillBadge text="Process Analysis" className="lg:top-[30%] lg:-right-15 bg-white border border-blue-200 text-gray-700" />
             <SkillBadge text="Business Documentation" className="lg:top-1/2 lg:-right-25 bg-white border border-blue-200 text-gray-700 lg:-translate-y-1/2" />
@@ -55,7 +59,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <HireMe />
+      <ContactMe />
     </main>
   );
 }
