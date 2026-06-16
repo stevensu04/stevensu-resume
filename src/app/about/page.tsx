@@ -1,6 +1,7 @@
 "use client";
 import React from 'react';
 import AnimatedText from '@/components/AnimatedText';
+import { FaArrowUp } from 'react-icons/fa';
 
 export default function AboutPage() {
     return (
@@ -27,7 +28,7 @@ export default function AboutPage() {
                 </div>
             </div>
             
-            {/* Tech terminal */}
+            {/* Tech terminal showcasing AI Search & RAG specialization */}
             <div className="relative group">
                 <div className="absolute top-0 -right-3 -z-10 w-[102%] h-[103%] rounded-[2rem] bg-black" />
                 <div className="w-full h-80 bg-[#1e1e1e] rounded-2xl p-6 font-mono text-sm shadow-2xl flex flex-col">
@@ -40,10 +41,12 @@ export default function AboutPage() {
                         <p className="text-blue-400">const <span className="text-yellow-200">developer</span> = &#123;</p>
                         <p className="pl-4 text-gray-300">background: <span className="text-green-400">&quot;Economics & Finance&quot;</span>,</p>
                         <p className="pl-4 text-gray-300">education: <span className="text-green-400">&quot;Master of IT @ UQ&quot;</span>,</p>
-                        <p className="pl-4 text-gray-300">specialization: [<span className="text-orange-400">&quot;Full-stack&quot;, &quot;Automation&quot;</span>],</p>
-                        <p className="pl-4 text-gray-300">focus: <span className="text-green-400">&quot;User-Centered Design&quot;</span></p>
+                        {/* 💡 Highlighted specialization: AI Search & RAG */}
+                        <p className="pl-4 text-gray-300">specialization: [<span className="text-orange-400">&quot;Full-stack&quot;, &quot;AI Search &amp; RAG&quot;</span>],</p>
+                        {/* 💡 Highlighted focus: Information Retrieval */}
+                        <p className="pl-4 text-gray-300">focus: <span className="text-green-400">&quot;Information Retrieval &amp; HCI&quot;</span></p>
                         <p className="text-blue-400">&#125;;</p>
-                        <p className="mt-4 text-gray-500">// Ready to bridge strategy and code...</p>
+                        <p className="mt-4 text-gray-500">// Ready to bridge strategy, code, and intelligent search...</p>
                     </div>
                 </div>
             </div>
@@ -53,9 +56,9 @@ export default function AboutPage() {
         <div className="flex items-center justify-center w-full mb-24">
             <nav className="flex gap-4 p-2 px-6 bg-gray-50/50 backdrop-blur-sm border border-gray-200 rounded-full shadow-sm">
                 <NavLink href="#education" text="Education" />
-                <div className="w-[1px] h-4 bg-gray-300 self-center" /> {/* 分隔線 */}
+                <div className="w-[1px] h-4 bg-gray-300 self-center" /> {/* Nav anchor divider */}
                 <NavLink href="#experience" text="Experience" />
-                <div className="w-[1px] h-4 bg-gray-300 self-center" /> {/* 分隔線 */}
+                <div className="w-[1px] h-4 bg-gray-300 self-center" /> {/* Nav anchor divider */}
                 <NavLink href="#activities" text="Activities" />
             </nav>
         </div>
@@ -69,7 +72,8 @@ export default function AboutPage() {
                     school="The University of Queensland"
                     location="Brisbane, Australia"
                     time="Feb 2025 - Nov 2026"
-                    info="GPA: 6.143/7.0 (Distinction Average). Focused on Relational Databases, Human-Computer Interaction, and Web Information Systems. For my Capstone, I prototyped an IoT-integrated Library Seat System to enhance campus UX."
+                    // 💡 Updated to feature Next-Gen Information Retrieval, LLMs, and RAG architectures
+                    info="GPA: 6.143/7.0 (Distinction Average). Specialising in Next-Gen Information Retrieval (incorporating LLM, Vector Search, and RAG architectures), Human-Computer Interaction, and Web Information Systems. For my Capstone, I prototyped an IoT-integrated Library Seat System to enhance campus UX."
                 />
 
                 <EducationItem 
@@ -96,7 +100,7 @@ export default function AboutPage() {
             <div className="max-w-[85%] mx-auto">
                 <ExperienceItem 
                     title="Business Support Partner (Intern)"
-                    company="Queensland State  Government (IT LANDS | Dept. of Natural Resources and Mines, Manufacturing and Regional and Rural Development (NRMMRRD))"
+                    company="Queensland State Government (IT LANDS | Dept. of Natural Resources and Mines, Manufacturing and Regional and Rural Development (NRMMRRD))"
                     location="Brisbane, QLD (Australia)"
                     time="Oct 2025 - Jan 2026"
                     work="Spearheaded the 'Finance Forms' project using Power Apps, Power Automate and SharePoint. Automated manual data validation, projected to boost processing efficiency by 30% for the department."
@@ -123,25 +127,35 @@ export default function AboutPage() {
             <h2 className="font-bold text-4xl mb-16 w-full text-center">Extracurricular Activities</h2>
             <div className="max-w-[85%] mx-auto">                
                 <ActivityItem
-                title="Vice President"
-                company="UQ Graduate Union of Taiwanese Students (GUTS)"
-                location="The University of Queensland"
-                time="Jan 2026 - Dec 2026"
-                work="Spearheading strategic planning for 100+ members, aligning diverse perspectives, and collaborating with university representatives to ensure successful stakeholder management. "
+                    company="UQ Graduate Union of Taiwanese Students (GUTS)"
+                    location="The University of Queensland"
+                    roles={[
+                        {
+                            title: "Vice President",
+                            time: "Nov 2025 - Jun 2026",
+                            work: "Spearheading strategic planning for 100+ members, aligning diverse perspectives, and collaborating with university representatives to ensure successful stakeholder management.",
+                            isPromoted: true
+                        },
+                        {
+                            title: "Intern of Secretary / Information Manager",
+                            time: "Aug 2025 - Nov 2025",
+                            work: "Managed internal databases, oversaw information pipelines, and supported administrative operations to optimize communication across the student union."
+                        }
+                    ]}
                 />
                 <ActivityItem 
-                title="Participant"
-                company="UQ Ventures Program"
-                location="The University of Queensland"
-                time="2024 - 2025"
-                work="Completed innovation and growth modules, utilising creative problem-solving and collaborative approaches to tackle entrepreneurial challenges."
+                    title="Participant"
+                    company="UQ Ventures Program"
+                    location="The University of Queensland"
+                    time="2024 - 2025"
+                    work="Completed innovation and growth modules, utilising creative problem-solving and collaborative approaches to tackle entrepreneurial challenges."
                 />
                 <ActivityItem
-                title="Volunteer"
-                company="Australia Career Forum (ACF)"
-                location="Brisbane, Australia"
-                time="2025 - 2026"
-                work="Supported large-scale community events like 'ACF Brisbane Squid Game', fostering community ties for 50+ attendees through inclusive cultural activities."
+                    title="Social Media Coordinator & Copywriter"
+                    company="Australia Career Forum (ACF)"
+                    location="Brisbane, Australia"
+                    time="Mar 2025 - Jun 2026"
+                    work="Drafted high-converting marketing copy and coordinated multi-channel social media campaigns to promote large-scale professional networking events, successfully driving engagement for 50+ attendees in the Brisbane community."
                 />
             </div>
         </section>
@@ -184,17 +198,45 @@ function ExperienceItem({title, company, location, time, work}: any) {
     );
 }
 
-function ActivityItem({title, company, location, time, work}: any) {
+// Updated ActivityItem with nested role support for GUTS career progression
+function ActivityItem({title, company, location, time, work, roles}: any) {
     return (
         <div className="my-8 first:mt-0 last:mb-0 border-l-4 border-black pl-8 relative">
             <div className="absolute -left-[13px] top-0 w-6 h-6 bg-green-500 rounded-full border-4 border-white shadow-sm" />
-            <h3 className="font-bold text-2xl mb-1">{title} <span className="text-green-600">@{company}</span></h3>
+            
+            {/* Header style depending on single or multiple roles */}
+            {roles ? (
+                <h3 className="font-bold text-2xl mb-1 text-black">@{company}</h3>
+            ) : (
+                <h3 className="font-bold text-2xl mb-1">{title} <span className="text-green-600">@{company}</span></h3>
+            )}
+            
             <div className="flex flex-wrap items-center gap-x-2 font-semibold text-gray-500 mb-3 text-sm md:text-base">
-            <span>{location}</span>
-            {location && <span>•</span>}
-            <span>{time}</span>
+                <span>{location}</span>
+                {time && <span>• {time}</span>}
             </div>
-            <p className="font-medium w-full text-gray-700 leading-relaxed">{work}</p>
+
+            {/* Dynamic rendering for single vs double roles (GUTS) */}
+            {roles ? (
+                <div className="space-y-6 mt-4">
+                    {roles.map((r: any, idx: number) => (
+                        <div key={idx} className={`relative pl-4 ${idx > 0 ? "border-l-2 border-gray-100 mt-4" : ""}`}>
+                            {r.isPromoted && (
+                                <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-green-50 text-green-700 px-2 py-0.5 rounded-full mb-1">
+                                    <FaArrowUp className="text-[9px]" /> Promoted
+                                </span>
+                            )}
+                            <div className="flex flex-col md:flex-row md:items-center justify-between mb-1.5">
+                                <span className="font-bold text-lg text-black">{r.title}</span>
+                                <span className="text-sm font-semibold text-gray-400">{r.time}</span>
+                            </div>
+                            <p className="font-medium w-full text-gray-700 leading-relaxed text-sm">{r.work}</p>
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <p className="font-medium w-full text-gray-700 leading-relaxed">{work}</p>
+            )}
         </div>
     );
 }
@@ -206,7 +248,7 @@ function NavLink({ href, text }: { href: string; text: string }) {
             className="group relative px-2 py-1 text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-blue-600 transition-colors"
         >
             {text}
-            {/* 動態底線動畫 */}
+            {/* Dynamic underline hover effect */}
             <span className="absolute left-0 bottom-0 w-0 h-[2px] bg-blue-600 transition-all duration-300 group-hover:w-full" />
         </a>
     );
