@@ -154,13 +154,13 @@ export default function AboutPage() {
                     roles={[
                         {
                             title: "Social Media Coordinator & Copywriter",
-                            time: "Oct 2025 - Jun 2026",
+                            time: "May 2026 - Present",
                             work: "Drafted high-converting marketing copy and coordinated multi-channel social media campaigns to promote large-scale professional networking events, successfully driving engagement for 50+ attendees in the Brisbane community.",
                             isPromoted: true
                         },
                         {
                             title: "Event Volunteer",
-                            time: "Mar 2025 - Oct 2025",
+                            time: "Mar 2025 - May 2026",
                             work: "Supported large-scale community events like 'ACF Brisbane Squid Game', fostering community ties and managing event logistics for attendees through inclusive cultural activities."
                         }
                     ]}
