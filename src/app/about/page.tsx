@@ -214,9 +214,13 @@ function ActivityItem({title, company, location, time, work, roles}: any) {
             
             {/* Header style depending on single or multiple roles */}
             {roles ? (
-                <h3 className="font-bold text-2xl mb-1 text-black">@{company}</h3>
+                <h3 className="font-bold text-2xl mb-1 text-black">
+                <span className="text-green-600">@{company}</span>
+            </h3>
             ) : (
-                <h3 className="font-bold text-2xl mb-1">{title} <span className="text-green-600">@{company}</span></h3>
+                <h3 className="font-bold text-2xl mb-1">
+                    {title} <span className="text-green-600">@{company}</span>
+                </h3>
             )}
             
             <div className="flex flex-wrap items-center gap-x-2 font-semibold text-gray-500 mb-3 text-sm md:text-base">
