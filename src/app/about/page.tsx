@@ -95,6 +95,15 @@ export default function AboutPage() {
         <section id="experience" className="w-full mb-24 scroll-mt-32">
             <h2 className="font-bold text-4xl mb-16 w-full text-center">Work Experience</h2>
             <div className="max-w-[85%] mx-auto">
+                {/* 💡 Latest: Intelligent System R&D Internship at Star Trade */}
+                <ExperienceItem 
+                    title="Intern of Intelligent System R&D Division"
+                    company="Star Trade"
+                    location="Taipei, Taiwan (On-site)"
+                    time="Jun 2026 - Jul 2026"
+                    work="Star Trade is an international power services and energy management provider, anchored by its self-developed Star Trade power trading platform, providing flexible, scalable power solutions for both end users and the grid."
+                />
+                
                 <ExperienceItem 
                     title="Business Support Partner (Intern)"
                     company="Queensland State Government (IT LANDS | Dept. of Natural Resources and Mines, Manufacturing and Regional and Rural Development (NRMMRRD))"
@@ -102,6 +111,7 @@ export default function AboutPage() {
                     time="Oct 2025 - Jan 2026"
                     work="Spearheaded the 'Finance Forms' project using Power Apps, Power Automate and SharePoint. Automated manual data validation, projected to boost processing efficiency by 30% for the department."
                 />
+                
                 <ExperienceItem 
                     title="Business Development Consultant (Intern)"
                     company="Practera | Study Australia Industry Experience Program (SAIEP)"
@@ -109,6 +119,7 @@ export default function AboutPage() {
                     time="Jun 2025 - Jul 2025"
                     work="Navigated complex project requirements and facilitated communication between diverse stakeholders to deliver high-quality strategic documentation."
                 />
+                
                 <ExperienceItem 
                     title="Financial Services Consultant"
                     company="E.SUN Commercial Bank"
@@ -195,13 +206,15 @@ function ExperienceItem({title, company, location, time, work}: any) {
     return (
         <div className="my-8 first:mt-0 last:mb-0 border-l-4 border-black pl-8 relative">
             <div className="absolute -left-[13px] top-0 w-6 h-6 bg-blue-600 rounded-full border-4 border-white shadow-sm" />
-            <h3 className="font-bold text-2xl mb-0 leading-tight">{title} <span className="text-blue-600">@{company}</span></h3>
-            <div className="flex flex-wrap items-center gap-x-2 font-semibold text-gray-500 mb-2 text-sm md:text-base leading-none">
+            <h3 className="font-bold text-2xl mb-1 leading-tight text-black">
+                {title} <span className="text-blue-600">@{company}</span>
+            </h3>
+            <div className="flex flex-wrap items-center gap-x-2 font-semibold text-gray-500 mb-2 text-sm md:text-base">
                 <span>{location}</span>
                 {location && <span>•</span>}
                 <span>{time}</span>
             </div>
-            <p className="font-medium w-full text-gray-700 leading-relaxed">{work}</p>
+            <p className="font-medium w-full text-gray-700 leading-relaxed text-sm md:text-base">{work}</p>
         </div>
     );
 }
