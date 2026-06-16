@@ -157,18 +157,45 @@ function ProjectCard({ project, onOpen }: { project: any, onOpen: () => void }) 
 function ProjectModal({ project, onClose }: { project: any, onClose: () => void }) {
     const [isZoomed, setIsZoomed] = useState(false);
 
-    // 💡 Map project data to Sian-style professional metadata
-    const getProjectMeta = (id: number) => {
+    // 💡 Sian-style dynamic metadata rendering based on project essence
+    const renderMetaRows = (id: number) => {
         switch(id) {
-            case 1: return { role: "Full Stack Engineer", status: "Completed", stack: "Python, Django, Leaflet.js, Bootstrap" };
-            case 2: return { role: "IT Automation Specialist", status: "Completed", stack: "Power Apps, Power Automate, SharePoint" };
-            case 3: return { role: "UI/UX & HCI Researcher", status: "Completed", stack: "Figma, User Testing, HCI Research" };
-            case 4: return { role: "Frontend Engineer", status: "Completed", stack: "JavaScript (ES6+), HTML5, CSS3" };
-            default: return { role: "Software Engineer", status: "Active Development", stack: "Next.js, TypeScript" };
+            case 1: // OlymPulse
+                return (
+                    <>
+                        <div><span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">My Role</span><span className="font-bold text-black">Full Stack Engineer</span></div>
+                        <div><span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Context</span><span className="font-bold text-black">UQ WIS Project</span></div>
+                        <div className="col-span-2 mt-2"><span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Tech Stack</span><span className="font-mono text-xs text-gray-600">Python, Django, Leaflet.js, Bootstrap</span></div>
+                    </>
+                );
+            case 2: // Finance Forms
+                return (
+                    <>
+                        <div><span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">My Role</span><span className="font-bold text-black">IT Automation Specialist</span></div>
+                        <div><span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Context</span><span className="font-bold text-black">Queensland Government</span></div>
+                        <div className="col-span-2 mt-2"><span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Projected Impact</span><span className="font-bold text-blue-600">+30% Processing Efficiency</span></div>
+                    </>
+                );
+            case 3: // ParkEase
+                return (
+                    <>
+                        <div><span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">My Role</span><span className="font-bold text-black">UI/UX &amp; HCI Researcher</span></div>
+                        <div><span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Duration · Team</span><span className="font-bold text-black">4 Weeks · 3 Designers</span></div>
+                        <div className="col-span-2 mt-2"><span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Core Methodology</span><span className="text-xs text-gray-600 font-bold">Heuristic Evaluation &amp; Usability Testing</span></div>
+                    </>
+                );
+            case 4: // JourneyMate
+                return (
+                    <>
+                        <div><span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">My Role</span><span className="font-bold text-black">Full Stack Engineer</span></div>
+                        <div><span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Context</span><span className="font-bold text-black">UQ Ventures Program</span></div>
+                        <div className="col-span-2 mt-2"><span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Architecture Feature</span><span className="font-mono text-xs text-gray-600">Vanilla JS Logic, Token-Gate Economy</span></div>
+                    </>
+                );
+            default:
+                return null;
         }
     };
-
-    const meta = getProjectMeta(project.id);
 
     return (
         <>
@@ -187,7 +214,7 @@ function ProjectModal({ project, onClose }: { project: any, onClose: () => void 
                     </button>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                        {/* Left Side: Image Only (Supports Zoom) */}
+                        {/* Left Side: Visuals & Dynamic Meta */}
                         <div>
                             <div 
                                 className="rounded-2xl overflow-hidden shadow-lg border border-gray-100 bg-gray-50 cursor-zoom-in relative group/img"
@@ -199,26 +226,13 @@ function ProjectModal({ project, onClose }: { project: any, onClose: () => void 
                                 </div>
                             </div>
                             
-                            {/* 💡 Sian-Style Meta Info Block */}
+                            {/* 💡 Dynamic Meta Info Block */}
                             <div className="mt-6 grid grid-cols-2 gap-4 bg-gray-50 p-6 rounded-2xl border border-gray-100 text-sm">
-                                <div>
-                                    <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">My Role</span>
-                                    <span className="font-bold text-black">{meta.role}</span>
-                                </div>
-                                <div>
-                                    <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Status</span>
-                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-800">
-                                        {meta.status}
-                                    </span>
-                                </div>
-                                <div className="col-span-2 mt-2">
-                                    <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Tech Stack</span>
-                                    <span className="font-mono text-xs text-gray-600">{meta.stack}</span>
-                                </div>
+                                {renderMetaRows(project.id)}
                             </div>
                         </div>
 
-                        {/* Right Side: Structured Narrative */}
+                        {/* Right Side: Narrative */}
                         <div className="flex flex-col">
                             <span className="text-blue-600 font-bold text-sm mb-2">{project.category}</span>
                             <h2 className="text-4xl font-bold mb-6 text-black">{project.title}</h2>
@@ -226,7 +240,7 @@ function ProjectModal({ project, onClose }: { project: any, onClose: () => void 
                             <div className="space-y-8">
                                 <section>
                                     <h4 className="flex items-center gap-2 text-black font-extrabold text-lg mb-3">
-                                        <FaLightbulb className="text-yellow-500" /> 01 - Problem & Challenge
+                                        <FaLightbulb className="text-yellow-500" /> 01 - Problem &amp; Challenge
                                     </h4>
                                     <p className="text-gray-600 leading-relaxed">{project.details?.problem}</p>
                                     
@@ -247,8 +261,10 @@ function ProjectModal({ project, onClose }: { project: any, onClose: () => void 
                                 </section>
 
                                 <section>
+                                    {/* 💡 Dynamic subheader for single vs double roles (GUTS & ACF) */}
                                     <h4 className="flex items-center gap-2 text-black font-extrabold text-lg mb-3">
-                                        <FaCode className="text-blue-600" /> 02 - Solution & Architecture
+                                        <FaCode className="text-blue-600" /> 
+                                        {project.id === 3 ? "02 - Solution &amp; Interactive Prototype" : "02 - Solution &amp; Architecture"}
                                     </h4>
                                     <p className="text-gray-600 leading-relaxed mb-4">{project.details?.solution}</p>
                                     
@@ -270,7 +286,7 @@ function ProjectModal({ project, onClose }: { project: any, onClose: () => void 
                 </motion.div>
             </motion.div>
 
-            {/* Lightbox for full image viewing */}
+            {/* Lightbox */}
             <AnimatePresence>
                 {isZoomed && (
                     <motion.div 
