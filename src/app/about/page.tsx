@@ -99,7 +99,7 @@ export default function AboutPage() {
                 <ExperienceItem 
                     title="Intern of Intelligent System R&D Division"
                     company="Star Trade"
-                    location="Taipei, Taiwan (On-site)"
+                    location="Taipei, Taiwan"
                     time="Jun 2026 - Jul 2026"
                     work="Star Trade is an international power services and energy management provider, anchored by its self-developed Star Trade power trading platform, providing flexible, scalable power solutions for both end users and the grid."
                 />

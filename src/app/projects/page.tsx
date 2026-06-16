@@ -155,93 +155,140 @@ function ProjectCard({ project, onOpen }: { project: any, onOpen: () => void }) 
 }
 
 function ProjectModal({ project, onClose }: { project: any, onClose: () => void }) {
+    const [isZoomed, setIsZoomed] = useState(false);
+
+    // 💡 Map project data to Sian-style professional metadata
+    const getProjectMeta = (id: number) => {
+        switch(id) {
+            case 1: return { role: "Full Stack Engineer", status: "Completed", stack: "Python, Django, Leaflet.js, Bootstrap" };
+            case 2: return { role: "IT Automation Specialist", status: "Completed", stack: "Power Apps, Power Automate, SharePoint" };
+            case 3: return { role: "UI/UX & HCI Researcher", status: "Completed", stack: "Figma, User Testing, HCI Research" };
+            case 4: return { role: "Frontend Engineer", status: "Completed", stack: "JavaScript (ES6+), HTML5, CSS3" };
+            default: return { role: "Software Engineer", status: "Active Development", stack: "Next.js, TypeScript" };
+        }
+    };
+
+    const meta = getProjectMeta(project.id);
+
     return (
-        <motion.div 
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 bg-black/70 backdrop-blur-sm"
-            onClick={onClose}
-        >
+        <>
             <motion.div 
-                initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
-                className="bg-white w-full max-w-5xl max-h-[90vh] overflow-y-auto rounded-3xl relative p-6 md:p-12 shadow-2xl"
-                onClick={(e) => e.stopPropagation()}
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 bg-black/70 backdrop-blur-sm"
+                onClick={onClose}
             >
-                <button onClick={onClose} className="absolute right-6 top-6 text-2xl hover:text-blue-600 transition-colors">
-                    <FaTimes />
-                </button>
+                <motion.div 
+                    initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
+                    className="bg-white w-full max-w-5xl max-h-[90vh] overflow-y-auto rounded-3xl relative p-6 md:p-12 shadow-2xl"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    <button onClick={onClose} className="absolute right-6 top-6 text-2xl hover:text-blue-600 transition-colors">
+                        <FaTimes />
+                    </button>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                    <div>
-                        <div className="rounded-2xl overflow-hidden shadow-lg mb-6 border border-gray-100 bg-gray-50">
-                            <img src={project.img} alt={project.title} className="w-full h-auto" />
-                        </div>
-                        <div className="flex flex-col gap-3">
-                            <a href={project.link} target="_blank" className="w-full bg-black text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-blue-600 transition-all active:scale-95">
-                                <FaExternalLinkAlt /> Open {project.category === "UI/UX Design" ? "Prototype" : "Live Demo"}
-                            </a>
-                        </div>
-                    </div>
-
-                    <div className="flex flex-col">
-                        <span className="text-blue-600 font-bold text-sm mb-2">{project.category}</span>
-                        <h2 className="text-4xl font-bold mb-6 text-black">{project.title}</h2>
-                        
-                        <div className="space-y-8">
-                            <section>
-                                <h4 className="flex items-center gap-2 text-black font-extrabold text-lg mb-3">
-                                    <FaLightbulb className="text-yellow-500" /> The Challenge
-                                </h4>
-                                <p className="text-gray-600 leading-relaxed">{project.details?.problem}</p>
-                                
-                                {/* 💡 客製化亮點：ParkEase */}
-                                {project.id === 3 && (
-                                    <div className="mt-4 p-4 bg-blue-50 rounded-xl border-l-4 border-blue-600">
-                                        <p className="text-blue-900 text-sm font-semibold italic">
-                                            &quot;Research confirmed that 86% of surveyed users at UQ St Lucia and Toowong reported high frustration with current parking arrangements.&quot;
-                                        </p>
-                                    </div>
-                                )}
-
-                                {/* 💡 客製化亮點：JourneyMate */}
-                                {project.id === 4 && (
-                                    <div className="mt-4 p-4 bg-purple-50 rounded-xl border-l-4 border-purple-600">
-                                        <p className="text-purple-900 text-sm font-semibold italic">
-                                            &quot;1 in 4 travelers face flight delays. JourneyMate addresses this by saving ~80% of app-switching time through a consolidated AI platform.&quot;
-                                        </p>
-                                    </div>
-                                )}
-                            </section>
-
-                            <section>
-                                <h4 className="flex items-center gap-2 text-black font-extrabold text-lg mb-3">
-                                    <FaCode className="text-blue-600" /> Key Features & Tech
-                                </h4>
-                                <div className="flex flex-wrap gap-2 mb-4">
-                                    {project.tech.map((t: string) => (
-                                        <span key={t} className="bg-gray-100 text-gray-800 px-3 py-1 rounded-md text-xs font-bold border border-gray-200">
-                                            {t}
-                                        </span>
-                                    ))}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                        {/* Left Side: Image Only (Supports Zoom) */}
+                        <div>
+                            <div 
+                                className="rounded-2xl overflow-hidden shadow-lg border border-gray-100 bg-gray-50 cursor-zoom-in relative group/img"
+                                onClick={() => setIsZoomed(true)}
+                            >
+                                <img src={project.img} alt={project.title} className="w-full h-auto" />
+                                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
+                                    <span className="bg-white/95 text-black text-xs font-bold px-3 py-1.5 rounded-full shadow-md">Click to View Full Image 🔍</span>
                                 </div>
-                                <p className="text-gray-600 leading-relaxed">{project.details?.solution}</p>
-                                
-                                {/* 💡 技術實作細節：JourneyMate Token System */}
-                                {project.id === 4 && (
-                                    <div className="mt-4 flex items-start gap-3 p-4 bg-green-50 rounded-xl border border-green-100">
-                                        <FaCoins className="text-green-600 mt-1" />
-                                        <div>
-                                            <p className="text-green-900 text-xs font-bold mb-1 uppercase tracking-wider">Technical Highlight: Token Economy</p>
-                                            <p className="text-green-800 text-xs leading-snug">
-                                                Developed a gamified logic where users earn tokens via daily check-ins to manage AI query costs.
+                            </div>
+                            
+                            {/* 💡 Sian-Style Meta Info Block */}
+                            <div className="mt-6 grid grid-cols-2 gap-4 bg-gray-50 p-6 rounded-2xl border border-gray-100 text-sm">
+                                <div>
+                                    <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">My Role</span>
+                                    <span className="font-bold text-black">{meta.role}</span>
+                                </div>
+                                <div>
+                                    <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Status</span>
+                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-800">
+                                        {meta.status}
+                                    </span>
+                                </div>
+                                <div className="col-span-2 mt-2">
+                                    <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Tech Stack</span>
+                                    <span className="font-mono text-xs text-gray-600">{meta.stack}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Right Side: Structured Narrative */}
+                        <div className="flex flex-col">
+                            <span className="text-blue-600 font-bold text-sm mb-2">{project.category}</span>
+                            <h2 className="text-4xl font-bold mb-6 text-black">{project.title}</h2>
+                            
+                            <div className="space-y-8">
+                                <section>
+                                    <h4 className="flex items-center gap-2 text-black font-extrabold text-lg mb-3">
+                                        <FaLightbulb className="text-yellow-500" /> 01 - Problem & Challenge
+                                    </h4>
+                                    <p className="text-gray-600 leading-relaxed">{project.details?.problem}</p>
+                                    
+                                    {project.id === 3 && (
+                                        <div className="mt-4 p-4 bg-blue-50 rounded-xl border-l-4 border-blue-600">
+                                            <p className="text-blue-900 text-sm font-semibold italic">
+                                                &quot;Research confirmed that 86% of surveyed users at UQ St Lucia and Toowong reported high frustration with current parking arrangements.&quot;
                                             </p>
                                         </div>
-                                    </div>
-                                )}
-                            </section>
+                                    )}
+                                    {project.id === 4 && (
+                                        <div className="mt-4 p-4 bg-purple-50 rounded-xl border-l-4 border-purple-600">
+                                            <p className="text-purple-900 text-sm font-semibold italic">
+                                                &quot;JourneyMate eliminates app-switching fatigue by integrating fragmented travel data into a single adaptive interface.&quot;
+                                            </p>
+                                        </div>
+                                    )}
+                                </section>
+
+                                <section>
+                                    <h4 className="flex items-center gap-2 text-black font-extrabold text-lg mb-3">
+                                        <FaCode className="text-blue-600" /> 02 - Solution & Architecture
+                                    </h4>
+                                    <p className="text-gray-600 leading-relaxed mb-4">{project.details?.solution}</p>
+                                    
+                                    {project.id === 4 && (
+                                        <div className="flex items-start gap-3 p-4 bg-green-50 rounded-xl border border-green-100">
+                                            <FaCoins className="text-green-600 mt-1" />
+                                            <div>
+                                                <p className="text-green-900 text-xs font-bold mb-1 uppercase tracking-wider">Technical Highlight: Token Economy</p>
+                                                <p className="text-green-800 text-xs leading-snug">
+                                                    Developed a gamified logic where users earn tokens via daily check-ins to handle AI query costs efficiently.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )}
+                                </section>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </motion.div>
             </motion.div>
-        </motion.div>
+
+            {/* Lightbox for full image viewing */}
+            <AnimatePresence>
+                {isZoomed && (
+                    <motion.div 
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 backdrop-blur-md cursor-zoom-out"
+                        onClick={() => setIsZoomed(false)}
+                    >
+                        <button className="absolute right-8 top-8 text-white text-3xl hover:text-gray-300" onClick={() => setIsZoomed(false)}>
+                            <FaTimes />
+                        </button>
+                        <motion.img 
+                            initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }}
+                            src={project.img} alt={project.title} 
+                            className="max-w-[95vw] max-h-[90vh] object-contain rounded-xl shadow-2xl"
+                        />
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </>
     );
 }
