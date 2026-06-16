@@ -41,9 +41,7 @@ export default function AboutPage() {
                         <p className="text-blue-400">const <span className="text-yellow-200">developer</span> = &#123;</p>
                         <p className="pl-4 text-gray-300">background: <span className="text-green-400">&quot;Economics & Finance&quot;</span>,</p>
                         <p className="pl-4 text-gray-300">education: <span className="text-green-400">&quot;Master of IT @ UQ&quot;</span>,</p>
-                        {/* 💡 Highlighted specialization: AI Search & RAG */}
                         <p className="pl-4 text-gray-300">specialization: [<span className="text-orange-400">&quot;Full-stack&quot;, &quot;AI Search &amp; RAG&quot;</span>],</p>
-                        {/* 💡 Highlighted focus: Information Retrieval */}
                         <p className="pl-4 text-gray-300">focus: <span className="text-green-400">&quot;Information Retrieval &amp; HCI&quot;</span></p>
                         <p className="text-blue-400">&#125;;</p>
                         <p className="mt-4 text-gray-500">// Ready to bridge strategy, code, and intelligent search...</p>
@@ -72,7 +70,6 @@ export default function AboutPage() {
                     school="The University of Queensland"
                     location="Brisbane, Australia"
                     time="Feb 2025 - Nov 2026"
-                    // 💡 Updated to feature Next-Gen Information Retrieval, LLMs, and RAG architectures
                     info="GPA: 6.143/7.0 (Distinction Average). Specialising in Next-Gen Information Retrieval (incorporating LLM, Vector Search, and RAG architectures), Human-Computer Interaction, and Web Information Systems. For my Capstone, I prototyped an IoT-integrated Library Seat System to enhance campus UX."
                 />
 
@@ -133,7 +130,7 @@ export default function AboutPage() {
                         {
                             title: "Vice President",
                             time: "Nov 2025 - Jun 2026",
-                            work: "Spearheading strategic planning for 100+ members, aligning diverse perspectives, and collaborating with university representatives to ensure successful stakeholder management.",
+                            work: "Spearheaded strategic planning for 100+ members, aligned diverse perspectives, and collaborated with university representatives to ensure successful stakeholder management.",
                             isPromoted: true
                         },
                         {
@@ -150,12 +147,23 @@ export default function AboutPage() {
                     time="2024 - 2025"
                     work="Completed innovation and growth modules, utilising creative problem-solving and collaborative approaches to tackle entrepreneurial challenges."
                 />
+                {/* 💡 Re-structured ACF into career progression timeline format */}
                 <ActivityItem
-                    title="Social Media Coordinator & Copywriter"
                     company="Australia Career Forum (ACF)"
                     location="Brisbane, Australia"
-                    time="Mar 2025 - Jun 2026"
-                    work="Drafted high-converting marketing copy and coordinated multi-channel social media campaigns to promote large-scale professional networking events, successfully driving engagement for 50+ attendees in the Brisbane community."
+                    roles={[
+                        {
+                            title: "Social Media Coordinator & Copywriter",
+                            time: "Oct 2025 - Jun 2026",
+                            work: "Drafted high-converting marketing copy and coordinated multi-channel social media campaigns to promote large-scale professional networking events, successfully driving engagement for 50+ attendees in the Brisbane community.",
+                            isPromoted: true
+                        },
+                        {
+                            title: "Event Volunteer",
+                            time: "Mar 2025 - Oct 2025",
+                            work: "Supported large-scale community events like 'ACF Brisbane Squid Game', fostering community ties and managing event logistics for attendees through inclusive cultural activities."
+                        }
+                    ]}
                 />
             </div>
         </section>
@@ -198,7 +206,7 @@ function ExperienceItem({title, company, location, time, work}: any) {
     );
 }
 
-// Updated ActivityItem with nested role support for GUTS career progression
+// Updated ActivityItem with nested role support for GUTS and ACF career progression
 function ActivityItem({title, company, location, time, work, roles}: any) {
     return (
         <div className="my-8 first:mt-0 last:mb-0 border-l-4 border-black pl-8 relative">
@@ -216,7 +224,7 @@ function ActivityItem({title, company, location, time, work, roles}: any) {
                 {time && <span>• {time}</span>}
             </div>
 
-            {/* Dynamic rendering for single vs double roles (GUTS) */}
+            {/* Dynamic rendering for single vs double roles (GUTS & ACF) */}
             {roles ? (
                 <div className="space-y-6 mt-4">
                     {roles.map((r: any, idx: number) => (
