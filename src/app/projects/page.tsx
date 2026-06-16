@@ -261,10 +261,13 @@ function ProjectModal({ project, onClose }: { project: any, onClose: () => void 
                                 </section>
 
                                 <section>
-                                    {/* 💡 Dynamic subheader for single vs double roles (GUTS & ACF) */}
                                     <h4 className="flex items-center gap-2 text-black font-extrabold text-lg mb-3">
                                         <FaCode className="text-blue-600" /> 
-                                        {project.id === 3 ? "02 - Solution &amp; Interactive Prototype" : "02 - Solution &amp; Architecture"}
+                                        {project.id === 3 ? (
+                                            <>02 - Solution {"&"} Interactive Prototype</>
+                                        ) : (
+                                            <>02 - Solution {"&"} Architecture</>
+                                        )}
                                     </h4>
                                     <p className="text-gray-600 leading-relaxed mb-4">{project.details?.solution}</p>
                                     
