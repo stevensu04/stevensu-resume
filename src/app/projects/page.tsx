@@ -7,16 +7,16 @@ import { FaTimes, FaExternalLinkAlt, FaCode, FaLightbulb, FaCoins } from "react-
 const projects = [
     {
         id: 1,
-        title: "Brisbane OlymPulse",
+        title: "BrisPulse",
         category: "Full-Stack",
-        img: "/project-olympulse.jpg",
-        summary: "Real-time crowd density visualization for Brisbane 2032 Olympics.",
-        tech: ["Django", "Python", "Bootstrap", "Leaflet.js"],
+        img: "/projects/BrisPulse.jpeg",
+        summary: "An event-day spatial pressure-awareness system that translates crowded urban conditions into human-centred movement choices.",
+        tech: ["Django", "Python", "GTFS-Realtime API"],
         featured: true,
         link: "#",
         details: {
-            problem: "Managing massive urban crowds during global mega-events.",
-            solution: "A geospatial dashboard providing heatmaps and density alerts."
+            problem: "Existing mapping tools focus strictly on travel time, failing to capture experienced spatial pressure (uncertainty and reduced control) at major Brisbane bottlenecks like station exits and narrow pedestrian corridors.",
+            solution: "A complementary decision-support layer empowering flexible users with transparent choices between Fastest, Balanced, and Calmer routes, strictly constrained by spatial-equity guardrails to protect residential streets.",
         }
     },
     {
@@ -157,15 +157,27 @@ function ProjectCard({ project, onOpen }: { project: any, onOpen: () => void }) 
 function ProjectModal({ project, onClose }: { project: any, onClose: () => void }) {
     const [isZoomed, setIsZoomed] = useState(false);
 
-    // 💡 Sian-style dynamic metadata rendering based on project essence
     const renderMetaRows = (id: number) => {
         switch(id) {
-            case 1: // OlymPulse
+            case 1: // BrisPulse
                 return (
                     <>
-                        <div><span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">My Role</span><span className="font-bold text-black">Full Stack Engineer</span></div>
-                        <div><span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Context</span><span className="font-bold text-black">UQ WIS Project</span></div>
-                        <div className="col-span-2 mt-2"><span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Tech Stack</span><span className="font-mono text-xs text-gray-600">Python, Django, Leaflet.js, Bootstrap</span></div>
+                        <div>
+                            <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">My Role</span>
+                            <span className="font-bold text-black">Systems Architect (Proposal)</span>
+                        </div>
+                        <div>
+                            <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Status</span>
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-50 text-purple-800">
+                                Feasibility &amp; Design
+                            </span>
+                        </div>
+                        <div className="col-span-2 mt-2">
+                            <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Proposed Data Architecture</span>
+                            <span className="font-mono text-[11px] text-gray-600 block leading-tight">
+                                TransLink GTFS-Realtime API • BCC Wi-Fi Probe Density • Venue Gate Egress • Anonymized User-Experience Signals
+                            </span>
+                        </div>
                     </>
                 );
             case 2: // Finance Forms
@@ -256,6 +268,17 @@ function ProjectModal({ project, onClose }: { project: any, onClose: () => void 
                                             <p className="text-purple-900 text-sm font-semibold italic">
                                                 &quot;JourneyMate eliminates app-switching fatigue by integrating fragmented travel data into a single adaptive interface.&quot;
                                             </p>
+                                        </div>
+                                    )}
+                                    {project.id === 1 && (
+                                        <div className="mt-4 flex items-start gap-3 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                                            <div className="text-blue-600 font-bold text-sm mt-0.5">⚖️</div>
+                                            <div>
+                                                <p className="text-blue-900 text-xs font-bold mb-1 uppercase tracking-wider">Architectural Decision: Spatial-Equity Guardrails</p>
+                                                <p className="text-blue-800 text-xs leading-relaxed">
+                                                    Programmed custom cost penalties directly into the routing engine nodes. This mathematical firewall ensures alternative calmer routes are strictly constrained to high-capacity corridors, preventing the harmful redistribution of crowds into residential or commuter paths.
+                                                </p>
+                                            </div>
                                         </div>
                                     )}
                                 </section>
