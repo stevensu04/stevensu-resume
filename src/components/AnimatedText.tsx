@@ -28,7 +28,9 @@ const quote = {
     return (
         <div className="w-full mx-auto py-2 flex items-center justify-center text-center overflow-hidden">
         <motion.h1
-            className={`inline-block w-full font-bold capitalize text-8xl ${className}`}
+            // No `capitalize` here — headlines are written with their intended casing at the
+            // call site. Forcing Title Case mangled sentence-case copy like "From the bank floor".
+            className={`inline-block w-full font-bold text-8xl ${className}`}
             variants={quote}
             initial="initial"
             animate="animate"

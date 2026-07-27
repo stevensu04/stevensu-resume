@@ -2,8 +2,9 @@
 import Link from 'next/link';
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { FaGithub, FaLinkedin } from "react-icons/fa";
+import { site } from "@/lib/site";
 
 const CustomLink = ({ href, title, className = "" }: { href: string; title: string; className?: string }) => {
     const pathname = usePathname();
@@ -28,8 +29,8 @@ const Navbar = () => {
                     S
                 </div>
                 <div className="ml-3 flex flex-col">
-                    <span className="text-xl font-bold text-gray-800 leading-none">Steven Su</span>
-                    <span className="text-xs font-medium text-blue-600">Portfolio</span>
+                    <span className="text-xl font-bold text-gray-800 leading-none">{site.name}</span>
+                    <span className="text-xs font-medium text-blue-600">{site.role}</span>
                 </div>
             </Link>
 
@@ -50,10 +51,10 @@ const Navbar = () => {
                 </nav>
 
                 <nav className='flex items-center justify-center gap-6'>
-                    <a href="https://github.com/stevensu04" target={"_blank"} className='text-2xl hover:text-blue-600 transition-all duration-300'>
+                    <a href={site.github} target={"_blank"} className='text-2xl hover:text-blue-600 transition-all duration-300'>
                         <FaGithub />
                     </a>
-                    <a href="https://www.linkedin.com/in/po-chun-steven-su-446746243/" target={"_blank"} className='text-2xl hover:text-blue-600 transition-all duration-300'>
+                    <a href={site.linkedin} target={"_blank"} className='text-2xl hover:text-blue-600 transition-all duration-300'>
                         <FaLinkedin />
                     </a>
                 </nav>
@@ -89,7 +90,7 @@ const Navbar = () => {
 
                             <div className='flex items-center gap-8 mt-auto mb-8'>
                                 <a 
-                                    href="https://github.com/stevensu04" 
+                                    href={site.github} 
                                     target={"_blank"} 
                                     className='text-gray-800 hover:text-blue-600 transition-all duration-300'
                                 >
@@ -97,7 +98,7 @@ const Navbar = () => {
                                     <FaGithub className="text-3xl" />
                                 </a>
                                 <a 
-                                    href="https://www.linkedin.com/in/po-chun-steven-su-446746243/" 
+                                    href={site.linkedin} 
                                     target={"_blank"} 
                                     className='text-gray-800 hover:text-blue-600 transition-all duration-300'
                                 >

@@ -1,78 +1,86 @@
 "use client";
 import AnimatedText from "@/components/AnimatedText";
 import ContactMe from "@/components/ContactMe";
+import TechOrbit from "@/components/TechOrbit";
 import Link from 'next/link';
+import { site } from "@/lib/site";
 
 export default function Home() {
   return (
     <main className="relative flex min-h-screen w-full flex-col items-center justify-center bg-white text-black overflow-x-hidden">
       <div className="flex flex-col lg:flex-row items-center justify-between w-full px-8 lg:px-48 py-20 lg:py-0">
-        
+
         {/* 左側：文字區 */}
-        <div className="w-full lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left order-2 lg:order-1">
-          <AnimatedText 
-            text="Turning Vision Into Reality With Code And Design." 
-            className="!text-4xl md:!text-5xl lg:!text-6xl !text-black font-bold" 
+        {/* 手機優先看到主張：the pitch leads on every viewport. This column used to be
+            order-2 on mobile, so phones opened on a wall of 15 skill badges and the value
+            proposition sat below the fold. */}
+        <div className="w-full lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left order-1">
+          <span className="text-xs font-bold uppercase tracking-[0.2em] text-blue-600 mb-3">
+            {site.role} · {site.location}
+          </span>
+
+          <AnimatedText
+            text={site.headline}
+            className="!text-4xl md:!text-5xl lg:!text-6xl !text-black font-bold !text-center lg:!text-left"
           />
-          <p className="mt-4 text-base md:text-lg font-medium text-gray-600">
-            Hi, I'm Steven, a Master of IT student @ UQ passionate about Full-stack development.
+
+          <p className="mt-4 text-base md:text-lg font-medium text-gray-600 max-w-xl">
+            {site.intro}
           </p>
-          
-          <div className="flex items-center self-center lg:self-start mt-8 z-10 gap-6">
-            {/* Resume 按鈕：連結至 About 頁面或下載 */}
-            <Link 
-              href="/about" 
+
+          {/* 數字先講話：Proof above the fold, before any adjective */}
+          {/* 手機直排、桌機三欄：three columns only once they can hold a readable line —
+              at 375px they were 90px wide and every label wrapped to four lines. */}
+          <dl className="mt-8 grid w-full max-w-xl grid-cols-1 gap-y-3 text-left sm:grid-cols-3 sm:gap-x-5 sm:gap-y-0">
+            {site.proof.map((p) => (
+              <div key={p.value} className="flex flex-row items-baseline gap-3 sm:flex-col sm:gap-0">
+                <dt className="w-20 shrink-0 text-2xl md:text-3xl font-extrabold text-black leading-none sm:w-auto">
+                  {p.value}
+                </dt>
+                <dd className="text-xs font-semibold text-gray-600 leading-snug sm:mt-1.5">
+                  {p.label}
+                  <span className="mt-0.5 block text-[11px] font-medium text-gray-500">{p.context}</span>
+                </dd>
+              </div>
+            ))}
+          </dl>
+
+          {/* 可用性：the objection recruiters filter on, answered before they ask */}
+          <p className="mt-6 inline-flex items-center gap-2 rounded-full bg-green-50 px-4 py-1.5 text-xs font-semibold text-green-800">
+            <span className="h-1.5 w-1.5 rounded-full bg-green-600" aria-hidden="true" />
+            {site.availability}
+            {site.workRights ? ` · ${site.workRights}` : ""}
+          </p>
+
+          <div className="flex flex-wrap items-center justify-center lg:justify-start self-center lg:self-start mt-8 z-10 gap-4">
+            <Link
+              href="/projects"
               className="group relative flex items-center bg-black text-white px-8 py-3 rounded-lg font-bold shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 overflow-hidden"
             >
-              <span className="relative z-10">View Resume</span>
+              <span className="relative z-10">View My Work</span>
               {/* 懸停時的發光背景動畫 */}
               <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0" />
             </Link>
+
+            {/* TODO(steven): this 404s until public/StevenSu_Resume.pdf exists. See PLAN.md §3. */}
+            <a
+              href={site.cv}
+              download
+              className="flex items-center px-8 py-3 rounded-lg font-bold border-2 border-black text-black transition-all duration-300 hover:bg-black hover:text-white active:scale-95"
+            >
+              Download CV
+            </a>
           </div>
         </div>
 
-        {/* 右側：核心技能視覺區 */}
-        <div className="w-full lg:w-1/2 flex justify-center lg:justify-end order-1 lg:order-2 mb-12 lg:mb-0">
-          <div className="relative w-full max-w-[450px] lg:max-w-[550px] aspect-square flex flex-wrap content-start justify-center gap-2 lg:block">
-            <div className="absolute hidden lg:block w-full h-full rounded-full bg-blue-50/50 border border-blue-100 animate-pulse"></div>
-            <div className="hidden lg:flex z-0 text-[150px] lg:text-[180px] font-black text-blue-600/5 select-none absolute items-center justify-center w-full h-full">
-              {"< / >"}
-            </div>
-            {/* Technical Skills */}
-            <SkillBadge text="Next.js" className="lg:top-2 lg:left-33 lg:-translate-x-1/2 bg-black text-white" />
-            <SkillBadge text="React" className="lg:top-14 lg:left-10 bg-blue-600 text-white" />
-            <SkillBadge text="Tailwind CSS" className="lg:top-[40%] lg:-left-10 bg-cyan-500 text-white" />
-            <SkillBadge text="TypeScript" className="lg:top-[53%] lg:-left-16 bg-blue-600 text-white lg:-translate-y-1/2" />
-            <SkillBadge text="Python" className="lg:bottom-[31%] lg:-left-8 bg-blue-400 text-white" />
-            <SkillBadge text="Django" className="lg:bottom-[13%] lg:left-10 bg-green-700 text-white" />
-            <SkillBadge text="SQL" className="lg:bottom-[4%] lg:left-25 bg-slate-600 text-white" />
-            <SkillBadge text="Java" className="lg:top-[20%] lg:-left-[-8%] lg:-translate-x-1/2 bg-gray-800 text-white" />
-            <SkillBadge text="GitHub" className="lg:bottom-[22%] lg:left-[0%] bg-black text-white" />
-            <SkillBadge text="Power Platform" className="lg:top-[33%] lg:-left-5 bg-cyan-500 text-white lg:-translate-y-1/2" />
-            <SkillBadge text="Figma" className="lg:bottom-[-2%] lg:left-[32%] bg-cyan-500 text-white" />
-
-            {/* Professional Skills */}
-            <SkillBadge text="Stakeholder Engagement" className="lg:top-12 lg:right-0 bg-white border border-blue-200 text-gray-700" />
-            <SkillBadge text="Process Analysis" className="lg:top-[30%] lg:-right-15 bg-white border border-blue-200 text-gray-700" />
-            <SkillBadge text="Business Documentation" className="lg:top-1/2 lg:-right-25 bg-white border border-blue-200 text-gray-700 lg:-translate-y-1/2" />
-            <SkillBadge text="Cross-cultural Communication" className="lg:bottom-[30%] lg:-right-20 bg-white border border-blue-200 text-gray-700" />
-          </div>
+        {/* 右側：核心技能視覺區 — two counter-rotating rings, grouped by layer.
+            Replaces the hand-positioned badge cloud, whose asymmetry came from mixing
+            28-character phrases with 3-character tech names. See PLAN.md §9. */}
+        <div className="w-full lg:w-1/2 flex justify-center lg:justify-end order-2 mt-12 lg:mt-0">
+          <TechOrbit />
         </div>
       </div>
       <ContactMe />
     </main>
-  );
-}
-
-function SkillBadge({ text, className }: { text: string; className: string }) {
-  return (
-    <div className={`
-      relative lg:absolute 
-      p-2 px-4 rounded-full text-xs md:text-sm font-bold shadow-sm whitespace-nowrap 
-      transition-all hover:scale-110 cursor-default 
-      ${className}
-    `}>
-      {text}
-    </div>
   );
 }

@@ -3,6 +3,7 @@ import React from "react";
 import Link from "next/link";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import { IoMdMail } from "react-icons/io";
+import { site } from "@/lib/site";
 
 const Footer = () => {
     const currentYear = new Date().getFullYear();
@@ -11,27 +12,28 @@ const Footer = () => {
         <footer className="w-full bg-[#121212] text-gray-400">
         <div className="max-w-[85%] mx-auto py-16 flex flex-col items-center text-center">
             <h2 className="text-white text-3xl md:text-4xl font-bold mb-6 tracking-tight italic">
-            Steven Su
+            {site.name}
             </h2>
-            
+
             <p className="max-w-2xl text-base md:text-lg leading-relaxed mb-10 text-gray-400">
-            A Master of IT student at UQ with an Economics and Finance background. 
-            Dedicated to building user-centered digital solutions that bridge the gap 
-            between strategic insight and technical excellence.
+            {site.summary}
             </p>
 
             <div className="flex items-center gap-6 mb-8">
-                <SocialIcon 
-                href="https://www.linkedin.com/in/po-chun-steven-su-446746243/" 
-                icon={<FaLinkedin size={22} />} 
+                <SocialIcon
+                href={site.linkedin}
+                label="LinkedIn"
+                icon={<FaLinkedin size={22} />}
                 />
-                <SocialIcon 
-                href="https://github.com/stevensu04" 
-                icon={<FaGithub size={22} />} 
+                <SocialIcon
+                href={site.github}
+                label="GitHub"
+                icon={<FaGithub size={22} />}
                 />
-                <SocialIcon 
-                href="mailto:stevensu04@gmail.com" 
-                icon={<IoMdMail size={22} />} 
+                <SocialIcon
+                href={`mailto:${site.email}`}
+                label="Email"
+                icon={<IoMdMail size={22} />}
                 />
             </div>
         </div>
@@ -53,12 +55,13 @@ const Footer = () => {
     );
 };
 
-function SocialIcon({ href, icon }: { href: string; icon: React.ReactNode }) {
+function SocialIcon({ href, label, icon }: { href: string; label: string; icon: React.ReactNode }) {
     return (
-        <a 
+        <a
         href={href}
         target="_blank"
         rel="noopener noreferrer"
+        aria-label={label}
         className="w-12 h-12 rounded-full border border-gray-700 flex items-center justify-center text-gray-400 hover:bg-white hover:text-black hover:border-white transition-all duration-300 shadow-sm"
         >
         {icon}

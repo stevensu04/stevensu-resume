@@ -2,6 +2,8 @@
 import React from 'react';
 import AnimatedText from '@/components/AnimatedText';
 import { FaArrowUp } from 'react-icons/fa';
+import { site } from '@/lib/site';
+import { professionalSkills } from '@/lib/stack';
 
 export default function AboutPage() {
     return (
@@ -12,7 +14,7 @@ export default function AboutPage() {
             <div className="flex flex-col items-start justify-start">
                 <AnimatedText text="Bridging Strategy and Code." className="!text-5xl !text-left mb-8" />
                 <p className="font-medium text-gray-600 mb-4 text-lg">
-                    G&apos;day! I&apos;m Steven. I&apos;m a Master of IT student at UQ with a professional background in Economics and Finance. 
+                    G&apos;day! I&apos;m Steven — a full-stack developer completing a Master of IT at UQ, with a professional background in Economics and Finance.
                 </p>
                 <p className="font-medium text-gray-600 mb-4">
                     My career began in the banking sector at E.SUN Bank, where I first discovered the power of tech-driven optimisation. By streamlining service workflows, I helped reduce client wait times by 10%. This sparked my passion for building digital solutions that don&apos;t just work, but actually make life easier for people.
@@ -21,8 +23,30 @@ export default function AboutPage() {
                     Now, I combine my analytical mindset from Economics with full-stack development skills to build high-impact software. I thrive on tackling complex problems and turning them into seamless user experiences.
                 </p>
                 
-                <div className="flex items-center gap-4 mt-6">
-                    <a href="/StevenSu_Resume.docx" download className="bg-black text-white p-3 px-8 rounded-lg font-semibold hover:bg-white hover:text-black border-2 border-transparent hover:border-black transition-all">
+                {/* TEMPORARY HOME — these four moved off the hero (their 28-character widths were
+                    what actually broke the badge cloud's symmetry, and they read as business-analyst
+                    vocabulary in a hero aimed at grad SWE roles). Parked here until the resume review
+                    picks a permanent placement. See PLAN.md §9. */}
+                <div className="mt-6 w-full">
+                    <h2 className="mb-3 text-[11px] font-bold uppercase tracking-[0.18em] text-gray-500">
+                        Carried over from banking
+                    </h2>
+                    <ul className="flex flex-wrap gap-2">
+                        {professionalSkills.map((skill) => (
+                            <li
+                                key={skill}
+                                className="rounded-full border border-blue-200 bg-white px-4 py-1.5 text-sm font-semibold text-gray-700"
+                            >
+                                {skill}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+
+                <div className="flex items-center gap-4 mt-8">
+                    {/* TODO(steven): 404s until public/StevenSu_Resume.pdf exists. PDF, not .docx —
+                        Word reformats on the reader's machine. See PLAN.md §3. */}
+                    <a href={site.cv} download className="bg-black text-white p-3 px-8 rounded-lg font-semibold hover:bg-white hover:text-black border-2 border-transparent hover:border-black transition-all">
                     Download CV
                     </a>
                 </div>
@@ -44,7 +68,9 @@ export default function AboutPage() {
                         <p className="pl-4 text-gray-300">specialization: [<span className="text-orange-400">&quot;Full-stack&quot;, &quot;AI Search &amp; RAG&quot;</span>],</p>
                         <p className="pl-4 text-gray-300">focus: <span className="text-green-400">&quot;Information Retrieval &amp; HCI&quot;</span></p>
                         <p className="text-blue-400">&#125;;</p>
-                        <p className="mt-4 text-gray-500">// Ready to bridge strategy, code, and intelligent search...</p>
+                        {/* String literal, not a bare text node — this is rendered content
+                            inside the terminal graphic, not a code comment. */}
+                        <p className="mt-4 text-gray-500">{"// Ready to bridge strategy, code, and intelligent search..."}</p>
                     </div>
                 </div>
             </div>
@@ -183,7 +209,41 @@ export default function AboutPage() {
 }
 
 // Helper Components
-function EducationItem({title, school, location, time, info}: any) {
+interface EducationItemProps {
+    title: string;
+    school: string;
+    location?: string;
+    time: string;
+    info: string;
+}
+
+interface ExperienceItemProps {
+    title: string;
+    company: string;
+    location?: string;
+    time: string;
+    work: string;
+}
+
+interface ActivityRole {
+    title: string;
+    time: string;
+    work: string;
+    isPromoted?: boolean;
+}
+
+interface ActivityItemProps {
+    /** Omitted when `roles` is supplied — the roles carry their own titles. */
+    title?: string;
+    company: string;
+    location?: string;
+    time?: string;
+    work?: string;
+    /** Career-progression timeline for organisations with more than one role. */
+    roles?: ActivityRole[];
+}
+
+function EducationItem({title, school, location, time, info}: EducationItemProps) {
     return (
         <div className="my-8 border-l-4 border-black pl-8 relative">
         <div className="absolute -left-[13px] top-0 w-6 h-6 bg-black rounded-full border-4 border-white shadow-sm" />
@@ -202,7 +262,7 @@ function EducationItem({title, school, location, time, info}: any) {
     );
 } 
 
-function ExperienceItem({title, company, location, time, work}: any) {
+function ExperienceItem({title, company, location, time, work}: ExperienceItemProps) {
     return (
         <div className="my-8 first:mt-0 last:mb-0 border-l-4 border-black pl-8 relative">
             <div className="absolute -left-[13px] top-0 w-6 h-6 bg-blue-600 rounded-full border-4 border-white shadow-sm" />
@@ -220,7 +280,7 @@ function ExperienceItem({title, company, location, time, work}: any) {
 }
 
 // Updated ActivityItem with nested role support for GUTS and ACF career progression
-function ActivityItem({title, company, location, time, work, roles}: any) {
+function ActivityItem({title, company, location, time, work, roles}: ActivityItemProps) {
     return (
         <div className="my-8 first:mt-0 last:mb-0 border-l-4 border-black pl-8 relative">
             <div className="absolute -left-[13px] top-0 w-6 h-6 bg-green-500 rounded-full border-4 border-white shadow-sm" />
@@ -244,7 +304,7 @@ function ActivityItem({title, company, location, time, work, roles}: any) {
             {/* Dynamic rendering for single vs double roles (GUTS & ACF) */}
             {roles ? (
                 <div className="space-y-6 mt-4">
-                    {roles.map((r: any, idx: number) => (
+                    {roles.map((r, idx) => (
                         <div key={idx} className={`relative pl-4 ${idx > 0 ? "border-l-2 border-gray-100 mt-4" : ""}`}>
                             {r.isPromoted && (
                                 <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-green-50 text-green-700 px-2 py-0.5 rounded-full mb-1">
