@@ -1,6 +1,6 @@
 ---
 title: StarLens
-category: Full-Stack
+category: Business
 order: 1
 # Flagship moved to Eco Router (eco-router.md). Only one project should carry `featured: true`.
 img: null
@@ -19,7 +19,7 @@ tech:
   - OpenAI API
 
 status:
-  label: Shipped · Internal Production
+  label: Shipped in Production
   tone: green
 
 # No demo/repo — proprietary enterprise software under IP/NDA, confirmed with Steven.

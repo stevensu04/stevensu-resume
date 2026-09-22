@@ -56,7 +56,7 @@ export default function ProjectsView({ projects }: { projects: Project[] }) {
                             filter === cat ? "bg-black text-white border-black" : "bg-white text-gray-500 border-gray-100 hover:border-black"
                         }`}
                     >
-                        {cat}
+                        {cat} ({cat === "All" ? projects.length : projects.filter((p) => p.category === cat).length})
                     </button>
                 ))}
             </div>

@@ -1,7 +1,7 @@
 ---
 title: Finance Forms Automation
 category: Business
-order: 3
+order: 2
 img: null
 # Government project — no public screenshot. Renders the blurred "Under NDA" placeholder
 # instead of plain initials. See CONTENT.md → confidential.
@@ -14,7 +14,7 @@ tech:
   - SharePoint
 
 status:
-  label: Shipped in production
+  label: Shipped in Production
   tone: green
 
 meta:

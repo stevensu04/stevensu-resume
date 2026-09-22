@@ -15,8 +15,8 @@ status:
   label: Live
   tone: green
 
-demo: https://stevensu-uq.github.io/VENTURES/
-# TODO(steven): add `repo` — the source is on GitHub, link it. See PLAN.md §4.
+demo: https://stevensu04.github.io/journeymate/
+repo: https://github.com/stevensu04/journeymate
 
 meta:
   - label: My Role

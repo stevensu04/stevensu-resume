@@ -1,7 +1,7 @@
 ---
 title: BrisPulse
 category: Full-Stack
-order: 2
+order: 3
 # Flagship moved to StarLens (starlens.md) — a shipped, full-stack platform with a quantified
 # performance result outranks a concept-stage prototype for that slot. BrisPulse now renders as
 # a normal uniform-grid card. Only one project should carry `featured: true` at a time.
