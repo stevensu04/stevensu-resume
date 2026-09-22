@@ -1,8 +1,10 @@
 ---
 title: BrisPulse
 category: Full-Stack
-order: 1
-featured: true
+order: 2
+# Flagship moved to StarLens (starlens.md) — a shipped, full-stack platform with a quantified
+# performance result outranks a concept-stage prototype for that slot. BrisPulse now renders as
+# a normal uniform-grid card. Only one project should carry `featured: true` at a time.
 img: /projects/BrisPulse.jpeg
 summary: An event-day spatial pressure-awareness system that translates crowded urban conditions into human-centred movement choices.
 

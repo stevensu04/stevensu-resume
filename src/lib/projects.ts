@@ -125,6 +125,7 @@ function parseProject(file: string, data: Raw): Project {
         category: requireString(file, data, "category"),
         order,
         img: optionalString(file, data, "img") ?? null,
+        confidential: data.confidential === true,
         summary: requireString(file, data, "summary"),
         tech: techRaw as string[],
         featured: data.featured === true,

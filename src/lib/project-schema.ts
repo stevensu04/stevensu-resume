@@ -39,6 +39,13 @@ export interface Project {
     order: number;
     /** null renders a branded placeholder rather than a broken image. */
     img: string | null;
+    /**
+     * True when the real screenshot can't be shown (client or government NDA). Renders a
+     * blurred mock-dashboard with a lock icon and "Under NDA" label instead of the plain
+     * initials placeholder — states the reason instead of leaving a recruiter to guess
+     * whether the image was simply never added.
+     */
+    confidential?: boolean;
     summary: string;
     tech: string[];
     featured?: boolean;

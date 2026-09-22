@@ -21,7 +21,7 @@ export const site = {
 
     /** Hero sub-paragraph. Carries the credentials and the stack. */
     intro:
-        "I spent two years at E.SUN Bank before moving into engineering — now I'm completing a Master of IT at UQ (6.14/7) and building with Next.js, TypeScript, Python and Django. I've shipped software inside Queensland Government.",
+        "I spent two years at E.SUN Bank before moving into engineering — now I'm completing a Master of IT at UQ (6.0/7.0) and building with Next.js, TypeScript, Python and Django. I've shipped software inside Queensland Government.",
 
     /** One-line version, used for metadata and the footer. */
     summary:
@@ -31,7 +31,7 @@ export const site = {
     proof: [
         { value: "30%", label: "projected efficiency gain", context: "QLD Government automation" },
         { value: "10%", label: "reduction in client wait times", context: "E.SUN Bank" },
-        { value: "6.14/7", label: "Master of IT GPA", context: "UQ, Distinction average" },
+        { value: "6.0/7.0", label: "Master of IT GPA", context: "UQ, Distinction average" },
     ],
 
     availability: "Graduating Nov 2026 · Available for 2027 graduate programs",

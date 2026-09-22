@@ -1,7 +1,7 @@
 ---
 title: ParkEase
 category: Product & Research
-order: 3
+order: 4
 img: /projects/ParkEase.png
 summary: A user-centred parking solution for Brisbane hotspots, reducing search time and urban stress.
 

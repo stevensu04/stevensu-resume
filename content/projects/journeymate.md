@@ -1,7 +1,7 @@
 ---
 title: JourneyMate
 category: Full-Stack
-order: 4
+order: 5
 img: /projects/JourneyMate.png
 summary: A functional travel web app prototype featuring an AI token system and adaptive itinerary planning.
 

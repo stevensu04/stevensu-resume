@@ -55,6 +55,7 @@ solution: |
 | `order` | number | Lower shows first. Default 999, then alphabetical |
 | `featured` | true/false | Card spans two columns |
 | `img` | path | e.g. `/projects/Thing.png`. Omit → branded placeholder, never a broken image |
+| `confidential` | true/false | Client/government NDA — see [Confidential projects](#confidential-projects) |
 | `status` | block | Maturity badge on the card — `label` + `tone` |
 | `demo` | URL | Live, working link. **Omit rather than guess** |
 | `repo` | URL | Public source |
@@ -136,6 +137,29 @@ with `category: Data & AI` and a "Data & AI" filter button appears automatically
 Current: `Full-Stack`, `Business`, `Product & Research`.
 
 Spelling matters — `Full-Stack` and `Full Stack` become two different filters.
+
+---
+
+## Confidential projects
+
+Some work — Finance Forms Automation is the example — can never have a public screenshot, because
+the interface belongs to a client or a government department. That's a different situation from "I
+haven't added a screenshot yet," and the two shouldn't look the same on the page.
+
+Set `confidential: true` instead of `img`:
+
+```yaml
+img: null
+confidential: true
+```
+
+This renders a blurred mock-dashboard with a lock icon and the project title, labelled **"Under
+NDA"** — it reads as "something real is behind this, it's just covered," rather than the plain
+initials card a missing-but-not-secret image gets. The mock shapes are generic geometry (a bar, a
+few blocks), not a real interface, so there's nothing to misrepresent.
+
+Don't set both `img` and `confidential: true` on the same project — if you have a real image to show,
+just set `img` and leave `confidential` off.
 
 ---
 

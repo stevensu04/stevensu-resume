@@ -3,7 +3,8 @@
 **Target role:** Graduate Software Engineer / Full-Stack
 **Market:** Australia (Brisbane) now
 **Timeline:** Final semester of Master of IT @ UQ, graduating Nov 2026. Applying now.
-**Status of this doc:** living working document. Last updated during Phase 0/1 implementation.
+**Status of this doc:** living working document. Last updated after syncing the site to Steven's
+Aug 2026 resume (real GPA, real capstone, real competency buckets — see §9 and §12).
 
 ---
 
@@ -78,9 +79,9 @@ None of these are judgment calls.
       `prefers-color-scheme: dark` while every page hardcodes `bg-white text-black`, so dark-mode
       phones got a dark body behind white pages. Committed to light-only.
 - [x] **CV link points at a PDF** (`/StevenSu_Resume.pdf`) instead of `.docx`.
-- [ ] ⚠️ **ACTION REQUIRED: export the CV and drop it at `public/StevenSu_Resume.pdf`.**
-      The file has never existed — the old `.docx` path was already a 404, meaning the site's single
-      most important conversion action has been dead. PDF not Word: Word reformats on other machines.
+- [x] **CV file now exists.** `public/StevenSu_Resume.pdf`, copied from Steven's Aug 2026 one-page
+      resume. Verified serving: `curl -I` → `200`, `application/pdf`, 380KB, 1 page. This button had
+      been a 404 for the entire engagement — first time it's actually worked.
 
 ---
 
@@ -191,7 +192,8 @@ different application entirely.
       in a `group-hover` overlay, so on touch devices that content **does not exist**.
 - [ ] Drop the category filter. Four projects, split 2/1/1 — filtering to a single card in a
       three-column grid makes the work look thinner than it is.
-- [ ] Make `featured` earn its double width with more content, not just a bigger image.
+- [x] ~~Make `featured` earn its double width~~ — superseded, see §14. The flagship project no
+      longer shares a grid row with anything, so there's no "earn the width" question left to ask.
 
 ## 7. Phase 4 — About restructure
 
@@ -412,8 +414,15 @@ standard above.
 1. **Work rights.** Still unanswered, and it is the line most likely to get an application filtered
    before a human reads it. `src/lib/site.ts` has a `workRights` field currently set to `null`, which
    omits the clause entirely — set it and it appears in the hero status line automatically.
-2. **Capstone.** Is the IoT library seat system done, or being built this semester? If it's live work,
-   it should be scoped as a portfolio piece now.
+2. ~~**Capstone.** Is the IoT library seat system done...~~ — **Resolved by the Aug 2026 resume.** The
+   capstone is **EventNow**, not the library seat system (that appears to have been an earlier or
+   placeholder idea that never made it into the actual resume). Resume describes it as: "End-to-end
+   SDLC management of a full-stack platform; integrated LLM APIs for smart content generation, Google
+   OAuth 2.0, and RESTful architectures." The About page's Education section now uses this description
+   verbatim in place of the stale library-seat-system text. **Not yet done:** EventNow isn't a Projects
+   page entry. Given it's a full-stack platform with LLM integration and OAuth — real, current,
+   in-progress engineering — it's arguably stronger portfolio material than BrisPulse's concept stage.
+   Worth a project entry once Steven confirms it's presentable (see `content/projects/_TEMPLATE.md`).
 3. **Deploy URL.** `SITE_URL` in `src/lib/site.ts` falls back to `http://localhost:3000`. OG images and
    canonical URLs need the real domain — set `NEXT_PUBLIC_SITE_URL` in the host's env.
 
@@ -421,7 +430,265 @@ standard above.
 
 Verify which 2027 Australian graduate intakes are still open — many close mid-year and it is late July.
 This matters because the channels want different things. **Grad programs** barely read portfolios; they
-run on GPA, online assessments and behavioural interviews, where a 6.14/7 and genuine stakeholder
+run on GPA, online assessments and behavioural interviews, where a 6.0/7.0 and genuine stakeholder
 stories are strong. **Direct applications to startups and SMEs** read GitHub and deployed work closely
 and are far more forgiving about a career change. If the big intakes have closed, channel two is the
 route — which makes Phase 2 more important, not less.
+
+---
+
+## 12. Resume sync (Aug 2026 one-page resume)
+
+Steven provided his current one-page resume, which resolved several open items and surfaced a few
+places the site had drifted from reality. Changes below are direct consequences of that document.
+
+### GPA corrected: 6.14/7 → 6.0/7.0
+
+The `6.14/7` figure was never wrong exactly — it was the number available at the time — but the
+resume now reports **6.0/7.0** as the official cumulative figure. Updated everywhere it appeared:
+`site.ts` (hero proof stat + intro sentence) and the About page's Master of IT `EducationItem`. The
+`6.14` figure in this plan's own §11 was also corrected, since a stale number in internal docs is how
+regressions happen later.
+
+### Capstone corrected: "IoT library seat system" → EventNow
+
+See the resolved open question in §10 — the About page now describes the real capstone (EventNow: a
+full-stack platform with LLM APIs, Google OAuth 2.0, RESTful architecture) instead of a placeholder
+project that isn't in the actual resume.
+
+### Home orbit re-derived from the resume's own competency buckets
+
+Previously the two orbit rings were an invented "Frontend" / "Backend & Data" split. The resume has
+its own two technical buckets — **Technical Stack** and **Data & DevOps** — so the rings were renamed
+to match them exactly, making the orbit mechanically checkable against the resume rather than a
+judgment call. `src/lib/stack.ts` header comment documents the mapping.
+
+- **Technical Stack ring** (10 items): Python, Java, SQL, JavaScript, TypeScript, HTML/CSS, React,
+  Next.js, Django, RESTful APIs.
+- **Data & DevOps ring** (5 items): MySQL, MongoDB, GitHub, Docker, Airflow.
+
+Slash-separated resume entries were split into individual badges (`JavaScript/TypeScript` → two
+badges; `React/Next.js` → two badges) so each technology gets its own pill rather than a combined
+label that reads as one skill.
+
+**Two items dropped from the hero, both because the resume itself doesn't put them in these two
+buckets — not an aesthetic call:**
+
+- **Figma** — the resume lists it under a third bucket, "Consulting & Delivery" ("UI/UX Prototyping
+  (Figma)"), so it moved to the About page's professional-skills list alongside the rest of that
+  bucket rather than staying in the tech orbit.
+- **Power Platform** — not listed under any competency bucket on the resume at all (only mentioned
+  inside one experience bullet). Dropping it from the headline tech stack matches a call the resume
+  itself already made — de-emphasising low-code tooling for a SWE application, which is exactly what
+  Phase 1's positioning work argued for independently. Power Platform is still represented honestly:
+  it remains in the Business Support Partner Intern bullet on the Experience page.
+
+**Ring geometry re-verified for the new item counts**, not just carried over: swept `--rot` across a
+full 360° at 3° resolution and checked pairwise bounding-box overlap within each ring.
+
+- First pass (Data & DevOps at radius 160, label "Git & GitHub") found a real collision — 44px
+  overlap between "MongoDB" and "Git & GitHub" at rot≈315°.
+- Fixed by shortening the label to "GitHub" (git is the implied prerequisite) and increasing the
+  radius to 195.
+- Re-swept: **0 collisions across all 120 sampled angles**, both rings.
+- Confirmed separately: no collision between the orbit and the hero text block at 1440px, no
+  horizontal page overflow, both rings render their full item counts (10 and 5).
+
+### Consulting & Delivery — permanent home, real content
+
+The heading "Carried over from banking" (a placeholder framing invented before the resume existed)
+is now **"Consulting & Delivery"** — the resume's own third bucket name, requiring no invented framing
+at all. The five items were also replaced with the resume's actual list: Requirements Elicitation,
+Stakeholder Engagement, Agile/Scrum Methodologies, UI/UX Prototyping (Figma), Technical Documentation
+— replacing four invented placeholders (Process Analysis, Business Documentation, Cross-cultural
+Communication, and a differently-worded Stakeholder Engagement) that were reasonable guesses at the
+time but aren't what the resume actually says.
+
+This also resolves the "temporary placement" flag from §9 — the About page is now the confirmed,
+resume-checked home for this content, not a parking spot.
+
+### CV file now exists
+
+`public/StevenSu_Resume.pdf` — copied from the provided one-page resume. This is the first point in
+the entire engagement where the Download CV button has actually served a file instead of 404ing.
+Verified: `200`, `application/pdf`, 380KB, 1 page.
+
+### Noticed, not yet acted on
+
+The About page's **Experience section** still carries earlier, more generic phrasing than the
+resume's current bullets — e.g. the Star Trade entry is a company description ("Star Trade is an
+international power services and energy management provider...") where the resume now has concrete,
+quantified engineering achievements ("optimised MongoDB indices to slash system latency by 50%").
+The resume's version is a materially stronger case for the full-stack positioning — a specific
+optimisation with a specific number is exactly the kind of verifiable engineering claim the whole
+positioning in §1 argues for. Left untouched because it wasn't part of the explicit ask and rewriting
+four experience entries' prose is a bigger content change than the four items requested — flagged
+here rather than done silently.
+
+**Privacy note, not acted on either way:** the source resume includes a phone number and suburb-level
+address (Eight Mile Plains QLD 4113). Neither is used on the site or copied anywhere outside the PDF
+itself — the PDF is served as-is because that's the deliverable being requested (a downloadable CV).
+Worth Steven's own consideration before the site goes fully public: a downloadable PDF with a phone
+number is normal for a resume, but it's a different exposure than the site's other pages, which carry
+no phone number at all.
+
+---
+
+## 13. Confidential-project placeholder
+
+Finance Forms Automation's card showed bare initials ("FF" / "BUSINESS") — with no image and no
+explanation, that reads as an unfinished card rather than a project whose screenshot is government-
+confidential. Added a distinct placeholder for that specific meaning, rather than reworking the
+generic "no image" state to try to serve both.
+
+- **New schema field**: `confidential?: boolean` on `Project` (`project-schema.ts`), parsed in
+  `projects.ts`, documented in `CONTENT.md` and `_TEMPLATE.md`.
+- **New component**: `ConfidentialPlaceholder` in `ProjectsView.tsx` — a blurred mock-dashboard
+  (plain absolutely-positioned divs standing in for a UI: a nav bar, three coloured "cards", a
+  chart block, two "text line" bars; nothing photographic, so there's nothing to misrepresent),
+  scaled up before blurring so the blur doesn't reveal crisp shape edges at the container boundary,
+  a dark scrim for contrast, and a frosted-glass card on top with a lock icon, the project title,
+  and an "Under NDA" label.
+- **`finance-forms.md`** now sets `confidential: true` instead of relying on the generic
+  no-image fallback.
+- The generic initials-card placeholder is unchanged and still used for anything that's simply
+  missing a screenshot without being confidential — the two states now mean different things and
+  look different, rather than one fallback trying to communicate both.
+- **Fixed in passing**: the modal's image panel always showed `cursor-zoom-in`, inviting a click
+  that did nothing whenever there was no real image to zoom (the click handler was already
+  correctly gated on `project.img`, just not the cursor). Now conditional on the same check.
+
+Verified: screenshot of the Projects grid and the opened modal both show the lock + title + "Under
+NDA" card in place of "FF"; typecheck, lint, and build all clean.
+
+---
+
+## 14. Hover-badge overlap + card sizing rework
+
+Two issues from the same screenshot, one a straight bug, one a design decision. Handled separately.
+
+### Bug: status badge overlapping hover-overlay text
+
+**Root cause.** The status badge (`top-4 left-4`, `z-10`) never fades — it's always on top. The
+hover overlay's content (summary + tech tags + button) is vertically *centered* in the same box.
+For cards with a longer summary and several tags (Finance Forms: 3 tags; JourneyMate: 4 tags), that
+content block grows tall enough that its top line lands exactly where the badge sits. Shorter-content
+cards (BrisPulse, ParkEase) don't show it — same bug, just below the visibility threshold there.
+
+A second, related artifact was visible in the same screenshot: the overlay was `bg-black/80`, not
+fully opaque, so the confidential placeholder's own "Under NDA" card ghosted through faintly behind
+the tech tags on hover.
+
+**Fix**, both in `ProjectCard`:
+- Badge: added `transition-opacity duration-300 group-hover:opacity-0` — fades out instead of
+  colliding, and this holds regardless of how long any future project's summary or tag list is,
+  rather than padding around today's longest case.
+- Overlay: `bg-black/80` → `bg-black` — fully opaque, so nothing underneath can bleed through.
+
+Verified by forcing the post-hover state directly (`badge.style.opacity/overlay.style.opacity`,
+bypassing this session's unreliable synthetic `:hover`) and screenshotting: badge gone, overlay
+solid, no ghosting, no overlap.
+
+**Fixed in passing**: the modal's image panel always showed `cursor-zoom-in`, inviting a click that
+did nothing whenever there was no real image to zoom (the click handler was already correctly gated
+on `project.img`, just not the cursor).
+
+### Design decision: card sizing
+
+Steven's own read as a UI/UX reviewer: the mixed card sizes "looked off." Diagnosed two compounding
+causes, only one of which was ever intentional:
+
+1. `featured: true` spans 2 grid columns. At a locked 16:9 image ratio, 2× the width is 2× the
+   height in absolute pixels — that size difference was deliberate.
+2. **CSS Grid's default `align-items: stretch` then forces every card in that row to match the
+   tallest one.** That was never asked for. Proved it directly: `getBoundingClientRect()` on
+   BrisPulse and Finance Forms Automation reported **identical 551px height** before the fix — the
+   dead white space inside the shorter card was Grid stretching its container to match its tall
+   neighbour, not empty page background.
+
+Presented four options (uniform grid / full-width hero + uniform grid / keep the span but fix
+`items-start` + a fixed image height / uniform grid with a ribbon instead of size) with a rendered
+mockup comparison per option. **Chosen: full-width hero + uniform grid.**
+
+**Implementation** (`ProjectsView.tsx`):
+- New `ProjectHero` component — full-width banner, own image + status badge, "Flagship Project"
+  eyebrow, summary, tech tags, "View Full Case Study" CTA plus demo/repo links. Sits entirely
+  outside the grid, so no future project's height can trigger the stretch mechanism again — the
+  fix removes the mechanism, not just today's symptom.
+- `ProjectCard` no longer reads `project.featured` for sizing — every grid card is now
+  unconditionally the same markup, same size.
+- `heroProject` / `gridProjects` computed from `filter`: the hero only shows on **"All"**; filtering
+  to the flagship's own category shows it as a normal uniform card alongside its category-mates
+  instead of the page having to special-case a filter around a project that already has a banner.
+
+Verified: grid heights are `[372, 372, 372]` on "All" (down from `[551, 551]` for the two that used
+to share a row). Filtering to "Full-Stack" removes the hero and renders BrisPulse + JourneyMate as
+two identical 372px cards; switching back to "All" restores the hero and drops BrisPulse from the
+grid below it. Typecheck, lint, and build clean.
+
+---
+
+## 15. StarLens — new flagship project
+
+Added a fifth project, **StarLens**: the internal market-intelligence platform Steven built during
+the Star Trade (HDRE Group) internship, and set it as the new flagship in place of BrisPulse.
+
+**Why this outranks BrisPulse for the hero slot:** it's shipped and in active internal use, not
+concept-stage, and it's the first project on the site with a quantified, verifiable engineering
+result (page latency 4s → <2s) that also matches the resume almost exactly (resume says "50%
+latency reduction"; 4s→2s is exactly 50%) — real corroboration rather than a number invented for
+the case study.
+
+**Confidentiality, decided before writing anything.** The reference screenshot showed a real
+counterparty name (TSMC) and real transaction figures — a materially different situation from
+Finance Forms Automation, where the case study never named a specific business or figure. Confirmed
+with Steven and applied the same treatment as Finance Forms: `confidential: true`, no real
+screenshot, and — going further than the image alone — **no specific counterparty names or exact
+regulatory figures in the case-study text either** (a "1,500 MW" policy cap mentioned in Steven's own
+notes was generalised to "regulatory capacity caps" in the published copy, on the same reasoning: a
+number doesn't need an image to become a disclosure).
+
+**Scope, confirmed rather than assumed.** Steven's architecture diagram showed Django + HTMX +
+Tailwind (server-rendered templates, not a JS framework) — a case study written from the dashboard
+screenshot alone would have guessed React/Vue and been wrong, the same class of mistake BrisPulse's
+original tags made. Asked directly instead. Also confirmed the case study can honestly claim *both*
+resume bullets (the Airflow/MongoDB pipeline **and** the OpenAI-driven B2B pitch engine) as one
+project, since Steven confirmed all three StarLens modules were built by the same two-person team on
+the same live system — not two separate initiatives being merged for effect.
+
+**Mechanics:**
+- `content/projects/starlens.md` — `featured: true`, `confidential: true`, `order: 0`.
+- `content/projects/brispulse.md` — `featured: true` removed (only one flagship at a time; the
+  `heroProject` picker in `ProjectsView.tsx` takes the first match, so a second `featured: true`
+  would silently do nothing rather than error — worth remembering if this happens again).
+- About page's Star Trade experience bullet upgraded from a generic company-description sentence
+  to the resume's quantified wording (Django Context-Aware Intelligence Engine, Airflow ETL, 50%
+  latency reduction) — closes the "noticed, not yet acted on" item from §12.
+
+**Verified:** hero renders StarLens with the confidential placeholder, correct tags, and the
+"Context-Aware, Not a Chatbot" callout; full modal content checked field-by-field against the
+markdown source. Filter behaviour re-confirmed with the new fifth project in the mix — "All" shows
+the hero plus a 4-card grid (BrisPulse, Finance Forms, ParkEase, JourneyMate); "Full-Stack" drops the
+hero and shows StarLens + BrisPulse + JourneyMate as three uniform cards; "Business" and "Product &
+Research" are unaffected. Typecheck, lint, and build clean.
+
+### Investigation note: modal close appeared stuck in the test pane
+
+Worth recording because it cost real effort to rule out. Testing the modal's close button in the
+automated browser pane, it appeared to do nothing — button click registered, no visible change,
+reproducible across JS-dispatched clicks, real OS-level clicks, and backdrop clicks, and it survived
+a full dev-server restart (the server process had been running 18h+ across this whole session, which
+was the first suspect).
+
+Added a temporary `console.log` inside `onClose` to settle it directly: **the handler fires and
+`setSelectedProject(null)` runs correctly** — proven, not inferred. The DOM node persists anyway
+because `AnimatePresence` doesn't unmount an exiting child until its exit animation reports
+complete, and that completion depends on `requestAnimationFrame`, which this pane throttles when the
+tab isn't genuinely focused — the same root cause already identified for the tech-orbit rotation
+(§9) and the ContactMe scroll listener (§13) earlier in this session. Confirmed once more directly:
+`getComputedStyle` on the backdrop showed `opacity: 1` with zero progress toward the `exit: {opacity:
+0}` target, i.e. frozen at frame zero, not a slow multi-second animation.
+
+**Conclusion: not a product bug.** No code change was made as a result — the diagnostic `console.log`
+was added and then removed. A real user's foregrounded tab runs `requestAnimationFrame` normally and
+the modal closes within the coded 300ms, same as every other Framer Motion transition on this site.

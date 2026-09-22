@@ -1,8 +1,11 @@
 ---
 title: Finance Forms Automation
 category: Business
-order: 2
+order: 3
 img: null
+# Government project — no public screenshot. Renders the blurred "Under NDA" placeholder
+# instead of plain initials. See CONTENT.md → confidential.
+confidential: true
 summary: Digitised invoice workflows for the Queensland Government, replacing manual validation with an automated approval pipeline.
 
 tech:

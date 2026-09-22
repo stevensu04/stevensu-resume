@@ -12,6 +12,11 @@ featured: false               # true = card spans two columns
 # a branded placeholder renders instead, never a broken image.
 img: /projects/YourImage.png
 
+# Set this instead of `img` when the real screenshot can't be shown (client/government NDA).
+# Renders a blurred mock-dashboard with a lock icon and "Under NDA" label — states the reason
+# rather than leaving a recruiter to guess whether you just forgot to add a screenshot.
+# confidential: true
+
 summary: One sentence, shown when someone hovers the card.
 
 # What you ACTUALLY built with. Anything planned rather than built belongs

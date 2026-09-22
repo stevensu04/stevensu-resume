@@ -23,13 +23,13 @@ export default function AboutPage() {
                     Now, I combine my analytical mindset from Economics with full-stack development skills to build high-impact software. I thrive on tackling complex problems and turning them into seamless user experiences.
                 </p>
                 
-                {/* TEMPORARY HOME — these four moved off the hero (their 28-character widths were
-                    what actually broke the badge cloud's symmetry, and they read as business-analyst
-                    vocabulary in a hero aimed at grad SWE roles). Parked here until the resume review
-                    picks a permanent placement. See PLAN.md §9. */}
+                {/* Permanent home, confirmed against the Aug 2026 resume — this is the resume's own
+                    third competency bucket ("Consulting & Delivery"), rendered here rather than in
+                    the hero orbit because it's soft/consulting skills, not core technical stack.
+                    Originally parked pending resume review; see PLAN.md §9. */}
                 <div className="mt-6 w-full">
                     <h2 className="mb-3 text-[11px] font-bold uppercase tracking-[0.18em] text-gray-500">
-                        Carried over from banking
+                        Consulting & Delivery
                     </h2>
                     <ul className="flex flex-wrap gap-2">
                         {professionalSkills.map((skill) => (
@@ -96,7 +96,7 @@ export default function AboutPage() {
                     school="The University of Queensland"
                     location="Brisbane, Australia"
                     time="Feb 2025 - Nov 2026"
-                    info="GPA: 6.143/7.0 (Distinction Average). Specialising in Next-Gen Information Retrieval (incorporating LLM, Vector Search, and RAG architectures), Human-Computer Interaction, and Web Information Systems. For my Capstone, I prototyped an IoT-integrated Library Seat System to enhance campus UX."
+                    info="Cumulative GPA: 6.0/7.0 (Distinction Average). Coursework spans Relational Database Systems, Human-Computer Interaction, Cloud Computing, Algorithms & Data Structures, and Information Retrieval & Web Search. For my Capstone (EventNow), I managed the end-to-end SDLC of a full-stack platform integrating LLM APIs for smart content generation, Google OAuth 2.0, and RESTful architectures."
                 />
 
                 <EducationItem 
@@ -121,13 +121,16 @@ export default function AboutPage() {
         <section id="experience" className="w-full mb-24 scroll-mt-32">
             <h2 className="font-bold text-4xl mb-16 w-full text-center">Work Experience</h2>
             <div className="max-w-[85%] mx-auto">
-                {/* 💡 Latest: Intelligent System R&D Internship at Star Trade */}
-                <ExperienceItem 
+                {/* Concrete, quantified bullets from the Aug 2026 resume — replaced a generic
+                    company-description sentence that said nothing about what Steven actually
+                    built. Flagged as a to-do in PLAN.md §12; done alongside the StarLens project
+                    entry since both draw on the same internship. */}
+                <ExperienceItem
                     title="Intern of Intelligent System R&D Division"
                     company="Star Trade"
                     location="Taipei, Taiwan"
                     time="Jun 2026 - Jul 2026"
-                    work="Star Trade is an international power services and energy management provider, anchored by its self-developed Star Trade power trading platform, providing flexible, scalable power solutions for both end users and the grid."
+                    work="Architected a Django-based Context-Aware Intelligence Engine that asynchronously calls OpenAI APIs to generate B2B pitches, and engineered nightly Apache Airflow ETL pipelines with optimised MongoDB indices that cut system latency by 50%."
                 />
                 
                 <ExperienceItem 
