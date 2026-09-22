@@ -12,8 +12,8 @@ tech:
   - UI Design
 
 status:
-  label: Live
-  tone: green
+  label: Interactive Prototype
+  tone: blue
 
 demo: https://stevensu04.github.io/journeymate/
 repo: https://github.com/stevensu04/journeymate

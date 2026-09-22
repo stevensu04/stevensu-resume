@@ -11,7 +11,7 @@ tech:
   - User Testing
 
 status:
-  label: Interactive prototype
+  label: Interactive Prototype
   tone: blue
 
 demo: https://www.figma.com/proto/GQttaNlNfAvNpn9SaT81gk/DECO-7250?node-id=1-1976&p=f&t=uvcdKuoEsTy2zEkO-1&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=1%3A1976
