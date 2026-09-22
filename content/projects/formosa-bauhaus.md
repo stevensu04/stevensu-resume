@@ -27,7 +27,7 @@ meta:
   - label: My Role
     value: Full-Stack / AI Pipeline / Research
   - label: Context
-    value: UQ DECO7381 Capstone · team of 6
+    value: UQ DECO7381 Capstone (Part 2) · team of 6
   - label: Timeline
     value: Semester 2, 2026 · showcase 26 Oct
     badge: amber

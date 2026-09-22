@@ -1,6 +1,6 @@
 ---
 title: BrisPulse
-category: Full-Stack
+category: Product & Research
 order: 5
 # Flagship moved to StarLens (starlens.md) — a shipped, full-stack platform with a quantified
 # performance result outranks a concept-stage prototype for that slot. BrisPulse now renders as
@@ -16,7 +16,7 @@ tech:
   - Responsive Prototype
 
 status:
-  label: Concept & Systems Design
+  label: Capstone · Concept & Design
   tone: purple
 
 # TODO(steven): add `repo` and `demo` once the walking skeleton is public. See PLAN.md §5.
@@ -24,6 +24,8 @@ status:
 meta:
   - label: My Role
     value: Systems Architect (Proposal)
+  - label: Context
+    value: UQ DECO7380 Capstone (Part 1) · team of 5 · Semester 1, 2026
   - label: Stage
     value: Feasibility & Design
     badge: purple

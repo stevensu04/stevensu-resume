@@ -96,7 +96,7 @@ export default function AboutPage() {
                     school="The University of Queensland"
                     location="Brisbane, Australia"
                     time="Feb 2025 - Nov 2026"
-                    info="Cumulative GPA: 6.0/7.0 (Distinction Average). Coursework spans Relational Database Systems, Human-Computer Interaction, Cloud Computing, Algorithms & Data Structures, and Information Retrieval & Web Search. My major project, EventNow (INFS7202), is a solo-built full-stack platform integrating LLM APIs for smart content generation, Google OAuth 2.0, and RESTful architectures. My Capstone (DECO7381), Formosa Bauhaus, is a photo-to-3D web storefront built by a team of six, where I work across the full stack and the AI asset pipeline."
+                    info="Cumulative GPA: 6.0/7.0 (Distinction Average). Coursework spans Relational Database Systems, Human-Computer Interaction, Cloud Computing, Algorithms & Data Structures, and Information Retrieval & Web Search. My major project, EventNow (INFS7202), is a solo-built full-stack platform integrating LLM APIs for smart content generation, Google OAuth 2.0, and RESTful architectures. My two-part Capstone covers BrisPulse (DECO7380, team of five), an event-day crowd-pressure navigation concept, and Formosa Bauhaus (DECO7381, team of six), a photo-to-3D web storefront where I work across the full stack and the AI asset pipeline."
                 />
 
                 <EducationItem 
