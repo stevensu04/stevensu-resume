@@ -907,6 +907,25 @@ Fixed from what the recordings showed:
     he arrives, and the 🎾 shows.
   - `?nav` (development only) draws the blocked cells in red, to check the grid against the models.
 
+- **Taipei moved to the far bank, and the visitor can zoom.** Taipei used to stand 20-odd metres
+  beyond the river, so at the follow zoom it was always off screen and only showed in the poster.
+  - It now stands on a narrow far bank (`FAR_BANK` in `zones.ts`) right across the water, with a
+    line of trees along the edge. It's still tinted towards the sky and never walkable, and it
+    still hides when the camera faces it from the river side. This matches the §3 map, and it
+    frames the crossing card: the ferry comes over from Taipei's side.
+  - **Zoom** works as one continuous level, between "whole block" (the slab and Taipei in frame)
+    and 1.6× the follow zoom, eased. As it widens, the camera drifts from Steven to the middle of
+    the block. You can drive it with the mouse wheel or trackpad, two-finger pinch on touch
+    screens (instead of zooming the page), the + and − keys, or a whole-block button next to the
+    rotate buttons.
+  - At either limit the wheel scrolls the page as normal, so the world never traps the scroll.
+    §6 rules out free orbit, not zoom.
+  - Verified: the follow view shows Taipei across the river from the ferry landing, the button
+    toggles to the whole block, the wheel limits pass through, and a pinch prevents page zoom on a
+    phone-sized viewport.
+  - **The poster was re-rendered** with Taipei on its new bank, which also brings in the CityCat and
+    the racquet.
+
 ### To launch (all content or devices, no code)
 
 1. **A real phone**, ideally a mid-range Android. *iPhone 18 Pro done (see above); no Android
@@ -929,7 +948,6 @@ Nice to have, not blocking:
 
 - **`/projects/[slug]`** (`PLAN.md` §6), so "Read the case study" lands on the case study itself.
 - The E.SUN sign lettering.
-- Re-rendering the poster, which predates the racquet.
 
 ---
 

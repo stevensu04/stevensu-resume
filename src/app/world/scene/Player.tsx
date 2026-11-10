@@ -10,6 +10,9 @@ import { RACQUET } from "../placements";
 import Avatar from "./Avatar";
 import { RUN_SPEED, WALK_SPEED, type Motion, type MovementInput } from "./input";
 
+/** Zoom shared with Scene: what the visitor asked for, and the widest this screen allows. */
+export type ZoomState = { target: number; min: number };
+
 /** He is 1.72 m tall; speeds live in input.ts. */
 /** A tap further away than this, he runs: crossing the 80 m block at a walk takes too long. */
 const RUN_DISTANCE = 14;
@@ -17,7 +20,10 @@ const HEIGHT = 1.72;
 const ISO_PITCH = Math.atan(1 / Math.SQRT2); // 35.264°, true isometric
 const CAMERA_DISTANCE = 120;
 
-const BLOCK_CENTRE = new Vector3(0, 0, -6);
+const BLOCK_CENTRE = new Vector3(0, 0, -8);
+/** The closest the visitor can zoom in, as a multiple of the follow zoom. */
+export const MAX_ZOOM = 1.6;
+const aim = new Vector3();
 const toward = new Vector3();
 const playerPoint = new Vector3();
 const offset = new Vector3();
@@ -41,6 +47,7 @@ export default function Player({
     lookAt,
     overview = false,
     onRacquet,
+    zoomRef,
 }: {
     position: RefObject<Vector3>;
     target: RefObject<Vector3>;
@@ -59,11 +66,17 @@ export default function Player({
     overview?: boolean;
     /** The easter egg went off (true) or finished (false). */
     onRacquet?: (active: boolean) => void;
+    /**
+     * The visitor's zoom, as a multiple of the follow zoom: Scene sets `target` (wheel, pinch, the
+     * whole-block button); Player clamps it and writes `min`, the whole-block level for this screen.
+     */
+    zoomRef?: RefObject<ZoomState>;
 }) {
     const body = useRef<Group>(null);
     const marker = useRef<Mesh>(null);
     const focus = useRef<Vector3>(null);
     const azimuth = useRef<number>(null);
+    const zoomK = useRef<number>(null);
     const running = useRef(false);
     const motion = useRef<Motion>({ state: "Idle", pace: 1 });
     // The route being walked (nav.ts) and the target it was planned for.
@@ -195,13 +208,39 @@ export default function Player({
             marker.current.position.set(t.x, 0.03, t.z);
         }
 
-        // Camera: orthographic, pitch locked, following Steven.
+        // Zoom (§6 allows it; only free orbit is out). Two reference levels: "follow" (about 34 m
+        // across on a desktop, Steven ~55 px tall; never under 16 px/m, so a portrait phone doesn't
+        // shrink him to a speck) and "whole block" (the slab and Taipei in frame). The visitor's
+        // zoom is a multiple of follow, between whole block and 1.6×, eased; as it nears whole block
+        // the camera drifts from Steven to the middle of the block.
+        const follow = Math.min(Math.max(Math.min(state.size.width / 34, state.size.height / 22), 16), 34);
+        const whole = Math.min(state.size.width / 118, state.size.height / 84);
+        const minK = Math.min(1, whole / follow);
+        if (zoomRef) {
+            zoomRef.current.min = minK;
+            zoomRef.current.target = Math.min(Math.max(zoomRef.current.target, minK), MAX_ZOOM);
+        }
+        const kTarget = overview ? minK : (zoomRef?.current.target ?? 1);
+        zoomK.current ??= kTarget;
+        zoomK.current += (kTarget - zoomK.current) * (still || overview ? 1 : 1 - Math.exp(-8 * dt));
+        // 0 at follow zoom or closer, 1 at whole block.
+        const wide = minK < 1 ? Math.min(Math.max((1 - zoomK.current) / (1 - minK), 0), 1) : 0;
+
+        // Camera: orthographic, pitch locked, following Steven (or the keyboard's focus), drifting
+        // to the block's middle as it widens.
         focus.current ??= p.clone();
-        focus.current.lerp(overview ? BLOCK_CENTRE : (lookAt?.current ?? p), k);
+        aim.copy(lookAt?.current ?? p).lerp(BLOCK_CENTRE, wide);
+        focus.current.lerp(aim, overview ? 1 : k);
         const cam = state.camera;
         offset.set(Math.cos(ISO_PITCH) * Math.sin(az), Math.sin(ISO_PITCH), Math.cos(ISO_PITCH) * Math.cos(az));
         cam.position.copy(focus.current).addScaledVector(offset, CAMERA_DISTANCE);
         cam.lookAt(focus.current);
+
+        const zoom = follow * zoomK.current;
+        if (Math.abs(cam.zoom - zoom) > 0.01) {
+            cam.zoom = zoom;
+            cam.updateProjectionMatrix();
+        }
 
         // Occlusion fade: tell the shared shader where Steven is on screen and how deep, so whatever
         // stands between him and the camera is stippled away round him (worldShader.ts).
@@ -211,17 +250,6 @@ export default function Player({
         worldUniforms.uPlayer.value[1] = (playerPoint.y * 0.5 + 0.5) * state.size.height * dpr;
         worldUniforms.uPlayer.value[2] = -playerPoint.set(p.x, 1, p.z).applyMatrix4(cam.matrixWorldInverse).z;
         worldUniforms.uCutRadius.value = overview ? 0 : 2.4 * cam.zoom * dpr;
-
-        // About 34 m across on a desktop, so Steven stands ~55 px tall (§6 asks for 60–80). A phone in
-        // portrait would shrink him to a speck at that width, so pixels per metre never drop below
-        // 16: the camera follows him anyway.
-        const zoom = overview
-            ? Math.min(state.size.width / 118, state.size.height / 84)
-            : Math.min(Math.max(Math.min(state.size.width / 34, state.size.height / 22), 16), 34);
-        if (Math.abs(cam.zoom - zoom) > 0.01) {
-            cam.zoom = zoom;
-            cam.updateProjectionMatrix();
-        }
     });
 
     return (

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState, type RefObject } from "react";
 import type { ThreeEvent } from "@react-three/fiber";
 import { PLACEMENTS, PROP_SOLIDS, SKYLINE } from "../placements";
-import { RIVER, SLAB } from "../zones";
+import { FAR_BANK, RIVER, SLAB } from "../zones";
 import { OBJECTS, type WorldObject } from "../objects";
 import { InstancedMesh, Matrix4, MeshBasicMaterial, PlaneGeometry } from "three";
 import KitInstances, { placementTransform } from "./KitInstances";
@@ -60,6 +60,8 @@ export default function Stage({
     const bedD = RIVER.maxZ - RIVER.minZ;
     const land = useMemo(() => shadedBox(width, 2, landD), [width, landD]);
     const bed = useMemo(() => shadedBox(width, 2 + RIVERBED, bedD), [width, bedD]);
+    const farD = FAR_BANK.maxZ - FAR_BANK.minZ;
+    const far = useMemo(() => shadedBox(width, 2, farD), [width, farD]);
 
     const walk = (e: ThreeEvent<MouseEvent>) => {
         e.stopPropagation();
@@ -78,6 +80,10 @@ export default function Stage({
 
             <KitInstances kit={kit} placements={PLACEMENTS} />
             {navView && <NavCells nav={navView} />}
+            {/* Taipei's bank: the same tabletop, a shade cooler, so the far side reads as elsewhere. */}
+            <mesh geometry={far} position={[0, -1, (FAR_BANK.minZ + FAR_BANK.maxZ) / 2]} raycast={() => null}>
+                <meshBasicMaterial vertexColors color="#cfd6d9" />
+            </mesh>
             {skyline && <KitInstances kit={kit} placements={SKYLINE} tint={SKY_TINT} />}
             <Props still={still} />
 

@@ -104,20 +104,24 @@ export const PLACEMENTS: Placement[] = [
 ];
 
 /**
- * Taipei, across the river (§3: "visible, not walkable"). Kenney's 188-triangle low-detail towers,
- * scaled up and tinted towards the sky so they read as distance.
+ * Taipei, on the far bank (§3: "visible, not walkable"), right across the river from the ferry
+ * landing so it's in view while you're there, not only in the overview. Kenney's 188-triangle
+ * low-detail towers and a row of trees, tinted towards the sky so the far side reads as another
+ * place. Past tense only: nothing over there can be walked to or opened.
  */
 export const SKYLINE: Placement[] = [
-    { model: "low-detail-building-a", x: -36, z: -54, scale: 6 },
-    { model: "low-detail-building-e", x: -27, z: -57, scale: 7 },
-    { model: "low-detail-building-c", x: -18, z: -53, scale: 6 },
-    { model: "low-detail-building-wide-a", x: -8, z: -56, scale: 6 },
-    { model: "low-detail-building-m", x: 3, z: -58, scale: 9 }, // the tall one, generic on purpose (§4 rule 4)
-    { model: "low-detail-building-g", x: 13, z: -54, scale: 6.5 },
-    { model: "low-detail-building-i", x: 23, z: -57, scale: 7 },
-    { model: "low-detail-building-k", x: 33, z: -53, scale: 6 },
+    { model: "low-detail-building-a", x: -35, z: -36.5, scale: 5 },
+    { model: "low-detail-building-e", x: -27, z: -37.5, scale: 5.5 },
+    { model: "low-detail-building-c", x: -19, z: -36, scale: 5 },
+    { model: "low-detail-building-wide-a", x: -10, z: -37, scale: 5 },
+    { model: "low-detail-building-m", x: 0, z: -37.5, scale: 7 }, // the tall one, generic on purpose (§4 rule 4)
+    { model: "low-detail-building-g", x: 10, z: -36.5, scale: 5.5 },
+    { model: "low-detail-building-i", x: 20, z: -37.5, scale: 5.5 },
+    { model: "low-detail-building-k", x: 30, z: -36, scale: 5 },
+    { model: "low-detail-building-c", x: 37, z: -37.5, scale: 4.5 },
+    // A line of trees along the water's edge.
+    ...[-38, -31, -23, -14.5, -5, 5, 14.5, 25, 34].map((x, i) => ({ model: i % 2 ? "tree-small" : "tree-large", x, z: -33.4, scale: 7 })),
 ];
-
 /**
  * The easter egg (WORLD.md §3): a tennis racquet leaning on the fence by the UQ corner, for the
  * Tamkang Tennis Club president. No card, doesn't count; Steven turns to it and hops, and that's all.

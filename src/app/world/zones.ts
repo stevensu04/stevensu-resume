@@ -33,6 +33,8 @@ export const ZONES: Zone[] = [
 
 /** The slab is the whole block, river strip included (§0: about 80 × 60 m). */
 export const SLAB = { minX: -40, maxX: 40, minZ: -32, maxZ: 32 };
+/** Taipei's bank, across the river: scenery only, never walkable (placements.ts SKYLINE). */
+export const FAR_BANK = { minZ: -39.5, maxZ: -32 };
 /** The Brisbane River runs along the north edge of the slab. */
 export const RIVER = { minZ: -32, maxZ: -24 };
 /** The street between the river row and the middle row. */
