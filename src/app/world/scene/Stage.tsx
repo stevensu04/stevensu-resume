@@ -5,7 +5,9 @@ import type { ThreeEvent } from "@react-three/fiber";
 import { PLACEMENTS, PROP_SOLIDS, SKYLINE } from "../placements";
 import { RIVER, SLAB } from "../zones";
 import { OBJECTS, type WorldObject } from "../objects";
-import KitInstances, { placementTransform, type Rect } from "./KitInstances";
+import { InstancedMesh, Matrix4, MeshBasicMaterial, PlaneGeometry } from "three";
+import KitInstances, { placementTransform } from "./KitInstances";
+import { buildNav, type Nav } from "./nav";
 import Props, { PALETTE } from "./Props";
 import { shadedBox } from "./shading";
 import { useKit } from "./useKit";
@@ -20,7 +22,7 @@ const RIVERBED = -0.8;
 export default function Stage({
     skyline,
     still,
-    solidsRef,
+    navRef,
     onGround,
     onObject,
     onHover,
@@ -28,21 +30,30 @@ export default function Stage({
     /** Draw Taipei across the river. Off when the camera looks from the river side (see Scene). */
     skyline: boolean;
     still: boolean;
-    /** Filled here, read by Player: footprints Steven walks round. */
-    solidsRef: RefObject<Rect[]>;
+    /** Filled here once the kit has loaded, read by Player: where Steven can walk. */
+    navRef: RefObject<Nav | null>;
     onGround: (x: number, z: number) => void;
     onObject: (object: WorldObject) => void;
     onHover: (object: WorldObject | null) => void;
 }) {
     const kit = useKit();
 
-    // Solid footprints come from the kit's own bounding boxes, so they always match the models.
+    // `?nav` (development only) draws the blocked cells, to check the grid against the models.
+    const [showNav] = useState(() => process.env.NODE_ENV === "development" && new URLSearchParams(window.location.search).has("nav"));
+    const [navView, setNavView] = useState<Nav | null>(null);
+
+    // The walk grid comes from the solid models' own triangles (nav.ts), so it always matches what
+    // you see: no invisible walls round an L-shaped fence or a tree's canopy.
     useEffect(() => {
-        solidsRef.current = [
-            ...PLACEMENTS.filter((p) => p.solid).map((p) => placementTransform(p, kit.get(p.model)!).footprint),
-            ...PROP_SOLIDS.map(({ x, z, w, d }) => ({ minX: x - w / 2, maxX: x + w / 2, minZ: z - d / 2, maxZ: z + d / 2 })),
-        ];
-    }, [kit, solidsRef]);
+        const solids = PLACEMENTS.filter((p) => p.solid).flatMap((p) => {
+            const model = kit.get(p.model)!;
+            const { matrix } = placementTransform(p, model);
+            return model.parts.map((part) => ({ geometry: part.geometry, matrix: new Matrix4().multiplyMatrices(matrix, part.matrix) }));
+        });
+        const rects = PROP_SOLIDS.map(({ x, z, w, d }) => ({ minX: x - w / 2, maxX: x + w / 2, minZ: z - d / 2, maxZ: z + d / 2 }));
+        navRef.current = buildNav(solids, rects);
+        if (showNav) setNavView(navRef.current);
+    }, [kit, navRef, showNav]);
 
     const width = SLAB.maxX - SLAB.minX;
     const landD = SLAB.maxZ - RIVER.maxZ;
@@ -66,6 +77,7 @@ export default function Stage({
             </mesh>
 
             <KitInstances kit={kit} placements={PLACEMENTS} />
+            {navView && <NavCells nav={navView} />}
             {skyline && <KitInstances kit={kit} placements={SKYLINE} tint={SKY_TINT} />}
             <Props still={still} />
 
@@ -118,4 +130,18 @@ function ObjectHit({
             )}
         </group>
     );
+}
+
+/** Development aid: every blocked walk cell as a red tile, a hair above the ground. */
+function NavCells({ nav }: { nav: Nav }) {
+    const mesh = useMemo(() => {
+        const cells: [number, number][] = [];
+        for (let j = 0; j < nav.rows; j++)
+            for (let i = 0; i < nav.cols; i++) if (nav.blocked[j * nav.cols + i]) cells.push([nav.minX + (i + 0.5) * 0.5, nav.minZ + (j + 0.5) * 0.5]);
+        const m = new InstancedMesh(new PlaneGeometry(0.44, 0.44).rotateX(-Math.PI / 2), new MeshBasicMaterial({ color: "#ef4444", transparent: true, opacity: 0.45, depthWrite: false }), cells.length);
+        cells.forEach(([x, z], k) => m.setMatrixAt(k, new Matrix4().makeTranslation(x, 0.08, z)));
+        m.raycast = () => {};
+        return m;
+    }, [nav]);
+    return <primitive object={mesh} />;
 }

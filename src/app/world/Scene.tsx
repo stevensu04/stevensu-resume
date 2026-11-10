@@ -10,7 +10,7 @@ import { OBJECTS, TOUR, objectStandPoint } from "./objects";
 import Stage from "./scene/Stage";
 import Player from "./scene/Player";
 import CardAnchor from "./scene/CardAnchor";
-import type { Rect } from "./scene/KitInstances";
+import type { Nav } from "./scene/nav";
 import { clampToGround } from "./scene/walk";
 import { EMPTY_INPUT, KEY_MAP, RUN_SPEED, WALK_SPEED, type MovementInput } from "./scene/input";
 import { EXPLORE_ZONE_IDS, worldUniforms } from "./scene/worldShader";
@@ -61,7 +61,7 @@ export default function Scene({
     const target = useRef(start.clone());
     const pace = useRef(1);
     const card = useRef<HTMLDivElement>(null);
-    const solidsRef = useRef<Rect[]>([]);
+    const navRef = useRef<Nav | null>(null);
     const input = useRef<MovementInput>({ ...EMPTY_INPUT });
 
     const [open, setOpen] = useState<string | null>(null);
@@ -216,7 +216,7 @@ export default function Scene({
                 <Suspense fallback={null}>
                     <Stage
                         still={still}
-                        solidsRef={solidsRef}
+                        navRef={navRef}
                         // Steps 1 and 2 put the camera on the river side, where the skyline would stand
                         // between the camera and the block. It is a backdrop, so it only exists behind.
                         skyline={step === 0 || step === 3}
@@ -239,7 +239,7 @@ export default function Scene({
                         }}
                     />
                 </Suspense>
-                <Player position={position} target={target} input={input} pace={pace} solidsRef={solidsRef} step={step} still={still} overview={posterMode} lookAt={lookAt} onRacquet={setCheer} />
+                <Player position={position} target={target} input={input} pace={pace} navRef={navRef} step={step} still={still} overview={posterMode} lookAt={lookAt} onRacquet={setCheer} />
                 <PlayerAnchor position={position} el={emote} />
                 <FocusAnchor object={focused ? (OBJECT_BY_ID.get(focused) ?? null) : null} ring={ring} />
                 {!posterMode && <Watchdog onSlow={onFallback} />}

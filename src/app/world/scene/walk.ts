@@ -1,26 +1,19 @@
 import { PIER } from "../placements";
 import { WALKABLE } from "../zones";
-import type { Rect } from "./KitInstances";
+
+/** A rectangle on the ground, metres. */
+export type GroundRect = { minX: number; maxX: number; minZ: number; maxZ: number };
 
 /**
- * Where Steven may stand (WORLD.md §9: a kinematic controller, no physics engine). The ground is
- * the main rectangle plus the pier; solids are building and prop footprints, grown by his radius.
+ * The ground Steven may stand on: the main rectangle plus the pier. What stands on it, and the
+ * routes round it, are nav.ts's job.
  */
-const RADIUS = 0.45;
-
-const AREAS: Rect[] = [
+export const AREAS: GroundRect[] = [
     WALKABLE,
     { minX: PIER.x - PIER.w / 2 + 0.3, maxX: PIER.x + PIER.w / 2 - 0.3, minZ: PIER.minZ + 0.3, maxZ: WALKABLE.minZ + 0.01 },
 ];
 
-const inside = (r: Rect, x: number, z: number, grow = 0) =>
-    x >= r.minX - grow && x <= r.maxX + grow && z >= r.minZ - grow && z <= r.maxZ + grow;
-
-export function canStand(x: number, z: number, solids: Rect[]): boolean {
-    return AREAS.some((a) => inside(a, x, z)) && !solids.some((s) => inside(s, x, z, RADIUS));
-}
-
-/** The nearest point on the walkable ground (ignoring solids: walking stops at them instead). */
+/** The nearest point on the ground, for a tap that lands in the river or off the slab. */
 export function clampToGround(x: number, z: number): [number, number] {
     let best: [number, number] = [x, z];
     let bestD = Infinity;

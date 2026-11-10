@@ -892,6 +892,21 @@ Fixed from what the recordings showed:
 - **The rotate buttons rendered as empty circles on iOS.** iOS fonts have no ⟲ or ⟳, so the buttons
   now use inline SVG arrows.
 
+- **Steven got stuck on walls, and the racquet only fired from one side.** Both had the same cause.
+  Collision used each model's bounding box, so an L-shaped fence blocked the whole 3.5 × 10 m yard it
+  encloses, and trees, parasols and planters were all bigger than they looked. Walking was a straight
+  line that gave up at the first corner. Coming from the government tower, he stopped on the
+  invisible edge of a planter, more than 2.5 m from the racquet.
+  - **`scene/nav.ts`** builds a 0.5 m walk grid from the solid models' own triangles below head
+    height (1.9 m), plus the hand-made solids, grown one cell for his body.
+  - **Tap-to-move now plans a route**: Dijkstra over the grid, 8-connected, no corner cutting, with
+    the corners pulled tight by line-of-sight. When the target can't be reached he goes to the
+    nearest spot that can.
+  - The keyboard still slides along walls, now against the true shapes.
+  - Verified: from (26, −9.5) in front of the tower, a tap by the racquet routes round the planter,
+    he arrives, and the 🎾 shows.
+  - `?nav` (development only) draws the blocked cells in red, to check the grid against the models.
+
 ### To launch (all content or devices, no code)
 
 1. **A real phone**, ideally a mid-range Android. *iPhone 18 Pro done (see above); no Android

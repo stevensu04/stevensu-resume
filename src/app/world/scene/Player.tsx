@@ -4,8 +4,7 @@ import { Component, Suspense, useMemo, useRef, type ReactNode, type RefObject } 
 import { useFrame } from "@react-three/fiber";
 import { Vector3, type Group, type Mesh } from "three";
 import { ACCENT, shadedBox } from "./shading";
-import type { Rect } from "./KitInstances";
-import { canStand } from "./walk";
+import { canStandAt, findPath, type Nav } from "./nav";
 import { worldUniforms } from "./worldShader";
 import { RACQUET } from "../placements";
 import Avatar from "./Avatar";
@@ -36,7 +35,7 @@ export default function Player({
     target,
     input,
     pace,
-    solidsRef,
+    navRef,
     step,
     still,
     lookAt,
@@ -48,8 +47,8 @@ export default function Player({
     input: RefObject<MovementInput>;
     /** Speed multiplier: 1 normally, more during the guided tour. */
     pace: RefObject<number>;
-    /** Footprints to walk round (filled by Stage once the kit has loaded). */
-    solidsRef: RefObject<Rect[]>;
+    /** Where he can walk (filled by Stage once the kit has loaded; null until then). */
+    navRef: RefObject<Nav | null>;
     /** Camera azimuth in 90° steps (§6: free orbit destroys the isometric look). */
     step: number;
     /** prefers-reduced-motion: no walk cycle, no camera easing (§10). */
@@ -67,6 +66,9 @@ export default function Player({
     const azimuth = useRef<number>(null);
     const running = useRef(false);
     const motion = useRef<Motion>({ state: "Idle", pace: 1 });
+    // The route being walked (nav.ts) and the target it was planned for.
+    const path = useRef<[number, number][]>([]);
+    const planned = useRef(new Vector3(Number.NaN, 0, Number.NaN));
     // The easter egg: seconds into the hop, or -1 when not reacting; re-arms once he walks away.
     const hop = useRef(-1);
     const hopArmed = useRef(true);
@@ -84,6 +86,9 @@ export default function Player({
         azimuth.current += shortestAngle(azimuth.current, goal) * k;
         const az = azimuth.current;
 
+        const nav = navRef.current;
+        const standable = (x: number, z: number) => (nav ? canStandAt(nav, x, z) : true);
+
         // Keyboard / d-pad: "up" walks away from the camera, whatever the azimuth.
         const fwd = Number(keys.forward) - Number(keys.backward);
         const side = Number(keys.right) - Number(keys.left);
@@ -94,14 +99,33 @@ export default function Player({
             speed = keys.run ? RUN_SPEED : WALK_SPEED;
             dist = speed * dt;
             t.copy(p); // a held key replaces any tap target
+            planned.current.copy(p);
+            path.current = [];
         } else {
-            toward.subVectors(t, p).setY(0);
-            dist = toward.length();
-            if (dist > 0.01) {
-                // Decide once per tap whether this trip is a walk or a run.
-                if (motion.current.state === "Idle") running.current = dist > RUN_DISTANCE;
+            // Tap-to-move: a new target means a new route round whatever is in the way (nav.ts).
+            // `!(… <= …)`, not `>`: the first frame compares against NaN, which must count as new.
+            if (!(planned.current.distanceToSquared(t) <= 0.0025)) {
+                planned.current.copy(t);
+                path.current = nav ? findPath(nav, p.x, p.z, t.x, t.z) : [[t.x, t.z]];
+                // Decide once per trip whether it's a walk or a run, from the route's real length.
+                let length = 0;
+                let [lx, lz] = [p.x, p.z];
+                for (const [wx, wz] of path.current) {
+                    length += Math.hypot(wx - lx, wz - lz);
+                    [lx, lz] = [wx, wz];
+                }
+                running.current = length > RUN_DISTANCE;
+                if (!path.current.length) {
+                    t.copy(p);
+                    planned.current.copy(p);
+                }
+            }
+            const next = path.current[0];
+            if (next) {
+                toward.set(next[0] - p.x, 0, next[1] - p.z);
+                dist = toward.length();
                 speed = (running.current ? RUN_SPEED : WALK_SPEED) * pace.current;
-                toward.normalize();
+                if (dist > 1e-4) toward.normalize();
             }
         }
 
@@ -110,21 +134,32 @@ export default function Player({
             const len = still ? dist : Math.min(dist, speed * dt);
             const nx = p.x + toward.x * len;
             const nz = p.z + toward.z * len;
-            // Straight line; slide along whatever is in the way; give up when stuck.
-            if (canStand(nx, nz, solidsRef.current)) {
+            if (standable(nx, nz)) {
                 p.set(nx, 0, nz);
-                moved = true;
-            } else if (canStand(nx, p.z, solidsRef.current) && Math.abs(toward.x) > 0.05) {
+                moved = len > 1e-4;
+            } else if (standable(nx, p.z) && Math.abs(toward.x) > 0.05) {
+                // Slide along a wall (the keyboard; a route never needs this).
                 p.setX(nx);
                 moved = true;
-            } else if (canStand(p.x, nz, solidsRef.current) && Math.abs(toward.z) > 0.05) {
+            } else if (standable(p.x, nz) && Math.abs(toward.z) > 0.05) {
                 p.setZ(nz);
                 moved = true;
             } else {
+                path.current = [];
                 t.copy(p);
+                planned.current.copy(p);
             }
-            if (body.current) body.current.rotation.y = Math.atan2(toward.x, toward.z);
+            if (moved && body.current) body.current.rotation.y = Math.atan2(toward.x, toward.z);
             if (fwd || side) t.copy(p);
+            // Reached this waypoint: on to the next, or stop, landing the target where he stands.
+            const next = path.current[0];
+            if (next && Math.hypot(next[0] - p.x, next[1] - p.z) < 0.05) {
+                path.current.shift();
+                if (!path.current.length) {
+                    t.copy(p);
+                    planned.current.copy(p);
+                }
+            }
         }
         motion.current.state = moved ? (speed > WALK_SPEED * pace.current ? "Run" : "Walk") : "Idle";
         motion.current.pace = pace.current;
