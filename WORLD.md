@@ -16,7 +16,7 @@ in full).
 | How do you move? | **Steer the avatar**, plus a 60-second guided tour. | Steering is the game feel. The tour is for people who won't steer. Same scene, two drivers. |
 | Mobile? | **Full interaction.** Tap-to-move is the primary touch input; a d-pad is secondary. | Tap-to-move behaves the same with a mouse and a finger and doesn't cover the screen. |
 | How big? | **One riverside block**, about 80 × 60 m. Not two cities. | One finished block beats three rough districts. Taipei is a backdrop, not a destination. |
-| Where do the models come from? | **CC0 low-poly kits** (Kenney, Quaternius, Poly Pizza) plus a few hand-made blocks. | No Meshy subscription. Kits share one palette texture, which is the cheapest route to a consistent art direction for a non-artist. |
+| Where do the models come from? | **Kenney, CC0:** City Kit Commercial, Suburban and Roads, plus the Watercraft Kit. A few hand-made blocks fill the gaps. Chosen 11 Nov 2026 after a side-by-side test (§6). | No Meshy subscription. Each kit is shaded through one small palette texture, which is the cheapest route to a consistent art direction for a non-artist. |
 | Which avatar? | **The DECO7381 Steven rig**, reused with Team 41's permission. | Rigged, animated and already meshopt-compressed. See §9. |
 | Real photos? | **In the Gallery**, unlocked by exploring. | Photos are the reward, never the gate. |
 | Confidential projects? | **Generic geometry only**: a shuttered door, frosted glass. | Same rule as `ConfidentialPlaceholder` (`PLAN.md` §13). A modelled screen would be a new disclosure surface. |
@@ -156,10 +156,13 @@ ends the conversation. **Make the interaction playful and keep the text plain.**
 underneath. All four reference reels use this frame, and it makes everything in the scene read as a
 model, the avatar included.
 
-- **Kit first.** Use one CC0 kit family for buildings, roads, trees, props and water, and stick to it.
-  Mixing kits breaks the palette. Hand-make only what kits don't have: noticeboard, blueprint table,
-  three plinths, exit sign, shuttered door, scaffolding. All of it is box-level work in Blender.
-- **Palette:** six colours plus one accent. The accent is the site's `blue-600`.
+- **Kit first: Kenney.** City Kit Commercial (2.1), Suburban (2.0) and Roads, plus the Watercraft Kit,
+  all CC0. Nothing from any other kit family, Kenney's own Nature Kit included (see the comparison
+  below). Hand-make only what the kits don't have: noticeboard, blueprint table, three plinths, exit
+  sign, shuttered door, scaffolding, crane, river surface, pier, palm trees and the ferry. All of it
+  is box-level work in Blender, coloured from the kits' colormaps.
+- **Palette:** six colours plus one accent, picked from the kits' colormaps. The accent is the site's
+  `blue-600`.
 - **Lighting:** bake it, as a lightmap or vertex colours, and use `MeshBasicMaterial`. No real-time
   lights, no shadow maps, no post-processing. This is both the mobile-performance answer and the look
   itself.
@@ -168,6 +171,9 @@ model, the avatar included.
   visitors feel but can't name. Fix it on the avatar side: flat or toon material (adapt `relight.ts`)
   and a 256 px texture. At isometric distance he's 60–80 px tall on screen, so detail is invisible
   anyway. Never make the world more realistic to match him.
+- **Scale:** one Kenney road tile is 8 m (two lanes plus footpaths), so the city kits run at 8 m per
+  unit. On that scale a mid-rise is about 10 m and the tallest skyscraper about 33 m. The Watercraft
+  Kit uses its own unit, so it is scaled per model.
 - **Camera:** orthographic, **pitch locked**, follows the avatar. Azimuth turns only in 90° steps,
   from two buttons or Q/E. Free orbit destroys the isometric look within seconds.
 - **Occlusion:** when a building hides Steven, fade it. A visitor notices this immediately if it's
@@ -175,6 +181,34 @@ model, the avatar included.
 - **Idle motion is what makes it alive,** more than polygon count: water swell (vertex shader), trees
   swaying, the crane turning slowly, the arcade screen flickering, a ferry crossing every ~30 s. All
   of it is cheap. All of it stops under `prefers-reduced-motion`.
+
+### Kit comparison (11 Nov 2026)
+
+All three candidates went side by side on a local test page, at the same real-world scale and
+through the §6 camera, with `MeshBasicMaterial` standing in for the shipped look.
+
+| | Kenney City Kit ×3 + Watercraft | KayKit City Builder Bits (free) | Quaternius Downtown City MegaKit |
+| --- | --- | --- | --- |
+| Format | GLB, external `Textures/colormap.png` | glTF + `.bin` | glTF |
+| Texture | One 512 px colormap per kit, four in all | One 1024 px gradient atlas | "Shared texture sets" |
+| Unlit | Holds up: the shading is painted into the colormap | Holds up, for the same reason | Not tested |
+| Coverage | Skyscrapers, low-detail backdrop towers, bridge and pillars, construction fence and cones, houses, fences, two trees, boats, buoys | 8 low-rise buildings (tallest ~12 m), roads, cars, props, one bush. No trees, water, boats or towers. The park is in the paid EXTRA. | 315 modular pieces; buildings are assembled wall by wall |
+| Size | 25 models in the test, 11,074 tris | 13 models, 7,201 tris; the whole free set is 1.7 MB | The free zip alone is 223 MB |
+
+- **Kenney wins on coverage.** It's the only family that covers zones ①, ③ and ④ (boats, towers,
+  a building site) without leaving the family.
+- **Kenney's Nature Kit is out.** It has no texture: each model has two to four flat PBR colours,
+  designed to be lit. Rendered unlit, it goes pastel and flat next to the city kits. The river tiles
+  and palms are what it would have added, and they're cheaper to hand-make than to rebake. Use
+  Suburban's `tree-large` and `tree-small` instead.
+- **No ferry in the Watercraft Kit looks like a CityCat.** The ocean liners read as the Titanic.
+  Hand-make a small catamaran, or adapt `boat-speed-*`.
+- **Four colormaps, not one.** Either merge them into one atlas in the `gltf-transform` step, or
+  accept four materials. That's four draw calls once merged per material, well inside the < 80 budget.
+- **Source files:** `kenney_city-kit-commercial_2.1.zip`, `kenney_city-kit-suburban_20.zip`,
+  `kenney_city-kit-roads.zip` and `kenney_watercraft-pack.zip` from kenney.nl. They stay out of the repo.
+  Only the processed GLBs in `public/world/` get committed. kenney.nl refuses non-browser downloads, so
+  fetch them by hand.
 
 ---
 
@@ -539,11 +573,13 @@ spinning cube. These are script bytes, gzip, measured on `next start` in the bro
   was hoisted, and `npm audit` flags nothing new from them.
 - One console warning, `THREE.Clock: This module has been deprecated`. It comes from R3F's internals
   on three 0.187, not this code. It's harmless and will go away when R3F moves to `THREE.Timer`.
-- **Not yet verified:** the Vercel deploy (needs a push), the reduced-motion branch (the test browser
-  can't emulate the media query) and a real phone.
+- **Vercel:** deployed from `988151b` and checked live. The cube renders, clicks count, the page is
+  `noindex, nofollow`, and the console is clean.
+- **Not yet verified:** the reduced-motion branch (the test browser can't emulate the media query) and
+  a real phone.
 
-**Decide the asset kit before M1.** Ship M1 behind the unlisted URL within the first week, so
-something real exists on the internet early.
+**Asset kit decided: Kenney** (§6). Ship M1 behind the unlisted URL within the first week, so something
+real exists on the internet early.
 
 ---
 
@@ -584,7 +620,6 @@ all of them before ever reaching `/world`.
 1. **Veilcore.** Is it publicly playable? Does it get `content/projects/veilcore.md`?
 2. **Which seven photos?**
 3. **Work rights:** the line for `site.workRights`.
-4. **Which kit family?** Kenney City Kit, Quaternius, or a mix within one palette. Look at them side by
-   side before M1.
+4. ~~Which kit family?~~ **Resolved 11 Nov 2026: Kenney** City Kit ×3 + Watercraft (§6).
 5. **Test devices.** Which phone, and is there a mid-range Android in the set? That device decides
    whether the fallbacks matter.
