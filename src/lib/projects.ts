@@ -192,3 +192,8 @@ export function getProjects(): Project[] {
 
     return projects.sort((a, b) => a.order - b.order || a.title.localeCompare(b.title));
 }
+
+/** One project by slug, or undefined. Used by `/projects/[slug]`. */
+export function getProject(slug: string): Project | undefined {
+    return getProjects().find((p) => p.slug === slug);
+}

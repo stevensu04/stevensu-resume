@@ -1,23 +1,21 @@
 "use client";
 import React, { useState } from 'react';
+import Link from 'next/link';
 import AnimatedText from '@/components/AnimatedText';
-import { AnimatePresence, motion } from 'framer-motion';
-import { FaTimes, FaExternalLinkAlt, FaGithub, FaCode, FaLightbulb, FaLock } from "react-icons/fa";
-import {
-    categoriesFrom,
-    toneClasses,
-    type Project,
-    type ProjectCallout,
-} from '@/lib/project-schema';
+import ProjectImage from '@/components/project/ProjectImage';
+import { ProjectLinks, StatusBadge, TechTags } from '@/components/project/CaseStudy';
+import { caseStudyHref, categoriesFrom, type Project } from '@/lib/project-schema';
 
 /**
  * Interactive projects UI. Content is loaded and validated on the server
  * (`lib/projects.ts`) and handed down as props — this component never touches the
  * filesystem, so adding a project means adding a markdown file, not editing JSX.
+ *
+ * Every card links to its case study at `/projects/<slug>` — a real URL that can be shared,
+ * rather than the modal this used to open.
  */
 export default function ProjectsView({ projects }: { projects: Project[] }) {
     const [filter, setFilter] = useState<string>("All");
-    const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
     // Derived from the content, so a brand-new category needs no code change.
     const categories = categoriesFrom(projects);
@@ -62,123 +60,17 @@ export default function ProjectsView({ projects }: { projects: Project[] }) {
             </div>
 
             {heroProject && (
-                <ProjectHero
-                    project={heroProject}
-                    onOpen={() => setSelectedProject(heroProject)}
-                />
+                <ProjectHero project={heroProject} />
             )}
 
             {/* Uniform grid — every card here is the same size, deliberately. No `featured`
                 span, so nothing can trigger the stretch bug again for a future project. */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {gridProjects.map((project) => (
-                    <ProjectCard
-                        key={project.slug}
-                        project={project}
-                        onOpen={() => setSelectedProject(project)}
-                    />
+                    <ProjectCard key={project.slug} project={project} />
                 ))}
             </div>
-
-            <AnimatePresence>
-                {selectedProject && (
-                    <ProjectModal
-                        project={selectedProject}
-                        onClose={() => setSelectedProject(null)}
-                    />
-                )}
-            </AnimatePresence>
         </main>
-    );
-}
-
-/**
- * Renders the project image, or a placeholder when there is no image (or the file failed to
- * load). Two distinct placeholders for two distinct meanings — a plain "FF"-style initials
- * card reads as "no screenshot yet"; that's the wrong message for a client/government project
- * that can never have a public screenshot, so `confidential` projects get their own treatment.
- */
-function ProjectImage({ project, className = "" }: { project: Project; className?: string }) {
-    const [failed, setFailed] = useState(false);
-
-    if (!project.img || failed) {
-        if (project.confidential) {
-            return <ConfidentialPlaceholder project={project} className={className} />;
-        }
-
-        const initials = project.title
-            .split(" ")
-            .map((w) => w[0])
-            .join("")
-            .slice(0, 2)
-            .toUpperCase();
-
-        return (
-            <div
-                role="img"
-                aria-label={`${project.title} — no cover image`}
-                className={`flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-gray-900 to-gray-700 ${className}`}
-            >
-                <span className="text-4xl font-black tracking-tight text-white/90">{initials}</span>
-                <span className="mt-2 text-[10px] font-bold uppercase tracking-[0.2em] text-white/50">
-                    {project.category}
-                </span>
-            </div>
-        );
-    }
-
-    return (
-        <img
-            src={project.img}
-            alt={project.title}
-            onError={() => setFailed(true)}
-            className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 ${className}`}
-        />
-    );
-}
-
-/**
- * "Under NDA" placeholder — a blurred, abstract mock-dashboard (built from plain divs, not a
- * fetched or embedded image) standing in for the real screenshot, with a frosted-glass lock
- * card on top. Reads as "something real is behind this, it's just covered" rather than a
- * blank box, which is a truer signal for a client/government project than plain initials.
- *
- * The mock shapes are deliberately generic (a "nav bar", a few "cards", two "chart" bars) —
- * enough visual weight to survive the blur without implying a specific real interface.
- */
-function ConfidentialPlaceholder({ project, className = "" }: { project: Project; className?: string }) {
-    return (
-        <div
-            role="img"
-            aria-label={`${project.title} — screenshot withheld under NDA`}
-            className={`relative h-full w-full overflow-hidden bg-slate-900 ${className}`}
-        >
-            {/* Fake dashboard. Scaled up past its own container before blurring, so the blur
-                radius doesn't reveal crisp shape edges at the card boundary. */}
-            <div className="absolute inset-0 scale-110 opacity-70 blur-lg" aria-hidden="true">
-                <div className="absolute inset-x-0 top-0 h-9 bg-slate-700/80" />
-                <div className="absolute left-4 top-16 h-20 w-28 rounded-lg bg-blue-500/60" />
-                <div className="absolute left-36 top-16 h-20 w-36 rounded-lg bg-emerald-500/50" />
-                <div className="absolute right-4 top-16 h-20 w-24 rounded-lg bg-amber-500/50" />
-                <div className="absolute inset-x-4 top-40 h-20 rounded-lg bg-slate-600/60" />
-                <div className="absolute bottom-8 left-4 h-2 w-2/3 rounded bg-slate-500/70" />
-                <div className="absolute bottom-[52px] left-4 h-2 w-1/2 rounded bg-slate-500/50" />
-            </div>
-
-            {/* Scrim so the frosted card and its text hold contrast regardless of what the
-                mock shapes underneath happen to line up with. */}
-            <div className="absolute inset-0 bg-gradient-to-b from-slate-950/50 via-slate-950/70 to-slate-950/90" />
-
-            <div className="absolute inset-0 flex items-center justify-center p-6">
-                <div className="flex flex-col items-center gap-1.5 rounded-2xl border border-white/15 bg-white/10 px-8 py-6 text-center backdrop-blur-md">
-                    <FaLock className="mb-1 text-xl text-white/70" />
-                    <span className="text-lg font-bold leading-tight text-white">{project.title}</span>
-                    <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/60">
-                        Under NDA
-                    </span>
-                </div>
-            </div>
-        </div>
     );
 }
 
@@ -187,16 +79,12 @@ function ConfidentialPlaceholder({ project, className = "" }: { project: Project
  * Sits entirely outside the uniform grid below, so its size can never again force Grid's
  * default `align-items: stretch` onto a neighbouring card. See the note above `heroProject`.
  */
-function ProjectHero({ project, onOpen }: { project: Project; onOpen: () => void }) {
+function ProjectHero({ project }: { project: Project }) {
     return (
         <div className="mb-16 grid grid-cols-1 items-center gap-8 rounded-3xl border border-gray-100 bg-white p-6 shadow-sm lg:grid-cols-2 lg:gap-12 lg:p-10">
             <div className="relative aspect-video w-full overflow-hidden rounded-2xl">
                 <ProjectImage project={project} />
-                {project.status && (
-                    <span className={`absolute left-4 top-4 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider shadow-sm ${toneClasses[project.status.tone].badge}`}>
-                        {project.status.label}
-                    </span>
-                )}
+                {project.status && <StatusBadge status={project.status} className="absolute left-4 top-4" />}
             </div>
 
             <div className="flex flex-col items-start">
@@ -206,41 +94,16 @@ function ProjectHero({ project, onOpen }: { project: Project; onOpen: () => void
                 <h2 className="mb-3 text-3xl font-bold text-black md:text-4xl">{project.title}</h2>
                 <p className="mb-5 leading-relaxed text-gray-600">{project.summary}</p>
 
-                <div className="mb-6 flex flex-wrap gap-2">
-                    {project.tech.map((t) => (
-                        <span key={t} className="rounded bg-blue-600 px-2 py-1 text-[10px] font-bold text-white">
-                            #{t}
-                        </span>
-                    ))}
-                </div>
+                <TechTags tech={project.tech} className="mb-6" />
 
                 <div className="flex flex-wrap items-center gap-4">
-                    <button
-                        onClick={onOpen}
+                    <Link
+                        href={caseStudyHref(project.slug)}
                         className="rounded-full bg-black px-6 py-2.5 text-sm font-bold text-white transition-colors hover:bg-blue-600"
                     >
                         View Full Case Study
-                    </button>
-                    {project.demo && (
-                        <a
-                            href={project.demo}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-700 hover:text-blue-600 transition-colors"
-                        >
-                            <FaExternalLinkAlt className="text-[10px]" /> Live Demo
-                        </a>
-                    )}
-                    {project.repo && (
-                        <a
-                            href={project.repo}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-700 hover:text-blue-600 transition-colors"
-                        >
-                            <FaGithub className="text-xs" /> Source
-                        </a>
-                    )}
+                    </Link>
+                    <ProjectLinks project={project} variant="inline" />
                 </div>
             </div>
         </div>
@@ -249,247 +112,59 @@ function ProjectHero({ project, onOpen }: { project: Project; onOpen: () => void
 
 // Every card the same size, deliberately — `featured` now only decides who gets the
 // full-width ProjectHero treatment above the grid, not this component's own sizing.
-function ProjectCard({ project, onOpen }: { project: Project; onOpen: () => void }) {
+function ProjectCard({ project }: { project: Project }) {
+    const href = caseStudyHref(project.slug);
+
     return (
         <div className="relative group overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-xl transition-all duration-500">
             <div className="aspect-video w-full bg-gray-100 overflow-hidden relative">
                 <ProjectImage project={project} />
 
-                {/* 誠實標籤：maturity stated on the card, not buried in the modal. Faded out on
+                {/* 誠實標籤：maturity stated on the card, not buried in the case study. Faded out on
                     hover — its own vertically-centered content block can grow tall enough (long
                     summary + several tech tags) to reach the top-left corner and overlap this,
                     verified for both Finance Forms and JourneyMate. Fading it avoids the overlap
                     at every content length instead of just padding around today's longest case. */}
                 {project.status && (
-                    <span className={`absolute left-4 top-4 z-10 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider shadow-sm transition-opacity duration-300 group-hover:opacity-0 ${toneClasses[project.status.tone].badge}`}>
-                        {project.status.label}
-                    </span>
+                    <StatusBadge
+                        status={project.status}
+                        className="absolute left-4 top-4 z-10 transition-opacity duration-300 group-hover:opacity-0 group-focus-within:opacity-0"
+                    />
                 )}
 
                 {/* Fully opaque, not /80 — a translucent scrim let the confidential placeholder's
-                    own "Under NDA" card ghost through behind the tech tags on hover. */}
-                <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center p-6 text-center">
+                    own "Under NDA" card ghost through behind the tech tags on hover. Also shown
+                    on keyboard focus, so the link inside is never focused while invisible. */}
+                <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center p-6 text-center">
                     <p className="text-white mb-4 text-sm font-medium">{project.summary}</p>
-                    <div className="flex flex-wrap justify-center gap-2 mb-6">
-                        {project.tech.map((t) => (
-                            <span key={t} className="text-[10px] bg-blue-600 text-white px-2 py-1 rounded font-bold">#{t}</span>
-                        ))}
-                    </div>
-                    <button
-                        onClick={onOpen}
+                    <TechTags tech={project.tech} className="justify-center mb-6" />
+                    <Link
+                        href={href}
                         className="bg-white text-black px-6 py-2 rounded-full text-xs font-bold hover:bg-blue-600 hover:text-white transition-colors"
                     >
-                        View Project Info
-                    </button>
+                        Read the case study
+                    </Link>
                 </div>
             </div>
 
             <div className="p-6">
                 <div className="flex justify-between items-center mb-2">
                     <span className="text-blue-600 font-bold text-xs uppercase tracking-tighter">{project.category}</span>
-                    <button
-                        onClick={onOpen}
+                    <Link
+                        href={href}
+                        aria-label={`View details: ${project.title}`}
                         className="text-black hover:text-blue-600 transition-colors font-bold text-sm flex items-center gap-1"
                     >
-                        View Details <span className="text-lg">→</span>
-                    </button>
+                        View Details <span className="text-lg" aria-hidden="true">→</span>
+                    </Link>
                 </div>
-                <h3 className="text-xl font-bold text-black">{project.title}</h3>
+                <h3 className="text-xl font-bold text-black">
+                    <Link href={href} className="hover:text-blue-600 transition-colors">{project.title}</Link>
+                </h3>
 
                 {/* 可驗證性：live demo and source, always visible — never behind a hover state */}
-                {(project.demo || project.repo) && (
-                    <div className="mt-4 flex flex-wrap items-center gap-4 border-t border-gray-100 pt-4">
-                        {project.demo && (
-                            <a
-                                href={project.demo}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-700 hover:text-blue-600 transition-colors"
-                            >
-                                <FaExternalLinkAlt className="text-[10px]" /> Live Demo
-                            </a>
-                        )}
-                        {project.repo && (
-                            <a
-                                href={project.repo}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-700 hover:text-blue-600 transition-colors"
-                            >
-                                <FaGithub className="text-xs" /> Source
-                            </a>
-                        )}
-                    </div>
-                )}
+                <ProjectLinks project={project} variant="inline" className="mt-4 border-t border-gray-100 pt-4" />
             </div>
         </div>
-    );
-}
-
-function Callout({ callout }: { callout: ProjectCallout }) {
-    const tone = toneClasses[callout.tone];
-
-    if (callout.quote) {
-        return (
-            <div className={`mt-4 p-4 rounded-xl border-l-4 ${tone.panel} border-l-current ${tone.title}`}>
-                <p className="text-sm font-semibold italic">&ldquo;{callout.body}&rdquo;</p>
-            </div>
-        );
-    }
-
-    return (
-        <div className={`mt-4 flex items-start gap-3 p-4 rounded-xl border ${tone.panel}`}>
-            {callout.icon && <div className="text-sm mt-0.5">{callout.icon}</div>}
-            <div>
-                {callout.title && (
-                    <p className={`text-xs font-bold mb-1 uppercase tracking-wider ${tone.title}`}>
-                        {callout.title}
-                    </p>
-                )}
-                <p className={`text-xs leading-relaxed ${tone.body}`}>{callout.body}</p>
-            </div>
-        </div>
-    );
-}
-
-function ProjectModal({ project, onClose }: { project: Project; onClose: () => void }) {
-    const [isZoomed, setIsZoomed] = useState(false);
-
-    const calloutsFor = (section: ProjectCallout["section"]) =>
-        (project.callouts ?? []).filter((c) => c.section === section);
-
-    return (
-        <>
-            <motion.div
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 bg-black/70 backdrop-blur-sm"
-                onClick={onClose}
-            >
-                <motion.div
-                    initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
-                    className="bg-white w-full max-w-5xl max-h-[90vh] overflow-y-auto rounded-3xl relative p-6 md:p-12 shadow-2xl"
-                    onClick={(e) => e.stopPropagation()}
-                >
-                    <button onClick={onClose} aria-label="Close project details" className="absolute right-6 top-6 text-2xl hover:text-blue-600 transition-colors">
-                        <FaTimes />
-                    </button>
-
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                        {/* Left Side: Visuals & Meta */}
-                        <div>
-                            <div
-                                className={`rounded-2xl overflow-hidden shadow-lg border border-gray-100 bg-gray-50 relative group/img aspect-video ${
-                                    project.img ? "cursor-zoom-in" : ""
-                                }`}
-                                onClick={() => project.img && setIsZoomed(true)}
-                            >
-                                <ProjectImage project={project} />
-                                {project.img && (
-                                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
-                                        <span className="bg-white/95 text-black text-xs font-bold px-3 py-1.5 rounded-full shadow-md">Click to View Full Image 🔍</span>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* 資料驅動：meta comes from the markdown file, not from JSX */}
-                            <div className="mt-6 grid grid-cols-2 gap-4 bg-gray-50 p-6 rounded-2xl border border-gray-100 text-sm">
-                                {project.meta.map((m) => (
-                                    <div key={m.label} className={m.wide ? "col-span-2" : ""}>
-                                        <span className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">
-                                            {m.label}
-                                        </span>
-                                        {m.badge ? (
-                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${toneClasses[m.badge].badge}`}>
-                                                {m.value}
-                                            </span>
-                                        ) : (
-                                            <span className={m.mono
-                                                ? "font-mono text-[11px] text-gray-600 block leading-tight"
-                                                : "font-bold text-black"}>
-                                                {m.value}
-                                            </span>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-
-                            {(project.demo || project.repo) && (
-                                <div className="mt-6 flex flex-wrap gap-3">
-                                    {project.demo && (
-                                        <a
-                                            href={project.demo}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-2 rounded-lg bg-black px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-blue-600"
-                                        >
-                                            <FaExternalLinkAlt className="text-xs" /> Live Demo
-                                        </a>
-                                    )}
-                                    {project.repo && (
-                                        <a
-                                            href={project.repo}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-2 rounded-lg border-2 border-black px-5 py-2.5 text-sm font-bold text-black transition-colors hover:bg-black hover:text-white"
-                                        >
-                                            <FaGithub /> View Source
-                                        </a>
-                                    )}
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Right Side: Narrative */}
-                        <div className="flex flex-col">
-                            <span className="text-blue-600 font-bold text-sm mb-2">{project.category}</span>
-                            <h2 className="text-4xl font-bold mb-6 text-black">{project.title}</h2>
-
-                            <div className="space-y-8">
-                                <section>
-                                    <h4 className="flex items-center gap-2 text-black font-extrabold text-lg mb-3">
-                                        <FaLightbulb className="text-yellow-500" /> 01 - Problem &amp; Challenge
-                                    </h4>
-                                    <p className="text-gray-600 leading-relaxed">{project.problem}</p>
-                                    {calloutsFor("problem").map((c, i) => (
-                                        <Callout key={i} callout={c} />
-                                    ))}
-                                </section>
-
-                                <section>
-                                    <h4 className="flex items-center gap-2 text-black font-extrabold text-lg mb-3">
-                                        <FaCode className="text-blue-600" />
-                                        02 - {project.solutionHeading ?? "Solution & Architecture"}
-                                    </h4>
-                                    <p className="text-gray-600 leading-relaxed">{project.solution}</p>
-                                    {calloutsFor("solution").map((c, i) => (
-                                        <Callout key={i} callout={c} />
-                                    ))}
-                                </section>
-                            </div>
-                        </div>
-                    </div>
-                </motion.div>
-            </motion.div>
-
-            {/* Lightbox */}
-            <AnimatePresence>
-                {isZoomed && project.img && (
-                    <motion.div
-                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 backdrop-blur-md cursor-zoom-out"
-                        onClick={() => setIsZoomed(false)}
-                    >
-                        <button aria-label="Close image" className="absolute right-8 top-8 text-white text-3xl hover:text-gray-300" onClick={() => setIsZoomed(false)}>
-                            <FaTimes />
-                        </button>
-                        <motion.img
-                            initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }}
-                            src={project.img} alt={project.title}
-                            className="max-w-[95vw] max-h-[90vh] object-contain rounded-xl shadow-2xl"
-                        />
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </>
     );
 }

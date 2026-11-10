@@ -138,7 +138,7 @@ A project can also stand somewhere in the walkable `/world` scene (`WORLD.md` §
 ```yaml
 world:
   zone: shed            # ferry, uq, gov, site, garage, shed or park
-  link: repo            # demo, repo, or projects (the /projects page)
+  link: repo            # demo, repo, or projects (its /projects/<slug> page)
   linkLabel: Read the source on GitHub
   card: |
     The same GPU job emits several times more CO₂ depending on which grid powers the

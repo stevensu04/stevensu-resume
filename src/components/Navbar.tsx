@@ -8,11 +8,13 @@ import { site } from "@/lib/site";
 
 const CustomLink = ({ href, title, className = "" }: { href: string; title: string; className?: string }) => {
     const pathname = usePathname();
+    // A case study at /projects/<slug> still sits under "Projects".
+    const active = pathname === href || (href !== "/" && pathname.startsWith(`${href}/`));
     return (
         <Link href={href} className={`${className} relative group text-gray-800`}> 
             {title}
             {/* 電腦版底線：使用鮮艷的藍色作為亮點 */}
-            <span className={`h-[2px] inline-block bg-blue-600 absolute left-0 -bottom-0.5 group-hover:w-full transition-[width] ease duration-300 ${pathname === href ? 'w-full' : 'w-0'}`}>&nbsp;</span>
+            <span className={`h-[2px] inline-block bg-blue-600 absolute left-0 -bottom-0.5 group-hover:w-full transition-[width] ease duration-300 ${active ? 'w-full' : 'w-0'}`}>&nbsp;</span>
         </Link>
     );
 };

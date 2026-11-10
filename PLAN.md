@@ -185,9 +185,20 @@ different application entirely.
         is the only function that knows where content comes from, so swapping in a real database
         later is a one-file change. The place to *demonstrate* backend work is Phase 2, not the
         portfolio's own content layer — nobody reviewing an application sees an admin UI.
-- [ ] Move to `/projects/[slug]` routes. Modals have no URL — a recruiter cannot send a colleague a
+- [x] Move to `/projects/[slug]` routes. Modals have no URL — a recruiter cannot send a colleague a
       link to a case study, and the site gets zero SEO from its best content. (Content is now
       file-per-project with a slug, so this is mostly a routing change.)
+      - `src/app/projects/[slug]/page.tsx`: one prerendered page per project file
+        (`generateStaticParams`, `dynamicParams = false`, `notFound()`), with its own title,
+        description from `summary`, canonical `/projects/<slug>`, and the root OG image carried over.
+      - The modal is gone. Cards and the flagship hero link to the page; the shared pieces
+        (`ProjectImage` with the NDA placeholder, meta grid, callouts, links) live in
+        `src/components/project/`. The page replaces the lightbox with a link to the full image.
+      - /world cards with `link: projects` now open `/projects/<slug>` (`caseStudyHref`).
+      - The `/projects` metadata moved from its layout to its page: a layout's plain-string title
+        stopped the root `%s · Steven Su` template reaching the case study pages.
+      - JS, `next start`, second navigation: `/` 201.7 → 201.1 kB, `/projects` 204.6 → 201.8 kB,
+        `/about` 204.2 → 203.6 kB; a case study page is 198.6 kB.
 - [ ] Move hover-only content onto the card. Summary, tech tags and the primary action currently live
       in a `group-hover` overlay, so on touch devices that content **does not exist**.
 - [ ] Drop the category filter. Four projects, split 2/1/1 — filtering to a single card in a

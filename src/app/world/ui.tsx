@@ -185,6 +185,10 @@ export function OutLinks() {
                 <span className="sm:hidden">CV</span>
                 <span className="hidden sm:inline">Read the CV</span>
             </a>
+            {/* A plain <a>, like the card links: leaving /world is a full load, so the WebGL scene
+                is torn down rather than kept alive behind a client-side navigation. The rule only
+                started flagging this once /projects/[slug] existed. */}
+            {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
             <a href="/projects" className={link}>
                 <span className="sm:hidden">Projects</span>
                 <span className="hidden sm:inline">All projects</span>

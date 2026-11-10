@@ -34,7 +34,10 @@ export interface ProjectCallout {
 export const WORLD_ZONES = ["ferry", "uq", "gov", "site", "garage", "shed", "park"] as const;
 export type WorldZone = (typeof WORLD_ZONES)[number];
 
-/** Which existing field a /world card links out to. The URL itself is never repeated. */
+/**
+ * Which existing field a /world card links out to. The URL itself is never repeated.
+ * `projects` means the project's own case study page, `/projects/<slug>`.
+ */
 export const WORLD_LINKS = ["demo", "repo", "projects"] as const;
 export type WorldLinkKind = (typeof WORLD_LINKS)[number];
 
@@ -81,6 +84,11 @@ export interface Project {
     callouts?: ProjectCallout[];
     /** Optional: the project's card in /world. */
     world?: ProjectWorldCard;
+}
+
+/** The project's case study page. One place, so /projects and /world can't disagree. */
+export function caseStudyHref(slug: string): string {
+    return `/projects/${slug}`;
 }
 
 /** Filter options, derived from the content so a new category needs no code change. */

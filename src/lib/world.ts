@@ -5,7 +5,7 @@
  *
  * Client-safe: no `fs`. The /world page reads projects on the server and passes plain cards down.
  */
-import type { Project, WorldZone } from "./project-schema";
+import { caseStudyHref, type Project, type WorldZone } from "./project-schema";
 import { site } from "./site";
 
 export type WorldLink = { label: string; href: string };
@@ -122,7 +122,7 @@ export const GALLERY_PHOTOS: GalleryPhoto[] = [
 export function projectWorldCards(projects: Project[]): WorldCard[] {
     return projects.flatMap((p) => {
         if (!p.world) return [];
-        const href = p.world.link === "projects" ? "/projects" : p.world.link === "demo" ? p.demo! : p.repo!;
+        const href = p.world.link === "projects" ? caseStudyHref(p.slug) : p.world.link === "demo" ? p.demo! : p.repo!;
         return [
             {
                 id: p.slug,
