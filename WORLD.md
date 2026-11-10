@@ -455,7 +455,7 @@ further.
 | Item | Budget |
 | --- | --- |
 | `/` and `/projects` first-load JS | **Unchanged.** If either moves, something leaked. |
-| `/world` route JS | ≤ 350 kB gzip |
+| `/world` JS on top of the ~200 kB every route shares | ≤ 350 kB gzip (M0 measured ~233 kB) |
 | Scene GLB | ≤ 1.5 MB target, 2.5 MB hard ceiling |
 | Avatar (after the fix above) | ~1.2 MB |
 | Draw calls / triangles | < 80 / < 150k |
@@ -463,8 +463,10 @@ further.
 | Poster paint | < 1.5 s |
 | Interactive on 4G | ≤ 4.5 s |
 
-The kB figures are planning estimates, not measurements. Replace them with the real per-route numbers
-from `next build` after M0.
+The JS rows are measured from M0 onwards (§11). The rest are still planning estimates. **`next build`
+no longer prints per-route sizes.** Next 16 removed them (`02-guides/upgrading/version-16.md`), so
+measure in the browser instead: run `next start`, load each route, and sum the Resource Timing
+`encodedBodySize` of its scripts.
 
 **Assets:** single GLB per group, **meshopt over Draco** (a smaller decoder that's faster on weak ARM
 cores, and low-poly gains little from Draco), produced by `gltf-transform` (`dedup`, `join`, `weld`,
@@ -504,7 +506,7 @@ the reuse in §9.
 
 | | Milestone | Hours |
 | --- | --- | --- |
-| **M0** | **Gate.** A `<Canvas>` renders a spinning cube on `/world` under Turbopack and the React Compiler. A click fires. Prod build and Vercel deploy are green. Read the real per-route JS. | 4–6 |
+| **M0** | **Gate.** A `<Canvas>` renders a spinning cube on `/world` under Turbopack and the React Compiler. A click fires. Prod build and Vercel deploy are green. Measure per-route JS in the browser (§9). | 4–6 |
 | M1 | Ortho camera, slab, placeholder blocks, tap-to-move on a flat plane, click opens a DOM card | 10–14 |
 | M2 | Scene built from the kit, palette, baked light, idle motion | 15–25 |
 | M3 | Avatar ported, clip-only GLBs, flat relight, keyboard + d-pad + tap-to-move | 6–10 |
@@ -512,6 +514,33 @@ the reuse in §9.
 | M5 | Mobile performance pass, fallbacks, keyboard, screen reader, reduced motion | 12–18 |
 | M6 | Occlusion fade, easter egg, sound toggle, case study write-up | 8–12 |
 | | **Total** | **~63–97** |
+
+### M0 results (11 Nov 2026)
+
+**Passed locally.** `src/app/world/` has the Server page, the client shell with `ssr: false`, and a
+spinning cube. These are script bytes, gzip, measured on `next start` in the browser:
+
+| Route | Before | After |
+| --- | --- | --- |
+| `/` | 210.0 kB | 210.0 kB |
+| `/projects` | 199.8 kB | 199.8 kB |
+| `/about` | 199.4 kB | 199.4 kB |
+| `/world` | — | 432.7 kB in total. One 238.1 kB chunk (904 kB raw) is three + R3F. |
+
+- R3F renders under the vendored React canary with the compiler on. `useFrame` animates. Clicking the
+  cube counts, and clicking empty space doesn't. The `dpr` clamp holds: a 1024 px canvas gets a
+  1536 px backing store.
+- The three + R3F chunk falls inside the §3 estimate of 215–250 kB. Its size is consistent with R3F
+  pulling in the whole three namespace, so `optimizePackageImports` for `three` probably won't shrink
+  it. Revisit in M5 only if the budget gets tight.
+- `@react-three/drei` isn't installed yet because M0 didn't need it. Add it when M1 needs a specific
+  helper, and use deep imports only.
+- Pinned: `three@0.187.0`, `@react-three/fiber@9.8.2`, `@types/three@0.187.0`. No `react-reconciler`
+  was hoisted, and `npm audit` flags nothing new from them.
+- One console warning, `THREE.Clock: This module has been deprecated`. It comes from R3F's internals
+  on three 0.187, not this code. It's harmless and will go away when R3F moves to `THREE.Timer`.
+- **Not yet verified:** the Vercel deploy (needs a push), the reduced-motion branch (the test browser
+  can't emulate the media query) and a real phone.
 
 **Decide the asset kit before M1.** Ship M1 behind the unlisted URL within the first week, so
 something real exists on the internet early.
