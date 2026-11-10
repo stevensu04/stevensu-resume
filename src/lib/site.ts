@@ -8,8 +8,21 @@
  * Change the pitch here and it changes on every surface. See PLAN.md §1.
  */
 
+/**
+ * The site's public origin, used for canonical URLs and Open Graph (`src/app/layout.tsx`).
+ *
+ * 1. `NEXT_PUBLIC_SITE_URL`, if set, wins: the way to pin a custom domain explicitly.
+ * 2. On Vercel, `VERCEL_PROJECT_PRODUCTION_URL` (a system variable, set at build time on every
+ *    deployment, previews included) names the production domain. Without this step every live page
+ *    declared itself canonical at http://localhost:3000, which link previews and search engines
+ *    took at its word.
+ * 3. Locally, localhost.
+ *
+ * Server-only on purpose: only the root layout reads it, so non-public env vars are fine here.
+ */
 export const SITE_URL =
-    process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3000");
 
 export const site = {
     name: "Steven Su",
