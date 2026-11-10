@@ -681,6 +681,57 @@ Not yet:
 - Zone light-up on visit (M4), occlusion fade (M6) and the racquet on its fence (M6).
 - A real phone. The FPS numbers on a mid-range Android are the open M5 question.
 
+### M3 results (11 Nov 2026)
+
+**Passed locally** in dev and on `next start`. The blue box is gone and Steven walks the block.
+
+- **`public/world/steven.glb`** is built by `npm run world:avatar` (`scripts/build-world-avatar.mjs`)
+  from the DECO7381 optimised GLBs.
+  - It keeps one copy of the mesh and moves the Idle, Walk and Run clips onto that skeleton, matching
+    bones by name.
+  - The mesh is simplified from 28,166 to 9,310 triangles. UV seams stop it going lower.
+  - The texture is now a 256 px JPEG instead of a 2048 px WebP.
+  - **Result: 340 KiB, and 250 kB over the wire, against the 4.4 MB the storefront loaded.** Gzip
+    barely helps because the data is already meshopt-compressed.
+  - The texture step uses macOS `sips`, so the script is macOS-only. That's fine for a one-off asset
+    step.
+- **`scene/Avatar.tsx`** adapts Team 41's `StevenCharacter`. It keeps the clip cross-fade and the
+  rule that he stays hidden until posed. What changed:
+  - `useLoader` and a plain `AnimationMixer` replace drei, so drei is still not installed.
+  - The material is a flat `MeshBasicMaterial`, so the relight step is no longer needed.
+  - It uses the fixed rig body.
+  - `clipScale.ts` is ported unchanged, so he no longer grows 18 cm when he stops.
+- **Figure scale is 1.2**, so he stands about 2 m tall against Kenney's ~2.5 m doors. A soft contact
+  shadow sits under him, because a light-clothed figure on light pavement disappeared without one.
+- **Camera zoom:** about 34 m across on a desktop, so he's ~55 px tall, close to §6's 60–80 px. The
+  floor is 16 px/m on phones, where he's ~30 px tall.
+- **Input:**
+  - Tap-to-move works as before. A tap more than 14 m away makes him run at 4.4 m/s instead of
+    walking at 2.2 m/s.
+  - WASD and the arrow keys move relative to the view, and Shift runs. A held key cancels any tap
+    target. Arrow keys no longer scroll the page.
+  - Releasing keys on window blur stops him, so he doesn't keep walking.
+  - On coarse pointers there's a d-pad, Team 41's `storefront__touch` buttons with pointer capture.
+- **Fallback:** while `steven.glb` loads, the old box stands in. An error boundary, Team 41's
+  `AvatarBoundary`, keeps the box if the file fails.
+- **Reduced motion:** he holds the first frame of Idle and moves without a walk cycle.
+
+Measured:
+
+| | Budget (§9) | M3 |
+| --- | --- | --- |
+| Avatar | ~1.2 MB | 340 KiB, 250 kB over the wire |
+| Scene GLBs total | ≤ 1.5 MB | 627 KiB (kit + avatar), 403 kB over the wire |
+| `/world` JS on top of shared | ≤ 350 kB | ~290 kB (491.7 vs 201.7). SkeletonUtils and the avatar code added ~19 kB. **About 60 kB of headroom is left.** |
+| `/`, `/projects`, `/about` | unchanged | `/` is still 201.7 kB |
+
+Not yet:
+
+- **Walk-cycle speed versus ground speed.** The clips play at their authored rate. At 2.2 m/s his
+  feet slide a little. Tune `timeScale` per clip once it can be watched on a real screen at 60 fps.
+- The camera doesn't ease on Tab between objects yet. That's M5's keyboard pass.
+- A real phone, still.
+
 ---
 
 ## 12. Do these first (from `PLAN.md`)

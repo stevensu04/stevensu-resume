@@ -9,11 +9,12 @@ import Player from "./scene/Player";
 import CardAnchor from "./scene/CardAnchor";
 import type { Rect } from "./scene/KitInstances";
 import { clampToGround } from "./scene/walk";
+import { EMPTY_INPUT, KEY_MAP, type MovementInput } from "./scene/input";
 
 /**
  * The /world scene (WORLD.md §11). M1 gave it the orthographic camera, tap-to-move and DOM cards;
- * M2 the Kenney block, hand-made props and idle motion. The avatar arrives in M3; real card copy,
- * the counter and the tour in M4.
+ * M2 the Kenney block, hand-made props and idle motion; M3 the avatar, the keyboard and the d-pad.
+ * Real card copy, the counter and the tour arrive in M4.
  */
 export default function Scene() {
     // Steven starts at the ferry landing, where the career starts (§3).
@@ -25,6 +26,7 @@ export default function Scene() {
     const target = useRef(start.clone());
     const card = useRef<HTMLDivElement>(null);
     const solidsRef = useRef<Rect[]>([]);
+    const input = useRef<MovementInput>({ ...EMPTY_INPUT });
 
     const [open, setOpen] = useState<Zone | null>(null);
     const [hover, setHover] = useState<Zone | null>(null);
@@ -39,16 +41,41 @@ export default function Scene() {
         target.current.set(cx, 0, cz);
     };
 
-    // Q and E rotate the view; Escape closes the card (§10).
+    // Keyboard (§10): arrows and WASD move, Shift runs, Q and E rotate the view, Escape closes the
+    // card. Held keys are tracked as a set, so releasing one of two keys bound to the same move
+    // (W and ↑) doesn't stop him.
     useEffect(() => {
+        const pressed = new Set<string>();
+        const typing = (e: KeyboardEvent) =>
+            e.target instanceof HTMLElement && !!e.target.closest("input, textarea, select, [contenteditable='true']");
         const onKey = (e: KeyboardEvent) => {
-            if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-            if (e.key === "q" || e.key === "Q") setStep((s) => (s + 3) % 4);
-            else if (e.key === "e" || e.key === "E") setStep((s) => (s + 1) % 4);
+            if (typing(e) || e.metaKey || e.ctrlKey || e.altKey) return;
+            const control = KEY_MAP[e.code];
+            if (control) {
+                e.preventDefault(); // arrows would scroll the page
+                if (e.type === "keydown") pressed.add(e.code);
+                else pressed.delete(e.code);
+                input.current[control] = [...pressed].some((code) => KEY_MAP[code] === control);
+                return;
+            }
+            if (e.type !== "keydown") return;
+            if (e.code === "KeyQ") setStep((s) => (s + 3) % 4);
+            else if (e.code === "KeyE") setStep((s) => (s + 1) % 4);
             else if (e.key === "Escape") setOpen(null);
         };
+        // A key released while the window is unfocused never fires keyup: don't keep walking.
+        const release = () => {
+            pressed.clear();
+            Object.assign(input.current, EMPTY_INPUT);
+        };
         window.addEventListener("keydown", onKey);
-        return () => window.removeEventListener("keydown", onKey);
+        window.addEventListener("keyup", onKey);
+        window.addEventListener("blur", release);
+        return () => {
+            window.removeEventListener("keydown", onKey);
+            window.removeEventListener("keyup", onKey);
+            window.removeEventListener("blur", release);
+        };
     }, []);
 
     // Leaving the page with a block hovered must not leave the pointer cursor stuck on <body>.
@@ -84,13 +111,13 @@ export default function Scene() {
                     />
                     <Ready onReady={() => setReady(true)} />
                 </Suspense>
-                <Player position={position} target={target} solidsRef={solidsRef} step={step} still={still} />
+                <Player position={position} target={target} input={input} solidsRef={solidsRef} step={step} still={still} />
                 <CardAnchor zone={open} card={card} />
             </Canvas>
 
             <div className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between gap-3 p-4">
                 <p className="pointer-events-auto rounded-full bg-white/90 px-4 py-1.5 text-xs font-semibold text-gray-700 shadow-sm">
-                    {hover ? zoneLabel(hover) : "Tap the ground to walk · tap a block to open it"}
+                    {hover ? zoneLabel(hover) : "Tap the ground to walk · tap a building to open it"}
                 </p>
                 <div className="pointer-events-auto flex gap-2">
                     <button
@@ -112,6 +139,8 @@ export default function Scene() {
                 </div>
             </div>
 
+            <DPad inputRef={input} />
+
             {!ready && (
                 <p role="status" className="absolute inset-x-0 top-[62%] text-center text-sm font-medium text-gray-500">
                     Loading the block…
@@ -119,6 +148,46 @@ export default function Scene() {
             )}
 
             {open && <ZoneCard key={open.id} zone={open} cardRef={card} onClose={() => setOpen(null)} />}
+        </div>
+    );
+}
+
+/**
+ * The secondary touch input (§0: tap-to-move first, d-pad second), shown on coarse pointers only.
+ * Directions are relative to the view, like the arrow keys. Adapted from DECO7381 Team 41's
+ * `storefront__touch` buttons, with permission: pointer capture keeps a held button pressed even
+ * when the thumb slides off it.
+ */
+function DPad({ inputRef }: { inputRef: React.RefObject<MovementInput> }) {
+    const buttons = [
+        ["forward", "↑", "Walk away from the camera", "col-start-2 row-start-1"],
+        ["left", "←", "Walk left", "col-start-1 row-start-2"],
+        ["right", "→", "Walk right", "col-start-3 row-start-2"],
+        ["backward", "↓", "Walk towards the camera", "col-start-2 row-start-3"],
+    ] as const;
+    const set = (control: keyof MovementInput, on: boolean) => {
+        inputRef.current[control] = on;
+    };
+    return (
+        <div aria-label="Movement controls" role="group" className="absolute bottom-4 right-4 hidden select-none grid-cols-3 grid-rows-3 gap-1 pointer-coarse:grid">
+            {buttons.map(([control, icon, label, place]) => (
+                <button
+                    key={control}
+                    type="button"
+                    aria-label={label}
+                    className={`${place} h-12 w-12 touch-none rounded-full bg-white/90 text-lg font-bold text-gray-700 shadow-sm active:bg-blue-600 active:text-white`}
+                    onPointerDown={(e) => {
+                        e.preventDefault();
+                        e.currentTarget.setPointerCapture(e.pointerId);
+                        set(control, true);
+                    }}
+                    onPointerUp={() => set(control, false)}
+                    onPointerCancel={() => set(control, false)}
+                    onLostPointerCapture={() => set(control, false)}
+                >
+                    {icon}
+                </button>
+            ))}
         </div>
     );
 }

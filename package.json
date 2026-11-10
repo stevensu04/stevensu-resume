@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "world:kit": "node scripts/build-world-kit.mjs"
+    "world:kit": "node scripts/build-world-kit.mjs",
+    "world:avatar": "node scripts/build-world-avatar.mjs"
   },
   "dependencies": {
     "@react-three/fiber": "9.8.2",
