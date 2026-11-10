@@ -1,30 +1,53 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type RefObject } from "react";
 import type { ThreeEvent } from "@react-three/fiber";
+import { PLACEMENTS, PROP_SOLIDS, SKYLINE } from "../placements";
 import { RIVER, SLAB, ZONES, type Zone } from "../zones";
-import { ACCENT, shadedBox } from "./shading";
+import KitInstances, { placementTransform, type Rect } from "./KitInstances";
+import Props, { PALETTE } from "./Props";
+import { shadedBox } from "./shading";
+import { useKit } from "./useKit";
+
+const SKY_TINT = { color: "#d3dceb", opacity: 0.7 };
+const RIVERBED = -0.8;
 
 /**
- * Everything that stands still: the slab, the river, the Taipei skyline across it, and one grey
- * block per zone. M2 swaps the blocks for Kenney models; the click contract stays the same.
+ * The block (WORLD.md §3, §6): the slab, the Kenney kit, the hand-made props and an invisible hit
+ * area per zone. Scenery never takes part in picking; only the ground and the zones do.
  */
 export default function Stage({
     skyline,
+    still,
+    solidsRef,
     onGround,
     onZone,
     onHover,
 }: {
     /** Draw Taipei across the river. Off when the camera looks from the river side (see Scene). */
     skyline: boolean;
+    still: boolean;
+    /** Filled here, read by Player: footprints Steven walks round. */
+    solidsRef: RefObject<Rect[]>;
     onGround: (x: number, z: number) => void;
     onZone: (zone: Zone) => void;
     onHover: (zone: Zone | null) => void;
 }) {
-    const slabW = SLAB.maxX - SLAB.minX;
-    const slabD = SLAB.maxZ - SLAB.minZ;
-    const slab = useMemo(() => shadedBox(slabW, 2, slabD), [slabW, slabD]);
-    const riverD = RIVER.maxZ - RIVER.minZ;
+    const kit = useKit();
+
+    // Solid footprints come from the kit's own bounding boxes, so they always match the models.
+    useEffect(() => {
+        solidsRef.current = [
+            ...PLACEMENTS.filter((p) => p.solid).map((p) => placementTransform(p, kit.get(p.model)!).footprint),
+            ...PROP_SOLIDS.map(({ x, z, w, d }) => ({ minX: x - w / 2, maxX: x + w / 2, minZ: z - d / 2, maxZ: z + d / 2 })),
+        ];
+    }, [kit, solidsRef]);
+
+    const width = SLAB.maxX - SLAB.minX;
+    const landD = SLAB.maxZ - RIVER.maxZ;
+    const bedD = RIVER.maxZ - RIVER.minZ;
+    const land = useMemo(() => shadedBox(width, 2, landD), [width, landD]);
+    const bed = useMemo(() => shadedBox(width, 2 + RIVERBED, bedD), [width, bedD]);
 
     const walk = (e: ThreeEvent<MouseEvent>) => {
         e.stopPropagation();
@@ -33,70 +56,57 @@ export default function Stage({
 
     return (
         <group>
-            {/* The slab: the diorama's tabletop. Clicks anywhere on it walk. */}
-            <mesh geometry={slab} position={[0, -1, 0]} onClick={walk}>
-                <meshBasicMaterial vertexColors color="#d6d3c4" />
+            {/* The slab: land at y = 0, the riverbed lower so the water sits below the bank. */}
+            <mesh geometry={land} position={[0, -1, (RIVER.maxZ + SLAB.maxZ) / 2]} onClick={walk}>
+                <meshBasicMaterial vertexColors color="#d9d4c7" />
             </mesh>
-            {/* The Brisbane River. Clicking it walks to the nearest bank (the target is clamped). */}
-            <mesh position={[0, 0.02, (RIVER.minZ + RIVER.maxZ) / 2]} rotation-x={-Math.PI / 2} onClick={walk}>
-                <planeGeometry args={[slabW, riverD]} />
-                <meshBasicMaterial color="#7cc4e4" />
+            <mesh geometry={bed} position={[0, -1 + RIVERBED / 2, (RIVER.minZ + RIVER.maxZ) / 2]} onClick={walk}>
+                <meshBasicMaterial vertexColors color="#8d8a80" />
             </mesh>
-            {skyline && <TaipeiSkyline />}
+
+            <KitInstances kit={kit} placements={PLACEMENTS} />
+            {skyline && <KitInstances kit={kit} placements={SKYLINE} tint={SKY_TINT} />}
+            <Props still={still} />
+
             {ZONES.map((zone) => (
-                <ZoneBlock key={zone.id} zone={zone} onZone={onZone} onHover={onHover} />
+                <ZoneHit key={zone.id} zone={zone} onZone={onZone} onHover={onHover} />
             ))}
         </group>
     );
 }
 
-function ZoneBlock({ zone, onZone, onHover }: { zone: Zone; onZone: (z: Zone) => void; onHover: (z: Zone | null) => void }) {
+/** An invisible box over the zone that catches clicks, and a soft accent patch on hover. */
+function ZoneHit({ zone, onZone, onHover }: { zone: Zone; onZone: (z: Zone) => void; onHover: (z: Zone | null) => void }) {
     const [hovered, setHovered] = useState(false);
-    const geo = useMemo(() => shadedBox(zone.w, zone.h, zone.d), [zone.w, zone.h, zone.d]);
     return (
-        <mesh
-            geometry={geo}
-            position={[zone.x, zone.h / 2, zone.z]}
-            onClick={(e) => {
-                e.stopPropagation();
-                onZone(zone);
-            }}
-            onPointerOver={(e) => {
-                e.stopPropagation();
-                setHovered(true);
-                onHover(zone);
-                document.body.style.cursor = "pointer";
-            }}
-            onPointerOut={() => {
-                setHovered(false);
-                onHover(null);
-                document.body.style.cursor = "";
-            }}
-        >
-            <meshBasicMaterial vertexColors color={hovered ? ACCENT : zone.number === null ? "#c9ccd3" : "#b8bcc6"} />
-        </mesh>
-    );
-}
-
-/**
- * Backdrop only (§3: "visible, not walkable"), so it never takes part in picking. Fixed heights,
- * not random ones: the scene renders the same every time, and a screenshot is reproducible.
- */
-const SKYLINE: [number, number, number][] = [
-    [-34, 9, 4], [-27, 14, 5], [-20, 7, 4], [-12, 18, 5], [-5, 11, 4],
-    [3, 34, 6], // the tall one: Taipei 101 stand-in, generic on purpose (§4 rule 4)
-    [11, 13, 5], [18, 8, 4], [25, 16, 5], [32, 10, 4],
-];
-
-function TaipeiSkyline() {
-    const geos = useMemo(() => SKYLINE.map(([, h, w]) => shadedBox(w, h, w)), []);
-    return (
-        <group position={[0, 0, SLAB.minZ - 14]}>
-            {SKYLINE.map(([x, h], i) => (
-                <mesh key={x} geometry={geos[i]} position={[x, h / 2 - 2, 0]} raycast={() => null}>
-                    <meshBasicMaterial vertexColors color="#a9b4c8" transparent opacity={0.75} />
+        <group position={[zone.x, 0, zone.z]}>
+            <mesh
+                position={[0, zone.h / 2, 0]}
+                visible={false}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    onZone(zone);
+                }}
+                onPointerOver={(e) => {
+                    e.stopPropagation();
+                    setHovered(true);
+                    onHover(zone);
+                    document.body.style.cursor = "pointer";
+                }}
+                onPointerOut={() => {
+                    setHovered(false);
+                    onHover(null);
+                    document.body.style.cursor = "";
+                }}
+            >
+                <boxGeometry args={[zone.w, zone.h, zone.d]} />
+            </mesh>
+            {hovered && (
+                <mesh position={[0, 0.06, 0]} rotation-x={-Math.PI / 2} raycast={() => null}>
+                    <planeGeometry args={[zone.w, zone.d]} />
+                    <meshBasicMaterial color={PALETTE.accent} transparent opacity={0.16} depthWrite={false} />
                 </mesh>
-            ))}
+            )}
         </group>
     );
 }

@@ -502,10 +502,15 @@ no longer prints per-route sizes.** Next 16 removed them (`02-guides/upgrading/v
 measure in the browser instead: run `next start`, load each route, and sum the Resource Timing
 `encodedBodySize` of its scripts.
 
-**Assets:** single GLB per group, **meshopt over Draco** (a smaller decoder that's faster on weak ARM
-cores, and low-poly gains little from Draco), produced by `gltf-transform` (`dedup`, `join`, `weld`,
-`meshopt`, `resize`) into `public/world/`. Scenery repeats use `InstancedMesh`. Load in order: poster,
-then ground and buildings, then props and avatar behind a second `Suspense` boundary.
+**Assets:** **meshopt over Draco**, because its decoder is smaller and faster on weak ARM cores, and
+low-poly models gain little from Draco. The output goes into `public/world/`. Scenery repeats use
+`InstancedMesh`. Load in this order: poster, then ground and buildings, then props and the avatar
+behind a second `Suspense` boundary.
+
+- **Kit:** `npm run world:kit` (`scripts/build-world-kit.mjs`) reads the four Kenney zips from
+  `~/Downloads`, or from a path you pass it. It keeps only the models the block uses and writes
+  `public/world/kit.glb`: one named node per model, run through `dedup`, `prune`, `weld`, `reorder`,
+  `quantize` and meshopt. Rerun it whenever `placements.ts` needs a model that isn't in the kit yet.
 
 ---
 
@@ -623,6 +628,58 @@ Decisions made while building:
 
 Not in M1, per §11: the poster (cards render once the scene loads), the counter, the tour, real card
 copy (M4), WASD and d-pad (M3), the screen-reader list and focus trap (M5).
+
+### M2 results (11 Nov 2026)
+
+**Passed locally** in dev and on `next start`. The grey blocks are gone. The block is now built from
+the Kenney kit plus hand-made props.
+
+- **`public/world/kit.glb`:** 36 models in 4 materials (one colormap per kit). The file is 291 KiB,
+  and 153 kB goes over the wire with gzip. That's about a tenth of the 1.5 MB scene budget.
+- **`placements.ts`:** every model placement, in metres. A placement names a model, its centre and
+  quarter turns. The kit's own bounding box stands the model on the ground and gives its collision
+  footprint. The file can't be called `layout.ts`, because Next would treat that as the route's
+  layout.
+- **`scene/KitInstances.tsx`:** one `InstancedMesh` per model part. **`scene/Props.tsx`:** the
+  hand-made parts.
+  - Pier, CityCat-style ferry, StarLens shutter, frosted door with padlock, volunteer and exit
+    noticeboards, building-site core with scaffolding and crane, arcade cabinet, park grass, blueprint
+    table and two plinths.
+  - Every static box is merged into one mesh, with colour and light both baked into vertex colours.
+- **Honesty grammar (§4) in geometry:**
+  - EventNow and Eco Router: open, full buildings.
+  - StarLens: shuttered. Finance Forms: frosted and padlocked.
+  - Formosa Bauhaus: a concrete core, scaffolding and a crane.
+  - ParkEase and JourneyMate: scale models on plinths.
+  - BrisPulse: a translucent wireframe on a blueprint table.
+- **Idle motion (§6):**
+  - The river swells in a vertex shader.
+  - A ferry crosses every 30 s and spends 8 s at the pier.
+  - The crane's jib turns, and the arcade screen flickers softly.
+  - All of it stops under reduced motion.
+  - Trees don't sway yet. They're instanced, so swaying needs a shader. That's left for M6.
+- **Walking:** Steven slides round building and prop footprints, can walk out onto the pier, and
+  clicking the river clamps his target to the bank. Tapping a zone opens its card and walks him to a
+  point just south of it.
+- **Taipei** uses Kenney's 188-triangle low-detail towers, scaled, tinted towards the sky, and set
+  further back. It still hides when the camera faces it from the river side.
+- **Loading:** a "Loading the block…" status shows until the kit has mounted.
+
+Measured:
+
+| | Budget (§9) | M2 |
+| --- | --- | --- |
+| Draw calls | < 80 | 45, down from 91 before the props were merged |
+| Triangles | < 150k | 23,179 |
+| Scene GLB | ≤ 1.5 MB | 291 KiB (153 kB over the wire) |
+| `/world` JS on top of shared | ≤ 350 kB | ~271 kB (472.6 vs 201.7). GLTFLoader and the meshopt decoder added ~26 kB. |
+| `/`, `/projects`, `/about` | unchanged | `/` is still 201.7 kB |
+
+Not yet:
+
+- The E.SUN sign text and any lettering. That needs a font, and comes with the M4 cards.
+- Zone light-up on visit (M4), occlusion fade (M6) and the racquet on its fence (M6).
+- A real phone. The FPS numbers on a mid-range Android are the open M5 question.
 
 ---
 

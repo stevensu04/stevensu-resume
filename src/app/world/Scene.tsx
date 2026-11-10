@@ -1,17 +1,19 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Vector3 } from "three";
-import { ZONES, WALKABLE, standPoint, type Zone } from "./zones";
+import { ZONES, standPoint, type Zone } from "./zones";
 import Stage from "./scene/Stage";
 import Player from "./scene/Player";
 import CardAnchor from "./scene/CardAnchor";
+import type { Rect } from "./scene/KitInstances";
+import { clampToGround } from "./scene/walk";
 
 /**
- * M1 (WORLD.md §11): orthographic camera, the slab, placeholder blocks, tap-to-move on a flat
- * plane, and a click that opens a DOM card. Kenney models replace the blocks in M2; the avatar
- * arrives in M3; real card copy, the counter and the tour in M4.
+ * The /world scene (WORLD.md §11). M1 gave it the orthographic camera, tap-to-move and DOM cards;
+ * M2 the Kenney block, hand-made props and idle motion. The avatar arrives in M3; real card copy,
+ * the counter and the tour in M4.
  */
 export default function Scene() {
     // Steven starts at the ferry landing, where the career starts (§3).
@@ -22,19 +24,19 @@ export default function Scene() {
     const position = useRef(start.clone());
     const target = useRef(start.clone());
     const card = useRef<HTMLDivElement>(null);
+    const solidsRef = useRef<Rect[]>([]);
 
     const [open, setOpen] = useState<Zone | null>(null);
     const [hover, setHover] = useState<Zone | null>(null);
     const [step, setStep] = useState(0);
+    // False until kit.glb has loaded and the block has mounted (Stage suspends until then).
+    const [ready, setReady] = useState(false);
     // The scene only exists in the browser (`ssr: false`), so `window` is safe to read here.
     const [still] = useState(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
     const walkTo = (x: number, z: number) => {
-        target.current.set(
-            Math.min(Math.max(x, WALKABLE.minX), WALKABLE.maxX),
-            0,
-            Math.min(Math.max(z, WALKABLE.minZ), WALKABLE.maxZ),
-        );
+        const [cx, cz] = clampToGround(x, z);
+        target.current.set(cx, 0, cz);
     };
 
     // Q and E rotate the view; Escape closes the card (§10).
@@ -61,23 +63,28 @@ export default function Scene() {
                 aria-hidden
                 onPointerMissed={() => setOpen(null)}
             >
-                <Stage
-                    // Steps 1 and 2 put the camera on the river side, where the skyline would stand
-                    // between the camera and the block. It is a backdrop, so it only exists behind.
-                    skyline={step === 0 || step === 3}
-                    onGround={(x, z) => {
-                        setOpen(null);
-                        walkTo(x, z);
-                    }}
-                    onZone={(zone) => {
-                        // Never gate information (§2): the card opens at once, and Steven walks over.
-                        setOpen(zone);
-                        const [x, z] = standPoint(zone);
-                        walkTo(x, z);
-                    }}
-                    onHover={setHover}
-                />
-                <Player position={position} target={target} step={step} still={still} />
+                <Suspense fallback={null}>
+                    <Stage
+                        still={still}
+                        solidsRef={solidsRef}
+                        // Steps 1 and 2 put the camera on the river side, where the skyline would stand
+                        // between the camera and the block. It is a backdrop, so it only exists behind.
+                        skyline={step === 0 || step === 3}
+                        onGround={(x, z) => {
+                            setOpen(null);
+                            walkTo(x, z);
+                        }}
+                        onZone={(zone) => {
+                            // Never gate information (§2): the card opens at once, and Steven walks over.
+                            setOpen(zone);
+                            const [x, z] = standPoint(zone);
+                            walkTo(x, z);
+                        }}
+                        onHover={setHover}
+                    />
+                    <Ready onReady={() => setReady(true)} />
+                </Suspense>
+                <Player position={position} target={target} solidsRef={solidsRef} step={step} still={still} />
                 <CardAnchor zone={open} card={card} />
             </Canvas>
 
@@ -105,9 +112,21 @@ export default function Scene() {
                 </div>
             </div>
 
+            {!ready && (
+                <p role="status" className="absolute inset-x-0 top-[62%] text-center text-sm font-medium text-gray-500">
+                    Loading the block…
+                </p>
+            )}
+
             {open && <ZoneCard key={open.id} zone={open} cardRef={card} onClose={() => setOpen(null)} />}
         </div>
     );
+}
+
+/** Mounts inside the Suspense boundary, so its effect runs once everything above it has loaded. */
+function Ready({ onReady }: { onReady: () => void }) {
+    useEffect(() => onReady(), [onReady]);
+    return null;
 }
 
 function zoneLabel(zone: Zone): string {
@@ -146,9 +165,9 @@ function ZoneCard({ zone, cardRef, onClose }: { zone: Zone; cardRef: React.RefOb
                 </button>
             </div>
             <p className="mt-2 text-sm leading-relaxed text-gray-600">
-                {zone.number === null ? "A facility, not a zone." : `Zone ${zone.number} of 7.`} Placeholder block: the
-                real model arrives in M2 and the card copy in M4.
+                {zone.number === null ? "A facility, not a zone." : `Zone ${zone.number} of 7.`} The card copy arrives in M4.
             </p>
         </div>
     );
 }
+

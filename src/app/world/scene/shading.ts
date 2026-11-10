@@ -1,4 +1,5 @@
-import { BoxGeometry, BufferAttribute, Color } from "three";
+import { BoxGeometry, BufferAttribute, Color, type BufferGeometry } from "three";
+import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 
 /**
  * A box whose faces carry fixed light values in vertex colours: the "baked" look WORLD.md §6 asks
@@ -21,3 +22,31 @@ export function shadedBox(w: number, h: number, d: number): BoxGeometry {
 
 /** Site accent (Tailwind blue-600), used for Steven and for hover. */
 export const ACCENT = new Color("#2563eb");
+
+export type BoxSpec = {
+    /** Centre, metres. */
+    at: [number, number, number];
+    size: [number, number, number];
+    color: string;
+    rotY?: number;
+};
+
+/**
+ * Many shaded boxes as one geometry, colour baked into the vertices alongside the light. A whole
+ * set of hand-made props then costs one draw call with `<meshBasicMaterial vertexColors />`
+ * (§9 budget: < 80 draw calls).
+ */
+export function mergeBoxes(specs: BoxSpec[]): BufferGeometry {
+    const parts = specs.map(({ at, size, color, rotY = 0 }) => {
+        const geo = shadedBox(...size);
+        const tint = new Color(color);
+        const c = geo.attributes.color;
+        for (let i = 0; i < c.count; i++) c.setXYZ(i, c.getX(i) * tint.r, c.getY(i) * tint.g, c.getZ(i) * tint.b);
+        if (rotY) geo.rotateY(rotY);
+        geo.translate(...at);
+        return geo;
+    });
+    const merged = mergeGeometries(parts);
+    parts.forEach((p) => p.dispose());
+    return merged;
+}

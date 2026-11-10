@@ -4,6 +4,8 @@ import { useMemo, useRef, type RefObject } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Vector3, type Group, type Mesh } from "three";
 import { ACCENT, shadedBox } from "./shading";
+import type { Rect } from "./KitInstances";
+import { canStand } from "./walk";
 
 /** Steven walks at an easy 2.2 m/s (§3) and is 1.72 m tall. A capsule stands in until M3. */
 const SPEED = 2.2;
@@ -22,11 +24,14 @@ const offset = new Vector3();
 export default function Player({
     position,
     target,
+    solidsRef,
     step,
     still,
 }: {
     position: RefObject<Vector3>;
     target: RefObject<Vector3>;
+    /** Footprints to walk round (filled by Stage once the kit has loaded). */
+    solidsRef: RefObject<Rect[]>;
     /** Camera azimuth in 90° steps (§6: free orbit destroys the isometric look). */
     step: number;
     /** prefers-reduced-motion: no walking animation, no camera easing (§10). */
@@ -48,8 +53,15 @@ export default function Player({
         toward.subVectors(t, p).setY(0);
         const dist = toward.length();
         if (dist > 0.01) {
-            if (still) p.copy(t);
-            else p.addScaledVector(toward.normalize(), Math.min(dist, SPEED * dt));
+            const len = still ? dist : Math.min(dist, SPEED * dt);
+            toward.normalize();
+            const nx = p.x + toward.x * len;
+            const nz = p.z + toward.z * len;
+            // Straight line; slide along whatever is in the way; give up when stuck.
+            if (canStand(nx, nz, solidsRef.current)) p.set(nx, 0, nz);
+            else if (canStand(nx, p.z, solidsRef.current) && Math.abs(toward.x) > 0.05) p.setX(nx);
+            else if (canStand(p.x, nz, solidsRef.current) && Math.abs(toward.z) > 0.05) p.setZ(nz);
+            else t.copy(p);
             if (body.current) body.current.rotation.y = Math.atan2(toward.x, toward.z);
         }
         if (body.current) body.current.position.copy(p);
