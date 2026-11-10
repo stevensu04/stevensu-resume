@@ -1,7 +1,8 @@
 "use client";
 
 import { Suspense, useEffect, useMemo, useRef, useState, type RefObject } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import Image from "next/image";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Vector3 } from "three";
 import type { WorldCard } from "@/lib/world";
 import { ZONES } from "./zones";
@@ -13,7 +14,9 @@ import type { Rect } from "./scene/KitInstances";
 import { clampToGround } from "./scene/walk";
 import { EMPTY_INPUT, KEY_MAP, type MovementInput } from "./scene/input";
 import { EXPLORE_ZONE_IDS, exploreUniforms } from "./scene/explore";
-import { Counter, DPad, Intro, OutLinks, TourBar, WorldCardView } from "./ui";
+import { Counter, DPad, OutLinks, TourBar, WorldCardView } from "./ui";
+import FocusAnchor from "./scene/FocusAnchor";
+import poster from "./poster.webp";
 
 /** During the tour Steven moves at 1.4× his normal pace: nine stops in about 65 s. */
 const TOUR_PACE = 1.4;
@@ -31,8 +34,22 @@ const OBJECT_BY_ID = new Map(OBJECTS.map((o) => [o.id, o]));
  *  M3  the avatar, keyboard and d-pad
  *  M4  real cards from content, explorer counter and light-up, Gallery unlock, the guided tour
  */
-export default function Scene({ cards }: { cards: WorldCard[] }) {
+export default function Scene({
+    cards,
+    start: startMode,
+    onFallback,
+}: {
+    cards: WorldCard[];
+    /** Which poster button brought the visitor in (§2). */
+    start: "tour" | "walk";
+    /** The device can't keep up: WorldShell swaps the scene for the list (§10). */
+    onFallback: () => void;
+}) {
     const cardById = useMemo(() => new Map(cards.map((c) => [c.id, c])), [cards]);
+    // The scene only exists in the browser (`ssr: false`), so `window` is safe to read here.
+    // `?poster` (development only) renders the still frame that becomes the poster image: the whole
+    // block, in full colour, nothing moving, no UI. See WORLD.md "M5 results".
+    const [posterMode] = useState(() => process.env.NODE_ENV === "development" && new URLSearchParams(window.location.search).has("poster"));
 
     // Steven starts on the ferry landing's side of the street, where the career starts (§3).
     const [start] = useState(() => new Vector3(-26, 0, -10.8));
@@ -46,14 +63,20 @@ export default function Scene({ cards }: { cards: WorldCard[] }) {
     const [open, setOpen] = useState<string | null>(null);
     const [hover, setHover] = useState<string | null>(null);
     const [step, setStep] = useState(0);
-    const [explored, setExplored] = useState<string[]>([]);
-    const [intro, setIntro] = useState(true);
+    const [explored, setExplored] = useState<string[]>(() => (posterMode ? EXPLORE_ZONE_IDS : []));
     const [tour, setTour] = useState<{ index: number; ms: number } | null>(null);
     const [paused, setPaused] = useState(false);
+    // Keyboard focus on an object (§10): the camera eases to it and a ring marks it.
+    const [focused, setFocused] = useState<string | null>(null);
+    const lookAt = useRef<Vector3 | null>(null);
+    const ring = useRef<HTMLDivElement>(null);
+    // No frames while the tab is hidden or the scene is scrolled out of view (§10).
+    const wrapper = useRef<HTMLDivElement>(null);
+    const [onScreen, setOnScreen] = useState(true);
     // False until kit.glb has loaded and the block has mounted (Stage suspends until then).
     const [ready, setReady] = useState(false);
     // The scene only exists in the browser (`ssr: false`), so `window` is safe to read here.
-    const [still] = useState(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    const [still] = useState(() => posterMode || window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
     const explore = (zone: string) => setExplored((prev) => (prev.includes(zone) || !EXPLORE_ZONE_IDS.includes(zone) ? prev : [...prev, zone]));
 
@@ -93,7 +116,6 @@ export default function Scene({ cards }: { cards: WorldCard[] }) {
         const distance = Math.hypot(x - position.current.x, z - position.current.z);
         const travel = distance / ((distance > 14 ? RUN_SPEED : WALK_SPEED) * TOUR_PACE);
         pace.current = TOUR_PACE;
-        setIntro(false);
         setTour({ index, ms: (travel + TOUR_DWELL) * 1000 });
         openCard(id);
     };
@@ -123,7 +145,6 @@ export default function Scene({ cards }: { cards: WorldCard[] }) {
                     pressed.add(e.code);
                     setTour(null);
                     pace.current = 1;
-                    setIntro(false);
                 } else pressed.delete(e.code);
                 input.current[control] = [...pressed].some((code) => KEY_MAP[code] === control);
                 return;
@@ -148,6 +169,23 @@ export default function Scene({ cards }: { cards: WorldCard[] }) {
         };
     }, []);
 
+    useEffect(() => {
+        const el = wrapper.current;
+        if (!el) return;
+        let inView = true;
+        const update = () => setOnScreen(inView && document.visibilityState === "visible");
+        const observer = new IntersectionObserver(([entry]) => {
+            inView = entry.isIntersecting;
+            update();
+        });
+        observer.observe(el);
+        document.addEventListener("visibilitychange", update);
+        return () => {
+            observer.disconnect();
+            document.removeEventListener("visibilitychange", update);
+        };
+    }, []);
+
     // Leaving the page with an object hovered must not leave the pointer cursor stuck on <body>.
     useEffect(() => () => void (document.body.style.cursor = ""), []);
 
@@ -156,10 +194,14 @@ export default function Scene({ cards }: { cards: WorldCard[] }) {
     const galleryOpen = explored.length === EXPLORE_ZONE_IDS.length;
 
     return (
-        <div className="relative h-[calc(100svh-5rem)] min-h-[480px] w-full touch-manipulation overflow-hidden bg-[#eef1f5]">
+        <div ref={wrapper} className="relative h-[calc(100svh-5rem)] min-h-[480px] w-full touch-manipulation overflow-hidden bg-[#eef1f5]">
+            {/* The poster stays behind the transparent canvas until the block has loaded. */}
+            {!ready && <Image src={poster} alt="" fill sizes="100vw" className="object-cover" />}
             <Canvas
+                frameloop={onScreen ? "always" : "never"}
                 orthographic
-                dpr={[1, 1.5]}
+                dpr={posterMode ? 2 : [1, 1.5]}
+                gl={{ preserveDrawingBuffer: posterMode }}
                 camera={{ zoom: 20, near: 1, far: 400, position: [80, 80, 80] }}
                 aria-hidden
                 onPointerMissed={() => setOpen(null)}
@@ -173,25 +215,33 @@ export default function Scene({ cards }: { cards: WorldCard[] }) {
                         skyline={step === 0 || step === 3}
                         onGround={(x, z) => {
                             setOpen(null);
-                            setIntro(false);
                             endTour();
                             walkTo(x, z);
                         }}
                         onObject={(object) => {
-                            setIntro(false);
                             endTour();
                             openCard(object.id);
                         }}
                         onHover={(o) => setHover(o?.id ?? null)}
                     />
-                    <Ready onReady={() => setReady(true)} />
+                    <Ready
+                        onReady={() => {
+                            if (ready) return;
+                            setReady(true);
+                            if (startMode === "tour" && !posterMode) goToStop(0);
+                        }}
+                    />
                 </Suspense>
-                <Player position={position} target={target} input={input} pace={pace} solidsRef={solidsRef} step={step} still={still} />
+                <Player position={position} target={target} input={input} pace={pace} solidsRef={solidsRef} step={step} still={still} overview={posterMode} lookAt={lookAt} />
+                <FocusAnchor object={focused ? (OBJECT_BY_ID.get(focused) ?? null) : null} ring={ring} />
+                {!posterMode && <Watchdog onSlow={onFallback} />}
                 <CardAnchor object={open ? (OBJECT_BY_ID.get(open) ?? null) : null} card={card} />
                 <ZoneWatcher position={position} onEnter={explore} />
                 <ExploreFade explored={explored} still={still} />
             </Canvas>
 
+            {!posterMode && (
+            <>
             {/* Phones: links and rotation on the first row, the hint or tour bar under them. */}
             <div className="pointer-events-none absolute inset-x-0 top-0 flex flex-col-reverse items-start gap-2 p-4 sm:flex-row sm:justify-between">
                 {tour ? (
@@ -219,6 +269,41 @@ export default function Scene({ cards }: { cards: WorldCard[] }) {
                 </div>
             </div>
 
+            {/* Tab walks the objects in route order (§10). The buttons are visually hidden; the ring
+                over the object is what shows focus, and the camera eases there. Enter opens. */}
+            <ol aria-label="Things to open, in route order" className="sr-only">
+                {OBJECTS.map((o) => {
+                    const c = cardById.get(o.id);
+                    return (
+                        <li key={o.id}>
+                            <button
+                                type="button"
+                                data-object={o.id}
+                                onFocus={() => {
+                                    setFocused(o.id);
+                                    lookAt.current = new Vector3(o.x, 0, o.z);
+                                }}
+                                onBlur={() => {
+                                    setFocused(null);
+                                    lookAt.current = null;
+                                }}
+                                onClick={() => {
+                                    endTour();
+                                    openCard(o.id);
+                                }}
+                            >
+                                {c?.title}
+                            </button>
+                        </li>
+                    );
+                })}
+            </ol>
+            <div
+                ref={ring}
+                aria-hidden
+                className={`pointer-events-none absolute left-[var(--ring-x)] top-[var(--ring-y)] h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] border-blue-600 bg-blue-600/10 ${focused ? "" : "hidden"}`}
+            />
+
             <Counter explored={explored.length} total={EXPLORE_ZONE_IDS.length} />
             <DPad inputRef={input} />
 
@@ -228,15 +313,10 @@ export default function Scene({ cards }: { cards: WorldCard[] }) {
                 </p>
             )}
 
-            {ready && intro && !openedCard && (
-                <Intro
-                    onTour={() => goToStop(0)}
-                    onWalk={() => setIntro(false)}
-                />
-            )}
-
             {openedCard && (
                 <WorldCardView key={openedCard.id} card={openedCard} cardRef={card} galleryOpen={galleryOpen} onClose={() => setOpen(null)} />
+            )}
+            </>
             )}
         </div>
     );
@@ -284,6 +364,38 @@ function ExploreFade({ explored, still }: { explored: string[]; still: boolean }
             const goal = explored.includes(id) ? 1 : 0;
             lit[i] = still ? goal : lit[i] + (goal - lit[i]) * Math.min(1, dt * 4);
         });
+    });
+    return null;
+}
+
+/**
+ * The slow-device fallback (§10). Frame times are sampled once the scene has settled; a gap over
+ * 250 ms is a pause (a background tab, a dropped GPU frame), not slowness, and is ignored. Below
+ * ~30 fps it first drops the pixel ratio to 1; if that still averages under ~20 fps, it gives up
+ * and hands the visitor the list.
+ */
+function Watchdog({ onSlow }: { onSlow: () => void }) {
+    const setDpr = useThree((s) => s.setDpr);
+    const sample = useRef({ elapsed: 0, frames: 0, time: 0, lowered: false, done: false });
+    useFrame((_, dt) => {
+        const s = sample.current;
+        if (s.done || dt > 0.25) return;
+        s.elapsed += dt;
+        if (s.elapsed < 3) return; // let loading, shader compiles and the first layout settle
+        s.frames += 1;
+        s.time += dt;
+        if (s.time < 4) return;
+        const fps = s.frames / s.time;
+        s.frames = 0;
+        s.time = 0;
+        if (fps >= 30) s.done = true;
+        else if (!s.lowered) {
+            s.lowered = true;
+            setDpr(1);
+        } else if (fps < 20) {
+            s.done = true;
+            onSlow();
+        } else s.done = true;
     });
     return null;
 }

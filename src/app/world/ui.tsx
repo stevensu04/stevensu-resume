@@ -28,7 +28,28 @@ export function WorldCardView({
     onClose: () => void;
 }) {
     const close = useRef<HTMLButtonElement>(null);
-    useEffect(() => close.current?.focus({ preventScroll: true }), []);
+    // Focus moves into the card, and back to whatever opened it (an object button, for keyboard
+    // users) when it closes (§10).
+    useEffect(() => {
+        const opener = document.activeElement instanceof HTMLElement && document.activeElement !== document.body ? document.activeElement : null;
+        close.current?.focus({ preventScroll: true });
+        return () => opener?.focus({ preventScroll: true });
+    }, []);
+    // The open card traps focus (§10): Tab and Shift+Tab cycle inside it.
+    const trap = (e: React.KeyboardEvent<HTMLDivElement>) => {
+        if (e.key !== "Tab") return;
+        const items = [...e.currentTarget.querySelectorAll<HTMLElement>("a[href], button")];
+        if (!items.length) return;
+        const first = items[0];
+        const last = items[items.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+        }
+    };
     const titleId = `world-card-${card.id}`;
     const gallery = card.id === "gallery" && galleryOpen;
 
@@ -37,6 +58,7 @@ export function WorldCardView({
             ref={cardRef}
             role="dialog"
             aria-labelledby={titleId}
+            onKeyDown={trap}
             data-testid="world-card"
             className={`absolute inset-x-3 bottom-3 max-h-[60%] overflow-y-auto rounded-2xl bg-white p-5 shadow-lg ring-1 ring-black/5 sm:inset-x-auto sm:bottom-auto sm:left-[var(--card-x,50%)] sm:top-[var(--card-y,50%)] sm:max-h-none sm:-translate-x-1/2 sm:-translate-y-[calc(100%+12px)] ${gallery ? "sm:w-[26rem]" : "sm:w-80"}`}
         >
@@ -97,30 +119,6 @@ export function WorldCardView({
                     })}
                 </ul>
             )}
-        </div>
-    );
-}
-
-/** The first thing you see once the block has loaded (§2): take the tour, or walk it yourself. */
-export function Intro({ onTour, onWalk }: { onTour: () => void; onWalk: () => void }) {
-    const first = useRef<HTMLButtonElement>(null);
-    useEffect(() => first.current?.focus({ preventScroll: true }), []);
-    return (
-        <div role="dialog" aria-labelledby="world-intro" className="absolute inset-x-3 top-1/2 mx-auto max-w-sm -translate-y-1/2 rounded-2xl bg-white p-6 shadow-lg ring-1 ring-black/5">
-            <h1 id="world-intro" className="text-lg font-bold text-gray-900">
-                Walk around my career
-            </h1>
-            <p className="mt-2 text-sm leading-relaxed text-gray-600">
-                Seven stops, from a bank in Taipei to a building site in Brisbane. Everything you&apos;ll find here is also on my CV.
-            </p>
-            <div className="mt-5 flex flex-wrap gap-2">
-                <button ref={first} type="button" onClick={onTour} className={`rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 ${focusRing}`}>
-                    Take the one-minute tour
-                </button>
-                <button type="button" onClick={onWalk} className={`rounded-full bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-200 ${focusRing}`}>
-                    Walk it yourself
-                </button>
-            </div>
         </div>
     );
 }

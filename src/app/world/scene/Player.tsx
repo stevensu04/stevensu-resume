@@ -18,6 +18,7 @@ const HEIGHT = 1.72;
 const ISO_PITCH = Math.atan(1 / Math.SQRT2); // 35.264°, true isometric
 const CAMERA_DISTANCE = 120;
 
+const BLOCK_CENTRE = new Vector3(0, 0, -6);
 const toward = new Vector3();
 const offset = new Vector3();
 
@@ -37,6 +38,8 @@ export default function Player({
     solidsRef,
     step,
     still,
+    lookAt,
+    overview = false,
 }: {
     position: RefObject<Vector3>;
     target: RefObject<Vector3>;
@@ -49,6 +52,10 @@ export default function Player({
     step: number;
     /** prefers-reduced-motion: no walk cycle, no camera easing (§10). */
     still: boolean;
+    /** When set, the camera eases here instead of following Steven (keyboard focus, §10). */
+    lookAt?: RefObject<Vector3 | null>;
+    /** The whole block in frame: used to render the poster (`?poster` in development). */
+    overview?: boolean;
 }) {
     const body = useRef<Group>(null);
     const marker = useRef<Mesh>(null);
@@ -123,7 +130,7 @@ export default function Player({
 
         // Camera: orthographic, pitch locked, following Steven.
         focus.current ??= p.clone();
-        focus.current.lerp(p, k);
+        focus.current.lerp(overview ? BLOCK_CENTRE : (lookAt?.current ?? p), k);
         const cam = state.camera;
         offset.set(Math.cos(ISO_PITCH) * Math.sin(az), Math.sin(ISO_PITCH), Math.cos(ISO_PITCH) * Math.cos(az));
         cam.position.copy(focus.current).addScaledVector(offset, CAMERA_DISTANCE);
@@ -132,7 +139,9 @@ export default function Player({
         // About 34 m across on a desktop, so Steven stands ~55 px tall (§6 asks for 60–80). A phone in
         // portrait would shrink him to a speck at that width, so pixels per metre never drop below
         // 16: the camera follows him anyway.
-        const zoom = Math.min(Math.max(Math.min(state.size.width / 34, state.size.height / 22), 16), 34);
+        const zoom = overview
+            ? Math.min(state.size.width / 118, state.size.height / 84)
+            : Math.min(Math.max(Math.min(state.size.width / 34, state.size.height / 22), 16), 34);
         if (Math.abs(cam.zoom - zoom) > 0.01) {
             cam.zoom = zoom;
             cam.updateProjectionMatrix();

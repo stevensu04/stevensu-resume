@@ -787,6 +787,53 @@ Still open. All of it is content, not code:
    until that route exists.
 5. The E.SUN sign lettering, carried over from M2.
 
+### M5 results (11 Nov 2026)
+
+**Passed locally** in dev and on `next start`. Each item below checks off a §10 or §2 requirement.
+
+- **Poster first (§2.1).** `/world` now opens on a still of the block with the headline and three
+  ways in: *Take the one-minute tour*, *Walk it yourself*, and *Rather read it as a list?*. **No
+  three.js is downloaded until a button is pressed.**
+  - The poster is `src/app/world/poster.webp`, 2560 × 1600 and 92 kB. `next/image` serves it at
+    about 47 kB.
+  - The page itself costs 208.1 kB of JS against the shared 201.7 kB, about 6 kB extra.
+  - Once a button is pressed, the poster stays behind the transparent canvas until the block has
+    loaded, so nothing flashes.
+  - **Re-render the poster whenever the block changes:**
+    1. Open `/world?poster` in `npm run dev`. That mode is development-only: the whole block, full
+       colour, nothing moving, no UI, `preserveDrawingBuffer` on.
+    2. Size the window to about 1280 × 880.
+    3. Composite the canvas onto `#eef1f5` and save it as WebP over the old poster.
+- **WebGL2 probe (§10).** It runs on the button press. If it fails, the visitor stays on the poster and
+  gets the list.
+- **The list (§10).** `WorldList.tsx` is always in the DOM: an ordered list of the 9 zones and all 16
+  cards in route order, with the full copy and links. While the scene runs it's `sr-only` and the
+  canvas is `aria-hidden`, so this is what a screen reader reads. With no WebGL, a slow device or a
+  visitor who chose it, the list becomes visible, scrolls into view and takes focus.
+- **Keyboard (§10).** Tab walks the 16 objects in route order. The camera eases to each one and a
+  blue ring marks it.
+  - Enter opens the card. Focus moves into the card and Tab is trapped inside it.
+  - Escape closes it and returns focus to the object.
+  - Arrows/WASD, Shift, and Q/E work as before.
+  - Verified with real key presses on Finance Forms.
+- **Pause when unseen (§10).** `frameloop` is `never` while the tab is hidden or the scene has
+  scrolled out of view, checked with IntersectionObserver plus `visibilitychange`.
+- **Slow device (§10).** A watchdog in the canvas works in two steps:
+  - It waits 3 s, then averages fps over 4 s, ignoring gaps over 250 ms.
+  - Under 30 fps it drops the pixel ratio to 1. If the next window is still under 20 fps, it swaps
+    the scene for the list, which offers *Try the 3D view anyway*.
+  - **The thresholds are guesses until a mid-range Android has been measured (§14 Q5).**
+- **Reduced motion:** unchanged from M2–M4. Nothing idles, the camera cuts, he holds Idle, and the
+  tour is a stepper.
+
+Not verified:
+
+- **A real phone, a real screen reader, and the OS reduced-motion setting.** The test browser can
+  emulate none of them faithfully.
+- The watchdog's fallback. It can't be triggered without a genuinely slow GPU.
+- First-paint timings. The test pane runs in the background and throttles frames, so its LCP
+  numbers mean nothing. Measure on Vercel from a phone, against §9's poster < 1.5 s budget.
+
 ---
 
 ## 12. Do these first (from `PLAN.md`)
