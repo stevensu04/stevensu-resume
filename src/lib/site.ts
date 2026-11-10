@@ -50,11 +50,15 @@ export const site = {
     availability: "Graduating Nov 2026 · Available for 2027 graduate programs",
 
     /**
-     * TODO(steven): set this once confirmed — e.g. "Full working rights (subclass 485 on graduation)".
-     * Left null so the clause is omitted rather than guessed. This is the line most likely to get an
-     * application filtered before a human reads it. See PLAN.md §9.
+     * Shown in the hero status line and on /world's exit board. This is the line most likely to get
+     * an application filtered before a human reads it (PLAN.md §10 Q1).
+     *
+     * Confirmed by Steven on 11 Nov 2026: on a student visa now, applying for the 485 within three
+     * months. "Applying for", never "holding" or "eligible". Update it as the status changes:
+     *   lodged  → "485 Temporary Graduate visa lodged (full work rights)"
+     *   granted → "Full work rights (485 Temporary Graduate visa)"
      */
-    workRights: null as string | null,
+    workRights: "Applying for a 485 Temporary Graduate visa (full work rights)" as string | null,
 
     /**
      * Rotating text on the floating contact badge. No "designer", no "freelancer".
