@@ -17,7 +17,7 @@ export default function AboutPage() {
                     G&apos;day! I&apos;m Steven — a full-stack developer completing a Master of IT at UQ, with a professional background in Economics and Finance.
                 </p>
                 <p className="font-medium text-gray-600 mb-4">
-                    My career began in the banking sector at E.SUN Bank, where I first discovered the power of tech-driven optimisation. By streamlining service workflows, I helped reduce client wait times by 10%. This sparked my passion for building digital solutions that don&apos;t just work, but actually make life easier for people.
+                    My career began in the banking sector at E.SUN Bank, where I first discovered the power of tech-driven optimisation. By streamlining service workflows, I helped reduce client wait times by 10%. The work was stable and structured, and over time it stopped pulling me forward. The AI era arrived while I was still there, and I could see it would start replacing the work people do — so I moved to the side that builds it.
                 </p>
                 <p className="font-medium text-gray-600 mb-4">
                     Now, I combine my analytical mindset from Economics with full-stack development skills to build high-impact software. I thrive on tackling complex problems and turning them into seamless user experiences.
