@@ -7,7 +7,7 @@ import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.j
 import { clone } from "three/examples/jsm/utils/SkeletonUtils.js";
 import { AnimationMixer, Mesh, MeshBasicMaterial, type AnimationAction, type Group, type Texture } from "three";
 import { normaliseBoneScale } from "./clipScale";
-import type { Motion } from "./input";
+import { RUN_SPEED, WALK_SPEED, type Motion } from "./input";
 
 const AVATAR_URL = "/world/steven.glb";
 const FADE_SECONDS = 0.14;
@@ -16,6 +16,18 @@ const FADE_SECONDS = 0.14;
  * stands ~2 m against Kenney's ~2.5 m doors: still plausibly a person, no longer a speck.
  */
 const FIGURE_SCALE = 1.2;
+/**
+ * How fast each clip carries him at its authored rate, at rig scale: twice the feet's largest
+ * fore-aft separation per cycle, over the cycle's length. Measured from steven.glb on 11 Nov 2026
+ * (Walk 0.653 m over 1.067 s, Run 0.804 m over 0.667 s). Playing a clip at ground speed over this
+ * keeps the feet from sliding.
+ */
+const CLIP_SPEED = { Walk: 1.22, Run: 2.41 } as const;
+const CLIP_RATE = {
+    Idle: 1,
+    Walk: WALK_SPEED / (CLIP_SPEED.Walk * FIGURE_SCALE),
+    Run: RUN_SPEED / (CLIP_SPEED.Run * FIGURE_SCALE),
+} as const;
 
 /**
  * Steven: the DECO7381 avatar, rigged at 1.72 m. Adapted from Team 41's `StevenCharacter.tsx`,
@@ -79,7 +91,7 @@ export default function Avatar({ motion, still }: { motion: RefObject<Motion>; s
             actions[next]?.reset().fadeIn(FADE_SECONDS).play();
             current.current = next;
         }
-        actions[current.current]?.setEffectiveTimeScale(current.current === "Idle" ? 1 : motion.current.pace);
+        actions[current.current]?.setEffectiveTimeScale(CLIP_RATE[current.current] * (current.current === "Idle" ? 1 : motion.current.pace));
         // Reduced motion: he holds the first frame of Idle (§10: "the avatar stays in idle").
         mixer.update(still ? 0 : dt);
         // Hidden until the mixer has posed him, so he never flashes in the bind (A-) pose.

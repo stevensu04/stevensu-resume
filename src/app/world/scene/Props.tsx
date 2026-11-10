@@ -3,8 +3,8 @@
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Color, MeshBasicMaterial, PlaneGeometry, type Group, type ShaderMaterial } from "three";
-import { withExplore } from "./explore";
-import { PIER } from "../placements";
+import { withWorldShader } from "./worldShader";
+import { PIER, RACQUET } from "../placements";
 import { RIVER, SLAB } from "../zones";
 import { mergeBoxes, shadedBox, type BoxSpec } from "./shading";
 
@@ -32,7 +32,7 @@ const CRANE_YELLOW = "#e2b33c";
 
 export default function Props({ still }: { still: boolean }) {
     const statics = useMemo(() => mergeBoxes(STATIC_BOXES), []);
-    const staticsMaterial = useMemo(() => withExplore(new MeshBasicMaterial({ vertexColors: true })), []);
+    const staticsMaterial = useMemo(() => withWorldShader(new MeshBasicMaterial({ vertexColors: true })), []);
     return (
         <>
             <mesh geometry={statics} material={staticsMaterial} raycast={() => null} />
@@ -40,6 +40,7 @@ export default function Props({ still }: { still: boolean }) {
             <Ferry still={still} />
             <CraneJib still={still} />
             <Arcade still={still} />
+            <Racquet />
             {/* Finance Forms: frosted glass over the entrance (§4: confidential stays closed). */}
             <Glass at={[27, 2, -11.85]} size={[4, 4, 0.2]} />
             {/* BrisPulse: a translucent wireframe over the blueprint table, no walls (§4: concept). */}
@@ -245,5 +246,21 @@ function Glass({ at, size }: { at: BoxSpec["at"]; size: BoxSpec["size"] }) {
         <mesh geometry={geo} position={at} raycast={() => null}>
             <meshBasicMaterial vertexColors color="#dfe8f0" transparent opacity={0.85} />
         </mesh>
+    );
+}
+
+/** The racquet: a handle and an oval head, leaning on the fence's sunny side. */
+function Racquet() {
+    const handle = useMemo(() => shadedBox(0.05, 0.36, 0.05), []);
+    return (
+        <group position={[RACQUET.x, 0, RACQUET.z]} rotation-z={0.3} scale={1.3}>
+            <mesh geometry={handle} position={[0, 0.18, 0]} raycast={() => null}>
+                <meshBasicMaterial vertexColors color={PALETTE.slate} />
+            </mesh>
+            <mesh position={[0, 0.56, 0]} rotation-y={Math.PI / 2} scale={[1, 1.3, 1]} raycast={() => null}>
+                <torusGeometry args={[0.14, 0.022, 6, 18]} />
+                <meshBasicMaterial color="#e11d48" />
+            </mesh>
+        </group>
     );
 }

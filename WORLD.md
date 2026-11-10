@@ -834,6 +834,65 @@ Not verified:
 - First-paint timings. The test pane runs in the background and throttles frames, so its LCP
   numbers mean nothing. Measure on Vercel from a phone, against §9's poster < 1.5 s budget.
 
+### M6 results (11 Nov 2026)
+
+**Passed locally** in dev and on `next start`. This was the last build milestone. What's left before
+`/world` is listed is content and a phone (see "To launch" below).
+
+- **One shared shader, three jobs.** `scene/explore.ts` became `scene/worldShader.ts`. It is still
+  one patch on the kit materials and the merged props, and still adds no draw calls.
+  - **Light-up on visit**, as in M4.
+  - **Occlusion fade (§6).** A fragment nearer the camera than Steven and within ~2.4 m of him on
+    screen is dithered away in a soft-edged circle. When he walks behind a building he shows through
+    it. Verified behind StarLens. It works per-fragment, so it works across instancing, where fading
+    whole objects couldn't.
+  - **Tree sway.** Trees get their own copy of the kit material with `WORLD_SWAY` on: a slow lean that
+    grows with height and is offset per instance. It stops under reduced motion along with
+    everything else.
+- **The easter egg (§3).** A red racquet leans on the fence by the UQ corner. When Steven stops within
+  2.2 m he turns to it and hops once (a turn only under reduced motion), and it re-arms when he walks
+  away. It has no card and doesn't count. *The hop wasn't watched: the background test pane runs at
+  about 1 fps, so the walk there takes minutes. The placement and the turn logic were checked.*
+- **Feet no longer slide.** I measured the clips from `steven.glb`: Walk carries the rig 1.22 m/s at
+  its authored rate, and Run 2.41 m/s. Each clip now plays at ground speed ÷ (clip speed × 1.2 figure
+  scale), about 1.5× for both, times the tour pace. `WALK_SPEED` and `RUN_SPEED` now live in
+  `scene/input.ts`, shared by the controller, the tour timer and the avatar.
+- **The case study is drafted, not published.** It's `content/projects/_world.md`. The leading `_`
+  keeps it off `/projects`, because listing it would list `/world` before it's finished (§1).
+  - The copy is a draft for Steven to rewrite.
+  - The `meta` line about AI assistance is his to word.
+  - `img` expects the poster copied to `public/projects/World.webp`.
+- **The sound toggle (§10) is not built, on purpose.** The world has no sound. A toggle that does
+  nothing would be the kind of dishonest UI the rest of the world avoids. If sound is ever added,
+  build the toggle with it, off by default.
+
+Measured: `/world` is 208.1 kB before a button is pressed (unchanged). With the scene loaded it's
+504.6 kB, about 303 kB on top of the shared bundle, which leaves **~47 kB of headroom**. `/` is
+still 201.7 kB.
+
+### To launch (all content or devices, no code)
+
+1. **A real phone**, ideally a mid-range Android. Check:
+   - the poster appears in under 1.5 s;
+   - the frame rate holds;
+   - the watchdog thresholds are right;
+   - the feet look right at 60 fps.
+2. **A screen reader** (VoiceOver on iOS or macOS) through the list and a card, and the OS
+   reduced-motion setting.
+3. **Seven Gallery photos** and their captions (`GALLERY_PHOTOS` in `src/lib/world.ts`).
+4. **`site.workRights`** for the exit board.
+5. **Veilcore** (§14 Q1). Skyveil's card links to `/about#experience` until there's a project file.
+6. **The case study.** Rewrite `_world.md` in your own words, add its image, and rename it to
+   `world.md`.
+7. **Then list it.** Drop `robots: { index: false }` from `src/app/world/page.tsx` and add `/world`
+   to the nav.
+
+Nice to have, not blocking:
+
+- **`/projects/[slug]`** (`PLAN.md` §6), so "Read the case study" lands on the case study itself.
+- The E.SUN sign lettering.
+- Re-rendering the poster, which predates the racquet.
+
 ---
 
 ## 12. Do these first (from `PLAN.md`)

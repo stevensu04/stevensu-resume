@@ -3,6 +3,7 @@
 import { useEffect, useMemo } from "react";
 import { Color, InstancedMesh, Matrix4, Quaternion, Vector3, type MeshBasicMaterial } from "three";
 import { KIT_SCALE, type Placement } from "../placements";
+import { withWorldShader } from "./worldShader";
 import type { KitModel } from "./useKit";
 
 export type Rect = { minX: number; maxX: number; minZ: number; maxZ: number };
@@ -43,6 +44,12 @@ export default function KitInstances({
 }) {
     const meshes = useMemo(() => {
         const groups = new Map<string, { geometry: KitModel["parts"][number]["geometry"]; material: MeshBasicMaterial; matrices: Matrix4[] }>();
+        // Trees get their own copy of the kit material with sway switched on (§6 idle motion).
+        const swaying = new Map<MeshBasicMaterial, MeshBasicMaterial>();
+        const swayed = (m: MeshBasicMaterial) => {
+            if (!swaying.has(m)) swaying.set(m, withWorldShader(m.clone(), { sway: true }));
+            return swaying.get(m)!;
+        };
         for (const p of placements) {
             const model = kit.get(p.model);
             if (!model) throw new Error(`kit.glb has no model "${p.model}": rebuild it with npm run world:kit`);
@@ -50,7 +57,8 @@ export default function KitInstances({
             model.parts.forEach((part, i) => {
                 const key = `${p.model}#${i}`;
                 let g = groups.get(key);
-                if (!g) groups.set(key, (g = { geometry: part.geometry, material: part.material, matrices: [] }));
+                const material = p.model.startsWith("tree") ? swayed(part.material) : part.material;
+                if (!g) groups.set(key, (g = { geometry: part.geometry, material, matrices: [] }));
                 g.matrices.push(new Matrix4().multiplyMatrices(matrix, part.matrix));
             });
         }

@@ -6,12 +6,12 @@ import { Vector3, type Group, type Mesh } from "three";
 import { ACCENT, shadedBox } from "./shading";
 import type { Rect } from "./KitInstances";
 import { canStand } from "./walk";
+import { worldUniforms } from "./worldShader";
+import { RACQUET } from "../placements";
 import Avatar from "./Avatar";
-import type { Motion, MovementInput } from "./input";
+import { RUN_SPEED, WALK_SPEED, type Motion, type MovementInput } from "./input";
 
-/** Steven walks at an easy 2.2 m/s (§3) and runs at twice that. He is 1.72 m tall. */
-const WALK_SPEED = 2.2;
-const RUN_SPEED = 4.4;
+/** He is 1.72 m tall; speeds live in input.ts. */
 /** A tap further away than this, he runs: crossing the 80 m block at a walk takes too long. */
 const RUN_DISTANCE = 14;
 const HEIGHT = 1.72;
@@ -20,6 +20,7 @@ const CAMERA_DISTANCE = 120;
 
 const BLOCK_CENTRE = new Vector3(0, 0, -6);
 const toward = new Vector3();
+const playerPoint = new Vector3();
 const offset = new Vector3();
 
 /**
@@ -63,6 +64,9 @@ export default function Player({
     const azimuth = useRef<number>(null);
     const running = useRef(false);
     const motion = useRef<Motion>({ state: "Idle", pace: 1 });
+    // The easter egg: seconds into the hop, or -1 when not reacting; re-arms once he walks away.
+    const hop = useRef(-1);
+    const hopArmed = useRef(true);
 
     useFrame((state, delta) => {
         const p = position.current;
@@ -122,7 +126,23 @@ export default function Player({
         motion.current.state = moved ? (speed > WALK_SPEED * pace.current ? "Run" : "Walk") : "Idle";
         motion.current.pace = pace.current;
 
-        if (body.current) body.current.position.copy(p);
+        // The racquet (§3): within 2.2 m he turns to it and hops once. Under reduced motion, only the turn.
+        const rx = RACQUET.x - p.x;
+        const rz = RACQUET.z - p.z;
+        const near = rx * rx + rz * rz < 2.2 * 2.2;
+        if (near && hopArmed.current && !moved) {
+            hopArmed.current = false;
+            hop.current = 0;
+        } else if (!near) hopArmed.current = true;
+        let lift = 0;
+        if (hop.current >= 0) {
+            if (body.current) body.current.rotation.y = Math.atan2(rx, rz);
+            hop.current += dt;
+            if (!still) lift = Math.sin(Math.min(hop.current / 0.45, 1) * Math.PI) * 0.3;
+            if (hop.current > 0.45) hop.current = -1;
+        }
+
+        if (body.current) body.current.position.set(p.x, lift, p.z);
         if (marker.current) {
             marker.current.visible = !fwd && !side && p.distanceTo(t) > 0.3;
             marker.current.position.set(t.x, 0.03, t.z);
@@ -135,6 +155,15 @@ export default function Player({
         offset.set(Math.cos(ISO_PITCH) * Math.sin(az), Math.sin(ISO_PITCH), Math.cos(ISO_PITCH) * Math.cos(az));
         cam.position.copy(focus.current).addScaledVector(offset, CAMERA_DISTANCE);
         cam.lookAt(focus.current);
+
+        // Occlusion fade: tell the shared shader where Steven is on screen and how deep, so whatever
+        // stands between him and the camera is stippled away round him (worldShader.ts).
+        const dpr = state.gl.getPixelRatio();
+        playerPoint.set(p.x, 1, p.z).project(cam);
+        worldUniforms.uPlayer.value[0] = (playerPoint.x * 0.5 + 0.5) * state.size.width * dpr;
+        worldUniforms.uPlayer.value[1] = (playerPoint.y * 0.5 + 0.5) * state.size.height * dpr;
+        worldUniforms.uPlayer.value[2] = -playerPoint.set(p.x, 1, p.z).applyMatrix4(cam.matrixWorldInverse).z;
+        worldUniforms.uCutRadius.value = overview ? 0 : 2.4 * cam.zoom * dpr;
 
         // About 34 m across on a desktop, so Steven stands ~55 px tall (§6 asks for 60–80). A phone in
         // portrait would shrink him to a speck at that width, so pixels per metre never drop below

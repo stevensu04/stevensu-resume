@@ -25,3 +25,7 @@ export type Motion = {
     /** Playback rate for the walk and run cycles, so the feet keep up when the tour hurries him. */
     pace: number;
 };
+
+/** Ground speeds, m/s (§3: an easy 2.2 m/s walk). Shared by the controller, the tour and the avatar. */
+export const WALK_SPEED = 2.2;
+export const RUN_SPEED = 4.4;

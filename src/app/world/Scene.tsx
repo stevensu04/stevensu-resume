@@ -12,8 +12,8 @@ import Player from "./scene/Player";
 import CardAnchor from "./scene/CardAnchor";
 import type { Rect } from "./scene/KitInstances";
 import { clampToGround } from "./scene/walk";
-import { EMPTY_INPUT, KEY_MAP, type MovementInput } from "./scene/input";
-import { EXPLORE_ZONE_IDS, exploreUniforms } from "./scene/explore";
+import { EMPTY_INPUT, KEY_MAP, RUN_SPEED, WALK_SPEED, type MovementInput } from "./scene/input";
+import { EXPLORE_ZONE_IDS, worldUniforms } from "./scene/worldShader";
 import { Counter, DPad, OutLinks, TourBar, WorldCardView } from "./ui";
 import FocusAnchor from "./scene/FocusAnchor";
 import poster from "./poster.webp";
@@ -22,8 +22,6 @@ import poster from "./poster.webp";
 const TOUR_PACE = 1.4;
 /** Seconds a tour stop holds after he arrives, before moving on. Pause is always there. */
 const TOUR_DWELL = 3;
-const WALK_SPEED = 2.2;
-const RUN_SPEED = 4.4;
 
 const OBJECT_BY_ID = new Map(OBJECTS.map((o) => [o.id, o]));
 
@@ -356,10 +354,14 @@ function ZoneWatcher({ position, onEnter }: { position: RefObject<Vector3>; onEn
     return null;
 }
 
-/** Eases each explored zone from grey to full colour over ~0.8 s; instantly under reduced motion. */
+/**
+ * Drives the shared shader's clock and light-up (worldShader.ts): each explored zone eases from
+ * grey to full colour over ~0.8 s, instantly under reduced motion, and the sway clock stands still.
+ */
 function ExploreFade({ explored, still }: { explored: string[]; still: boolean }) {
     useFrame((_, dt) => {
-        const lit = exploreUniforms.uZoneLit.value;
+        if (!still) worldUniforms.uTime.value += dt;
+        const lit = worldUniforms.uZoneLit.value;
         EXPLORE_ZONE_IDS.forEach((id, i) => {
             const goal = explored.includes(id) ? 1 : 0;
             lit[i] = still ? goal : lit[i] + (goal - lit[i]) * Math.min(1, dt * 4);

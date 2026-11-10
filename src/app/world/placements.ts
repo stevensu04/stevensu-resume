@@ -118,6 +118,12 @@ export const SKYLINE: Placement[] = [
     { model: "low-detail-building-k", x: 33, z: -53, scale: 6 },
 ];
 
+/**
+ * The easter egg (WORLD.md §3): a tennis racquet leaning on the fence by the UQ corner, for the
+ * Tamkang Tennis Club president. No card, doesn't count; Steven turns to it and hops, and that's all.
+ */
+export const RACQUET = { x: 16.5, z: -12.6 };
+
 /** Areas Steven can stand on, beyond the main walkable rectangle: the pier. */
 export const PIER = { x: -26, minZ: -28.5, maxZ: -23.2, w: 3 };
 
