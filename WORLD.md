@@ -870,9 +870,32 @@ Measured: `/world` is 208.1 kB before a button is pressed (unchanged). With the 
 504.6 kB, about 303 kB on top of the shared bundle, which leaves **~47 kB of headroom**. `/` is
 still 201.7 kB.
 
+### After M6: first phone test (11 Nov 2026)
+
+Steven recorded `/world` on an iPhone 18 Pro. The recording averages 59.8 fps, and the poster,
+walking, d-pad, cards and counter all worked. There is no Android in the set, so the watchdog's
+mid-range thresholds stay unverified. That doesn't block launch.
+
+Fixed from what the recordings showed:
+
+- **The racquet seemed not to work.** It did fire, but a 0.3 m hop is about 5 px at phone zoom, and it
+  only fired once he had fully stopped. Now coming within 2.5 m sets it off: a 🎾 bubble shows over
+  his head for 2.5 s, he turns to the racquet, and he hops twice at 0.55 m. Under reduced motion he
+  only turns, with no hop. It re-arms at 5 m. Verified with `?at=17.6,-12.6`, a development-only
+  start position for testing a spot without walking there.
+- **The ferry now looks like a CityCat**, modelled on a photo of one: white twin hulls, a royal-blue
+  body with a raked bow, the yellow stripe sweeping up to the cabin, a dark window band, a white
+  roof, a wheelhouse forward and a mast. It is about 24 m long.
+  - It's built from side profiles extruded across the beam. `paint()` in `shading.ts` bakes the same
+    fixed sun into any shape from its normals, and all the parts merge into one draw call.
+  - It docks alongside the pier's east side.
+- **The rotate buttons rendered as empty circles on iOS.** iOS fonts have no ⟲ or ⟳, so the buttons
+  now use inline SVG arrows.
+
 ### To launch (all content or devices, no code)
 
-1. **A real phone**, ideally a mid-range Android. Check:
+1. **A real phone**, ideally a mid-range Android. *iPhone 18 Pro done (see above); no Android
+   available.* Check:
    - the poster appears in under 1.5 s;
    - the frame rate holds;
    - the watchdog thresholds are right;

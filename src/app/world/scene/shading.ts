@@ -50,3 +50,38 @@ export function mergeBoxes(specs: BoxSpec[]): BufferGeometry {
     parts.forEach((p) => p.dispose());
     return merged;
 }
+
+/**
+ * Bakes colour and the same fixed sun as `shadedBox` into any geometry's vertices, reading the
+ * light from each vertex normal, so shaped parts (a raked bow, a sloped windscreen) shade like the
+ * boxes around them. Returns a non-indexed geometry, ready for `mergeParts`.
+ */
+export function paint(geometry: BufferGeometry, color: string): BufferGeometry {
+    const geo = geometry.index ? geometry.toNonIndexed() : geometry;
+    if (!geo.attributes.normal) geo.computeVertexNormals();
+    const n = geo.attributes.normal;
+    const tint = new Color(color);
+    const colors = new Float32Array(n.count * 3);
+    for (let i = 0; i < n.count; i++) {
+        const x = n.getX(i);
+        const y = n.getY(i);
+        const z = n.getZ(i);
+        // FACE_LIGHT, blended by how much the normal points along each axis.
+        const light =
+            x * x * (x > 0 ? FACE_LIGHT[0] : FACE_LIGHT[1]) +
+            y * y * (y > 0 ? FACE_LIGHT[2] : FACE_LIGHT[3]) +
+            z * z * (z > 0 ? FACE_LIGHT[4] : FACE_LIGHT[5]);
+        colors.set([light * tint.r, light * tint.g, light * tint.b], i * 3);
+    }
+    geo.setAttribute("color", new BufferAttribute(colors, 3));
+    return geo;
+}
+
+/** Merges painted parts into one geometry: one draw call for a whole model. */
+export function mergeParts(parts: BufferGeometry[]): BufferGeometry {
+    const flat = parts.map((p) => (p.index ? p.toNonIndexed() : p));
+    for (const p of flat) if (!p.attributes.uv) p.setAttribute("uv", new BufferAttribute(new Float32Array(p.attributes.position.count * 2), 2));
+    const merged = mergeGeometries(flat);
+    flat.forEach((p) => p.dispose());
+    return merged;
+}

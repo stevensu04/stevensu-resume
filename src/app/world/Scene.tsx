@@ -16,6 +16,7 @@ import { EMPTY_INPUT, KEY_MAP, RUN_SPEED, WALK_SPEED, type MovementInput } from 
 import { EXPLORE_ZONE_IDS, worldUniforms } from "./scene/worldShader";
 import { Counter, DPad, OutLinks, TourBar, WorldCardView } from "./ui";
 import FocusAnchor from "./scene/FocusAnchor";
+import PlayerAnchor from "./scene/PlayerAnchor";
 import poster from "./poster.webp";
 
 /** During the tour Steven moves at 1.4× his normal pace: nine stops in about 65 s. */
@@ -50,7 +51,12 @@ export default function Scene({
     const [posterMode] = useState(() => process.env.NODE_ENV === "development" && new URLSearchParams(window.location.search).has("poster"));
 
     // Steven starts on the ferry landing's side of the street, where the career starts (§3).
-    const [start] = useState(() => new Vector3(-26, 0, -10.8));
+    // `?at=x,z` (development only) starts him somewhere else, to test a spot without walking there.
+    const [start] = useState(() => {
+        const at = process.env.NODE_ENV === "development" ? new URLSearchParams(window.location.search).get("at") : null;
+        const [x, z] = at?.split(",").map(Number) ?? [];
+        return Number.isFinite(x) && Number.isFinite(z) ? new Vector3(x, 0, z) : new Vector3(-26, 0, -10.8);
+    });
     const position = useRef(start.clone());
     const target = useRef(start.clone());
     const pace = useRef(1);
@@ -64,6 +70,9 @@ export default function Scene({
     const [explored, setExplored] = useState<string[]>(() => (posterMode ? EXPLORE_ZONE_IDS : []));
     const [tour, setTour] = useState<{ index: number; ms: number } | null>(null);
     const [paused, setPaused] = useState(false);
+    // The racquet easter egg's bubble over Steven's head (§3).
+    const [cheer, setCheer] = useState(false);
+    const emote = useRef<HTMLDivElement>(null);
     // Keyboard focus on an object (§10): the camera eases to it and a ring marks it.
     const [focused, setFocused] = useState<string | null>(null);
     const lookAt = useRef<Vector3 | null>(null);
@@ -230,7 +239,8 @@ export default function Scene({
                         }}
                     />
                 </Suspense>
-                <Player position={position} target={target} input={input} pace={pace} solidsRef={solidsRef} step={step} still={still} overview={posterMode} lookAt={lookAt} />
+                <Player position={position} target={target} input={input} pace={pace} solidsRef={solidsRef} step={step} still={still} overview={posterMode} lookAt={lookAt} onRacquet={setCheer} />
+                <PlayerAnchor position={position} el={emote} />
                 <FocusAnchor object={focused ? (OBJECT_BY_ID.get(focused) ?? null) : null} ring={ring} />
                 {!posterMode && <Watchdog onSlow={onFallback} />}
                 <CardAnchor object={open ? (OBJECT_BY_ID.get(open) ?? null) : null} card={card} />
@@ -261,8 +271,8 @@ export default function Scene({
                 <div className="pointer-events-auto flex items-center gap-2 self-end sm:flex-col sm:items-end sm:self-auto">
                     <OutLinks />
                     <div className="flex gap-2">
-                        <RotateButton label="Rotate view left (Q)" glyph="⟲" onClick={() => setStep((s) => (s + 3) % 4)} />
-                        <RotateButton label="Rotate view right (E)" glyph="⟳" onClick={() => setStep((s) => (s + 1) % 4)} />
+                        <RotateButton label="Rotate view left (Q)" direction="left" onClick={() => setStep((s) => (s + 3) % 4)} />
+                        <RotateButton label="Rotate view right (E)" direction="right" onClick={() => setStep((s) => (s + 1) % 4)} />
                     </div>
                 </div>
             </div>
@@ -302,6 +312,15 @@ export default function Scene({
                 className={`pointer-events-none absolute left-[var(--ring-x)] top-[var(--ring-y)] h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] border-blue-600 bg-blue-600/10 ${focused ? "" : "hidden"}`}
             />
 
+            {/* Decorative: no card, no count, nothing to announce (§3). */}
+            <div
+                ref={emote}
+                aria-hidden
+                className={`pointer-events-none absolute left-[var(--emote-x)] top-[var(--emote-y)] -translate-x-1/2 -translate-y-full rounded-full bg-white px-2.5 py-1 text-xl shadow-md ring-1 ring-black/5 transition-opacity duration-300 ${cheer ? "opacity-100" : "opacity-0"}`}
+            >
+                🎾
+            </div>
+
             <Counter explored={explored.length} total={EXPLORE_ZONE_IDS.length} />
             <DPad inputRef={input} />
 
@@ -320,15 +339,22 @@ export default function Scene({
     );
 }
 
-function RotateButton({ label, glyph, onClick }: { label: string; glyph: string; onClick: () => void }) {
+/**
+ * An inline SVG, not a glyph: iOS fonts have no ⟲/⟳, and they rendered as empty circles on an
+ * iPhone (seen in Steven's screen recording, 11 Nov 2026).
+ */
+function RotateButton({ label, direction, onClick }: { label: string; direction: "left" | "right"; onClick: () => void }) {
     return (
         <button
             type="button"
             onClick={onClick}
             aria-label={label}
-            className="h-9 w-9 rounded-full bg-white text-sm font-bold text-gray-700 shadow-sm hover:text-blue-600 focus-visible:outline-2 focus-visible:outline-blue-600"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-gray-700 shadow-sm hover:text-blue-600 focus-visible:outline-2 focus-visible:outline-blue-600"
         >
-            {glyph}
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden className={direction === "right" ? "-scale-x-100" : ""}>
+                <path d="M4 12a8 8 0 1 0 2.3-5.6" />
+                <path d="M4 4v4.5h4.5" />
+            </svg>
         </button>
     );
 }

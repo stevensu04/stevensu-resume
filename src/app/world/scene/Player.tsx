@@ -41,6 +41,7 @@ export default function Player({
     still,
     lookAt,
     overview = false,
+    onRacquet,
 }: {
     position: RefObject<Vector3>;
     target: RefObject<Vector3>;
@@ -57,6 +58,8 @@ export default function Player({
     lookAt?: RefObject<Vector3 | null>;
     /** The whole block in frame: used to render the poster (`?poster` in development). */
     overview?: boolean;
+    /** The easter egg went off (true) or finished (false). */
+    onRacquet?: (active: boolean) => void;
 }) {
     const body = useRef<Group>(null);
     const marker = useRef<Mesh>(null);
@@ -126,20 +129,29 @@ export default function Player({
         motion.current.state = moved ? (speed > WALK_SPEED * pace.current ? "Run" : "Walk") : "Idle";
         motion.current.pace = pace.current;
 
-        // The racquet (§3): within 2.2 m he turns to it and hops once. Under reduced motion, only the turn.
+        // The racquet (§3). Walking within 2.5 m sets it off once: a 🎾 over his head for 2.5 s (Scene
+        // draws it), and while he's standing, he turns to the racquet and hops twice. Under reduced
+        // motion: the bubble and the turn, no hop. Re-arms once he's 5 m away.
         const rx = RACQUET.x - p.x;
         const rz = RACQUET.z - p.z;
-        const near = rx * rx + rz * rz < 2.2 * 2.2;
-        if (near && hopArmed.current && !moved) {
+        const d2 = rx * rx + rz * rz;
+        if (d2 < 2.5 * 2.5 && hopArmed.current) {
             hopArmed.current = false;
             hop.current = 0;
-        } else if (!near) hopArmed.current = true;
+            onRacquet?.(true);
+        } else if (d2 > 5 * 5) hopArmed.current = true;
         let lift = 0;
         if (hop.current >= 0) {
-            if (body.current) body.current.rotation.y = Math.atan2(rx, rz);
             hop.current += dt;
-            if (!still) lift = Math.sin(Math.min(hop.current / 0.45, 1) * Math.PI) * 0.3;
-            if (hop.current > 0.45) hop.current = -1;
+            if (!moved) {
+                if (body.current) body.current.rotation.y = Math.atan2(rx, rz);
+                // Two hops in the first 0.9 s: big enough to read at phone zoom (~10 px).
+                if (!still && hop.current < 0.9) lift = Math.abs(Math.sin((hop.current / 0.45) * Math.PI)) * 0.55;
+            }
+            if (hop.current > 2.5) {
+                hop.current = -1;
+                onRacquet?.(false);
+            }
         }
 
         if (body.current) body.current.position.set(p.x, lift, p.z);

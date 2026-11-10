@@ -2,11 +2,11 @@
 
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Color, MeshBasicMaterial, PlaneGeometry, type Group, type ShaderMaterial } from "three";
+import { BoxGeometry, Color, ExtrudeGeometry, MeshBasicMaterial, PlaneGeometry, Shape, Vector2, type BufferGeometry, type Group, type ShaderMaterial } from "three";
 import { withWorldShader } from "./worldShader";
 import { PIER, RACQUET } from "../placements";
 import { RIVER, SLAB } from "../zones";
-import { mergeBoxes, shadedBox, type BoxSpec } from "./shading";
+import { mergeBoxes, mergeParts, paint, shadedBox, type BoxSpec } from "./shading";
 
 /**
  * Everything the kits don't have (WORLD.md §6): the river, pier, ferry, shutter, frosted glass,
@@ -154,28 +154,64 @@ function River({ still }: { still: boolean }) {
 /* ---------------------------------------------------------------- ferry */
 
 /** One crossing every 30 s (§6): in from the west, 8 s at the pier, out to the east. */
-const FERRY_LANE_Z = -30;
+const FERRY_LANE_Z = -29.2;
 const CYCLE = 30;
 const DOCKED = 10;
 
-/** A CityCat-ish catamaran, ~16 m: two hulls, a blue stripe, a cabin with a dark window band. */
-const FERRY_BOXES: BoxSpec[] = [
-    box([0, 0.25, -1], [16, 0.8, 1], PALETTE.white),
-    box([0, 0.25, 1], [16, 0.8, 1], PALETTE.white),
-    box([0, 0.85, 0], [15, 0.4, 3], PALETTE.accent),
-    box([0.5, 1.75, 0], [10, 1.4, 2.6], PALETTE.white),
-    box([0.5, 1.75, 0], [9.4, 0.5, 2.7], PALETTE.slate),
-    box([0.5, 2.55, 0], [10.4, 0.2, 2.9], PALETTE.white),
-];
+/**
+ * A Brisbane CityCat, ~24 m: white twin hulls, a royal-blue body with a raked bow, the yellow
+ * stripe that sweeps up to the cabin, a dark window band, a white roof and a wheelhouse forward.
+ * Each part is a side profile extruded across the beam, painted with the fixed sun (`paint`) and
+ * merged into one mesh. The bow points +x, the way it sails.
+ */
+const CITYCAT = { white: "#f4f5f2", blue: "#1f4fbf", yellow: "#f6c21c", glass: "#141b2b" };
+
+function profile(points: [number, number][], depth: number, z: number, color: string): BufferGeometry {
+    const shape = new Shape(points.map(([x, y]) => new Vector2(x, y)));
+    const geo = new ExtrudeGeometry(shape, { depth, bevelEnabled: false });
+    geo.translate(0, 0, z - depth / 2);
+    return paint(geo, color);
+}
+
+function cityCat(): BufferGeometry {
+    const { white, blue, yellow, glass } = CITYCAT;
+    const hull: [number, number][] = [[-12, -0.4], [9.6, -0.4], [12.2, 0.9], [-12, 0.9]];
+    const body: [number, number][] = [[-11.8, 0.9], [12.2, 0.9], [8.9, 2.4], [-11.8, 2.4]];
+    const cabin: [number, number][] = [[-10, 2.4], [7.2, 2.4], [4.7, 3.9], [-10, 3.9]];
+    const stripe: [number, number][] = [[-11.8, 2.16], [9.3, 2.16], [8.9, 2.4], [-11.8, 2.4]];
+    const sweep: [number, number][] = [[6.4, 2.4], [7.3, 2.4], [4.9, 3.95], [4.0, 3.95]];
+    const windows: [number, number][] = [[-9.4, 2.75], [6.3, 2.75], [4.9, 3.62], [-9.4, 3.62]];
+    const wheelhouse: [number, number][] = [[0.8, 4.15], [4.6, 4.15], [3.7, 5.1], [0.8, 5.1]];
+    const bridgeGlass: [number, number][] = [[1.2, 4.45], [4.25, 4.45], [3.85, 4.95], [1.2, 4.95]];
+    const box = (w: number, h: number, d: number, x: number, y: number, z: number, color: string) =>
+        paint(new BoxGeometry(w, h, d).translate(x, y, z), color);
+    return mergeParts([
+        profile(hull, 1.3, 2.2, white),
+        profile(hull, 1.3, -2.2, white),
+        profile(body, 5.8, 0, blue),
+        profile(stripe, 0.08, 2.94, yellow),
+        profile(stripe, 0.08, -2.94, yellow),
+        profile(sweep, 0.08, 2.94, yellow),
+        profile(sweep, 0.08, -2.94, yellow),
+        profile(cabin, 5.4, 0, blue),
+        profile(windows, 0.06, 2.73, glass),
+        profile(windows, 0.06, -2.73, glass),
+        box(15.4, 0.25, 5.6, -2.7, 4.03, 0, white), // roof
+        profile(wheelhouse, 3, 0, white),
+        profile(bridgeGlass, 3.06, 0, glass),
+        box(0.12, 1.6, 0.12, 2, 5.9, 0, white), // mast
+        box(0.12, 0.08, 1.4, 2, 6.55, 0, white), // radar bar
+    ]);
+}
 
 function Ferry({ still }: { still: boolean }) {
     const ref = useRef<Group>(null);
     const t = useRef(DOCKED); // start at the pier, so the first frame shows a docked ferry
-    const geo = useMemo(() => mergeBoxes(FERRY_BOXES), []);
+    const geo = useMemo(() => cityCat(), []);
     useFrame((_, dt) => {
         if (!ref.current) return;
         if (!still) t.current = (t.current + dt) % CYCLE;
-        ref.current.position.set(ferryX(still ? DOCKED : t.current), -0.3, FERRY_LANE_Z);
+        ref.current.position.set(ferryX(still ? DOCKED : t.current), -0.35, FERRY_LANE_Z);
     });
     return (
         <group ref={ref}>
@@ -187,7 +223,7 @@ function Ferry({ still }: { still: boolean }) {
 }
 
 function ferryX(t: number): number {
-    const dock = PIER.x + 9.5; // alongside the end of the pier
+    const dock = PIER.x + PIER.w / 2 + 12.4; // stern alongside the pier's east side
     if (t < 8) return lerp(-60, dock, smooth(t / 8)); // arriving
     if (t < 16) return dock; // at the pier
     if (t < 26) return lerp(dock, 60, smooth((t - 16) / 10)); // leaving
