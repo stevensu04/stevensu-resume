@@ -62,6 +62,7 @@ solution: |
 | `meta` | list | The fact grid in the modal |
 | `callouts` | list | Highlighted panels under Problem or Solution |
 | `solutionHeading` | text | Overrides "Solution & Architecture" |
+| `world` | block | The project's card in `/world` — see [The /world card](#the-world-card) |
 
 ### Multi-line text
 
@@ -128,6 +129,28 @@ callouts:
 ```
 
 ---
+
+## The /world card
+
+A project can also stand somewhere in the walkable `/world` scene (`WORLD.md` §7, §8). Its title,
+`status.label` and URLs come from the fields above, so only the body is new:
+
+```yaml
+world:
+  zone: shed            # ferry, uq, gov, site, garage, shed or park
+  link: repo            # demo, repo, or projects (the /projects page)
+  linkLabel: Read the source on GitHub
+  card: |
+    The same GPU job emits several times more CO₂ depending on which grid powers the
+    datacentre, but region pickers only show price and latency. ...
+```
+
+- **Same facts, told another way.** First person, at most three sentences, ~45–60 words (the build
+  rejects anything over 75), ending on the boundary where one exists. Never copy a sentence from
+  `summary`, `problem` or `solution`.
+- `link: demo` or `link: repo` fails the build if the project has no such URL.
+- A card also needs an object to stand on: add one to `src/app/world/objects.ts`, or the build
+  fails saying which card has nowhere to go.
 
 ## Categories
 

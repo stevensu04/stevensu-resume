@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useState, type RefObject } from "react";
 import type { ThreeEvent } from "@react-three/fiber";
 import { PLACEMENTS, PROP_SOLIDS, SKYLINE } from "../placements";
-import { RIVER, SLAB, ZONES, type Zone } from "../zones";
+import { RIVER, SLAB } from "../zones";
+import { OBJECTS, type WorldObject } from "../objects";
 import KitInstances, { placementTransform, type Rect } from "./KitInstances";
 import Props, { PALETTE } from "./Props";
 import { shadedBox } from "./shading";
@@ -14,14 +15,14 @@ const RIVERBED = -0.8;
 
 /**
  * The block (WORLD.md §3, §6): the slab, the Kenney kit, the hand-made props and an invisible hit
- * area per zone. Scenery never takes part in picking; only the ground and the zones do.
+ * area per tappable object (objects.ts). Scenery never takes part in picking; only the ground and the objects do.
  */
 export default function Stage({
     skyline,
     still,
     solidsRef,
     onGround,
-    onZone,
+    onObject,
     onHover,
 }: {
     /** Draw Taipei across the river. Off when the camera looks from the river side (see Scene). */
@@ -30,8 +31,8 @@ export default function Stage({
     /** Filled here, read by Player: footprints Steven walks round. */
     solidsRef: RefObject<Rect[]>;
     onGround: (x: number, z: number) => void;
-    onZone: (zone: Zone) => void;
-    onHover: (zone: Zone | null) => void;
+    onObject: (object: WorldObject) => void;
+    onHover: (object: WorldObject | null) => void;
 }) {
     const kit = useKit();
 
@@ -68,29 +69,37 @@ export default function Stage({
             {skyline && <KitInstances kit={kit} placements={SKYLINE} tint={SKY_TINT} />}
             <Props still={still} />
 
-            {ZONES.map((zone) => (
-                <ZoneHit key={zone.id} zone={zone} onZone={onZone} onHover={onHover} />
+            {OBJECTS.map((object) => (
+                <ObjectHit key={object.id} object={object} onObject={onObject} onHover={onHover} />
             ))}
         </group>
     );
 }
 
-/** An invisible box over the zone that catches clicks, and a soft accent patch on hover. */
-function ZoneHit({ zone, onZone, onHover }: { zone: Zone; onZone: (z: Zone) => void; onHover: (z: Zone | null) => void }) {
+/** An invisible box over the object that catches taps, and a soft accent patch under it on hover. */
+function ObjectHit({
+    object,
+    onObject,
+    onHover,
+}: {
+    object: WorldObject;
+    onObject: (o: WorldObject) => void;
+    onHover: (o: WorldObject | null) => void;
+}) {
     const [hovered, setHovered] = useState(false);
     return (
-        <group position={[zone.x, 0, zone.z]}>
+        <group position={[object.x, 0, object.z]}>
             <mesh
-                position={[0, zone.h / 2, 0]}
+                position={[0, object.h / 2, 0]}
                 visible={false}
                 onClick={(e) => {
                     e.stopPropagation();
-                    onZone(zone);
+                    onObject(object);
                 }}
                 onPointerOver={(e) => {
                     e.stopPropagation();
                     setHovered(true);
-                    onHover(zone);
+                    onHover(object);
                     document.body.style.cursor = "pointer";
                 }}
                 onPointerOut={() => {
@@ -99,12 +108,12 @@ function ZoneHit({ zone, onZone, onHover }: { zone: Zone; onZone: (z: Zone) => v
                     document.body.style.cursor = "";
                 }}
             >
-                <boxGeometry args={[zone.w, zone.h, zone.d]} />
+                <boxGeometry args={[object.w, object.h, object.d]} />
             </mesh>
             {hovered && (
                 <mesh position={[0, 0.06, 0]} rotation-x={-Math.PI / 2} raycast={() => null}>
-                    <planeGeometry args={[zone.w, zone.d]} />
-                    <meshBasicMaterial color={PALETTE.accent} transparent opacity={0.16} depthWrite={false} />
+                    <planeGeometry args={[object.w + 0.6, object.d + 0.6]} />
+                    <meshBasicMaterial color={PALETTE.accent} transparent opacity={0.18} depthWrite={false} />
                 </mesh>
             )}
         </group>

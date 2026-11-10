@@ -20,4 +20,8 @@ export const KEY_MAP: Record<string, keyof MovementInput> = {
 };
 
 /** What the avatar should be doing this frame; Player writes it, Avatar reads it. */
-export type Motion = { state: "Idle" | "Walk" | "Run" };
+export type Motion = {
+    state: "Idle" | "Walk" | "Run";
+    /** Playback rate for the walk and run cycles, so the feet keep up when the tour hurries him. */
+    pace: number;
+};

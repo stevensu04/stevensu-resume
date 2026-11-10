@@ -2,7 +2,8 @@
 
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Color, PlaneGeometry, type Group, type MeshBasicMaterial, type ShaderMaterial } from "three";
+import { Color, MeshBasicMaterial, PlaneGeometry, type Group, type ShaderMaterial } from "three";
+import { withExplore } from "./explore";
 import { PIER } from "../placements";
 import { RIVER, SLAB } from "../zones";
 import { mergeBoxes, shadedBox, type BoxSpec } from "./shading";
@@ -31,11 +32,10 @@ const CRANE_YELLOW = "#e2b33c";
 
 export default function Props({ still }: { still: boolean }) {
     const statics = useMemo(() => mergeBoxes(STATIC_BOXES), []);
+    const staticsMaterial = useMemo(() => withExplore(new MeshBasicMaterial({ vertexColors: true })), []);
     return (
         <>
-            <mesh geometry={statics} raycast={() => null}>
-                <meshBasicMaterial vertexColors />
-            </mesh>
+            <mesh geometry={statics} material={staticsMaterial} raycast={() => null} />
             <River still={still} />
             <Ferry still={still} />
             <CraneJib still={still} />

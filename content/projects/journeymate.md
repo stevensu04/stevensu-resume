@@ -50,4 +50,14 @@ callouts:
     body: |
       Developed a gamified logic where users earn tokens via daily check-ins to handle AI query
       costs efficiently.
+
+# The project's card in /world (WORLD.md §7, §8). Title, status and URLs come from the fields above.
+world:
+  zone: park
+  link: demo
+  linkLabel: Open the demo
+  card: |
+    Travel planning is spread across five or more apps. JourneyMate puts it in one, with a token
+    economy — you earn tokens by checking in daily, and they meter what the AI costs to run. Vanilla
+    JavaScript, built in the UQ Ventures program.
 ---

@@ -33,6 +33,7 @@ export default function Player({
     position,
     target,
     input,
+    pace,
     solidsRef,
     step,
     still,
@@ -40,6 +41,8 @@ export default function Player({
     position: RefObject<Vector3>;
     target: RefObject<Vector3>;
     input: RefObject<MovementInput>;
+    /** Speed multiplier: 1 normally, more during the guided tour. */
+    pace: RefObject<number>;
     /** Footprints to walk round (filled by Stage once the kit has loaded). */
     solidsRef: RefObject<Rect[]>;
     /** Camera azimuth in 90° steps (§6: free orbit destroys the isometric look). */
@@ -52,7 +55,7 @@ export default function Player({
     const focus = useRef<Vector3>(null);
     const azimuth = useRef<number>(null);
     const running = useRef(false);
-    const motion = useRef<Motion>({ state: "Idle" });
+    const motion = useRef<Motion>({ state: "Idle", pace: 1 });
 
     useFrame((state, delta) => {
         const p = position.current;
@@ -83,7 +86,7 @@ export default function Player({
             if (dist > 0.01) {
                 // Decide once per tap whether this trip is a walk or a run.
                 if (motion.current.state === "Idle") running.current = dist > RUN_DISTANCE;
-                speed = running.current ? RUN_SPEED : WALK_SPEED;
+                speed = (running.current ? RUN_SPEED : WALK_SPEED) * pace.current;
                 toward.normalize();
             }
         }
@@ -109,7 +112,8 @@ export default function Player({
             if (body.current) body.current.rotation.y = Math.atan2(toward.x, toward.z);
             if (fwd || side) t.copy(p);
         }
-        motion.current.state = moved ? (speed > WALK_SPEED ? "Run" : "Walk") : "Idle";
+        motion.current.state = moved ? (speed > WALK_SPEED * pace.current ? "Run" : "Walk") : "Idle";
+        motion.current.pace = pace.current;
 
         if (body.current) body.current.position.copy(p);
         if (marker.current) {

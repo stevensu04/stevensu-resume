@@ -79,6 +79,7 @@ export default function Avatar({ motion, still }: { motion: RefObject<Motion>; s
             actions[next]?.reset().fadeIn(FADE_SECONDS).play();
             current.current = next;
         }
+        actions[current.current]?.setEffectiveTimeScale(current.current === "Idle" ? 1 : motion.current.pace);
         // Reduced motion: he holds the first frame of Idle (§10: "the avatar stays in idle").
         mixer.update(still ? 0 : dt);
         // Hidden until the mixer has posed him, so he never flashes in the bind (A-) pose.

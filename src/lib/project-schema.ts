@@ -30,6 +30,26 @@ export interface ProjectCallout {
     quote?: boolean;
 }
 
+/** The /world zones a project card can stand in (WORLD.md §3). */
+export const WORLD_ZONES = ["ferry", "uq", "gov", "site", "garage", "shed", "park"] as const;
+export type WorldZone = (typeof WORLD_ZONES)[number];
+
+/** Which existing field a /world card links out to. The URL itself is never repeated. */
+export const WORLD_LINKS = ["demo", "repo", "projects"] as const;
+export type WorldLinkKind = (typeof WORLD_LINKS)[number];
+
+/**
+ * A project's card in the /world scene (WORLD.md §7, §8). Title, status label and URLs come from
+ * the project's own fields, so the card can't drift from /projects. Only the body is new: the
+ * same facts told another way, first person, ending on the boundary.
+ */
+export interface ProjectWorldCard {
+    zone: WorldZone;
+    link: WorldLinkKind;
+    linkLabel: string;
+    card: string;
+}
+
 export interface Project {
     slug: string;
     title: string;
@@ -59,6 +79,8 @@ export interface Project {
     solution: string;
     solutionHeading?: string;
     callouts?: ProjectCallout[];
+    /** Optional: the project's card in /world. */
+    world?: ProjectWorldCard;
 }
 
 /** Filter options, derived from the content so a new category needs no code change. */

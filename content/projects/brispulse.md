@@ -57,4 +57,15 @@ callouts:
       Custom cost penalties designed directly into the routing engine nodes. This mathematical
       firewall constrains alternative calmer routes to high-capacity corridors, preventing the
       harmful redistribution of crowds into residential or commuter paths.
+
+# The project's card in /world (WORLD.md §7, §8). Title, status and URLs come from the fields above.
+world:
+  zone: park
+  link: projects
+  linkLabel: Read the case study
+  card: |
+    Mapping tools optimise travel time and ignore how crowded a station exit feels. I scoped the system,
+    designed the data architecture and prototyped the interface — including spatial-equity guardrails,
+    so a "calmer" route never redistributes crowds onto residential streets. The Django and
+    GTFS-Realtime stack is proposed, not built.
 ---

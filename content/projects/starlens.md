@@ -62,4 +62,14 @@ callouts:
       Rather than a generic LLM wrapper, the Intelligence Engine dynamically injects live
       database context — entity metrics, market share, regulatory capacity thresholds — into
       each prompt, producing audit-ready B2B pitches instead of generic AI text.
+
+# The project's card in /world (WORLD.md §7, §8). Title, status and URLs come from the fields above.
+world:
+  zone: ferry
+  link: projects
+  linkLabel: Read the case study
+  card: |
+    Taiwan's green-power trading desk ran on scattered Excel exports and manual crawls. Four weeks, team
+    of two: I built nightly Airflow pipelines into MongoDB and took page latency from 4s to under 2s.
+    The interface is proprietary, so this door stays shut.
 ---

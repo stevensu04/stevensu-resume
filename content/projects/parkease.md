@@ -42,4 +42,14 @@ callouts:
     body: |
       Research confirmed that 86% of surveyed users at UQ St Lucia and Toowong reported high
       frustration with current parking arrangements.
+
+# The project's card in /world (WORLD.md §7, §8). Title, status and URLs come from the fields above.
+world:
+  zone: park
+  link: demo
+  linkLabel: Open the prototype
+  card: |
+    86% of the drivers we surveyed at UQ St Lucia and Toowong reported high frustration finding a park.
+    Four weeks, three designers: I ran the heuristic evaluation and the usability testing, and designed
+    the interface. It's a Figma prototype — clickable, but nothing is wired to a sensor.
 ---

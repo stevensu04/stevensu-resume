@@ -3,15 +3,15 @@
  * +z is south, away from it. The snake route runs row by row: 1 → 3 along the river, 4 → 6 across
  * the street, then 7 → exit at the back.
  *
- * A zone here is only its hit area and card. What stands inside it lives in `placements.ts`. Card copy
- * and the `world:` front-matter field arrive in M4 (§8), so nothing here duplicates content.
+ * A zone is a footprint: walking into it explores it (§5), and it greys out until then. What stands
+ * in it lives in `placements.ts`; what you can tap lives in `objects.ts`; the copy lives in content.
  */
 export type Zone = {
     id: string;
     /** 1–7 for content zones; null for the Gallery and the exit, which are facilities (§3). */
     number: number | null;
     name: string;
-    /** The hit area: centre of its footprint, footprint size, and height. Invisible. */
+    /** Centre of the footprint, its size, and height. Metres. */
     x: number;
     z: number;
     w: number;
@@ -40,7 +40,3 @@ export const STREET = { z: -4 };
 /** Where Steven may stand: the slab minus the river and a margin. Buildings are cut out in placements.ts. */
 export const WALKABLE = { minX: -38.5, maxX: 38.5, minZ: RIVER.maxZ + 1.2, maxZ: 30.5 };
 
-/** The spot just south of a zone's hit area, where Steven stops when the zone is clicked. */
-export function standPoint(zone: Zone): [number, number] {
-    return [zone.x, Math.min(zone.z + zone.d / 2 + 1.2, WALKABLE.maxZ)];
-}

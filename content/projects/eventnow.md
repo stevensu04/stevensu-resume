@@ -56,4 +56,14 @@ callouts:
       row-locked counter, uses JSON mode and validates the output against the real venue list, and
       sanitises model-generated Markdown before it reaches a template. The site still boots and
       degrades gracefully when no API key is configured.
+
+# The project's card in /world (WORLD.md §7, §8). Title, status and URLs come from the fields above.
+world:
+  zone: uq
+  link: demo
+  linkLabel: Try the demo
+  card: |
+    Small Brisbane organisers juggle listings, registrations and attendee lists across separate tools.
+    EventNow does the lot — type "tech meetup at Fortitude Valley next Friday for 80 people" and an
+    agentic parser fills the form, constrained to real venues. Django, HTMX, DRF, Postgres, built solo.
 ---

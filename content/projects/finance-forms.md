@@ -34,4 +34,14 @@ problem: |
 solution: |
   Automated digital workflows built on Power Apps, Power Automate and SharePoint, projected to
   reduce processing time by 30%.
+
+# The project's card in /world (WORLD.md §7, §8). Title, status and URLs come from the fields above.
+world:
+  zone: gov
+  link: projects
+  linkLabel: Read the case study
+  card: |
+    The department processed invoices on paper, so validation depended on whoever happened to be
+    looking. I built the digital approval workflow on Power Apps, Power Automate and SharePoint —
+    projected to cut processing time by 30%. It's a government interface, so the glass stays frosted.
 ---

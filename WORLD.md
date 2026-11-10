@@ -732,6 +732,61 @@ Not yet:
 - The camera doesn't ease on Tab between objects yet. That's M5's keyboard pass.
 - A real phone, still.
 
+### M4 results (11 Nov 2026)
+
+**Passed locally** in dev and on `next start`. The world now says something.
+
+- **Content is single-source (§8).**
+  - The eight project cards live in each project's front matter as `world: { zone, link, linkLabel,
+    card }`. `projects.ts` validates them: the zone and link kind must be known, the linked URL
+    must exist, and the body must be 75 words or fewer.
+  - The other eight cards live in `src/lib/world.ts`: E.SUN, the crossing, the degree, off the
+    timetable, one more thing, Skyveil, the Gallery and the exit.
+  - The server page joins both sets and **fails the build** if a card has no object or an object
+    has no card. `CONTENT.md` documents the field.
+- **Tapping an object opens its card.** `objects.ts` places 16 tappable objects, one per card, over
+  the model or prop that stands for it. Zones are no longer tappable as a whole.
+  - Each card follows the §7 anatomy: name · status or org line, body, one way out.
+  - External links open in a new tab and say so to screen readers.
+- **The explorer counter** sits bottom left (`3 of 7 explored`). A zone counts as explored when
+  Steven walks into it (with 2 m of slack) or when one of its cards is opened.
+- **Light-up on visit (§5)** comes from one shader patch, `scene/explore.ts`, on the four kit
+  materials and the merged props.
+  - Inside an unexplored zone, colour is pulled 70% towards grey. It fades to full colour over
+    about 0.8 s, or instantly under reduced motion.
+  - The street, trees outside zones and the skyline stay in colour.
+- **The Gallery unlocks at 7 of 7.** It shows seven slots with the draft captions from §7. The photos
+  are `null` until Steven supplies them, and each empty slot says "Photo to come".
+- **The exit board** shows `site.summary`, the availability line, and CV, Email, LinkedIn and GitHub
+  links. `site.workRights` is still `null`, so that clause is left out.
+- **The intro** appears once the block loads, with two buttons: *Take the one-minute tour* and *Walk
+  it yourself*.
+- **The tour** has nine stops: the crossing, degree, Finance Forms, Formosa Bauhaus, Skyveil, Eco
+  Router, BrisPulse, the Gallery and the exit.
+  - Steven moves at 1.4× pace, with the walk cycle sped up to match. Each stop holds 3 s after he
+    arrives. The estimate is about 64 s, so the button says "one-minute", not "60-second".
+  - Previous, Pause, Next and Exit are always there (WCAG 2.2.2).
+  - Tapping the ground or pressing a movement key ends the tour.
+  - Finishing it explores every zone. Under reduced motion it becomes a stepper with no
+    auto-advance.
+- **Top right, always:** *Read the CV* and *All projects*, shortened to *CV* and *Projects* on phones.
+  On phones the controls stack in two rows.
+
+Measured:
+
+- `/world` JS is 494.8 kB, so M4 added about 3 kB, and **about 57 kB of headroom is left.**
+- `/` is 201.7 kB and `/projects` is 204.5 kB, both unchanged. The `world` types added to
+  `project-schema.ts` are constants only.
+
+Still open. All of it is content, not code:
+
+1. **Seven Gallery photos** and their final captions (`GALLERY_PHOTOS` in `src/lib/world.ts`).
+2. **`site.workRights`**, shown on the exit board.
+3. **Veilcore** (§14 Q1). Skyveil's card links to `/about#experience` until there's a project file.
+4. **`/projects/[slug]`** (`PLAN.md` §6). Every "Read the case study" link lands on `/projects`
+   until that route exists.
+5. The E.SUN sign lettering, carried over from M2.
+
 ---
 
 ## 12. Do these first (from `PLAN.md`)

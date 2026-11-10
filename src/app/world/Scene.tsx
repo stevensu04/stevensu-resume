@@ -1,49 +1,115 @@
 "use client";
 
-import { Suspense, useEffect, useRef, useState } from "react";
-import { Canvas } from "@react-three/fiber";
+import { Suspense, useEffect, useMemo, useRef, useState, type RefObject } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { Vector3 } from "three";
-import { ZONES, standPoint, type Zone } from "./zones";
+import type { WorldCard } from "@/lib/world";
+import { ZONES } from "./zones";
+import { OBJECTS, TOUR, objectStandPoint } from "./objects";
 import Stage from "./scene/Stage";
 import Player from "./scene/Player";
 import CardAnchor from "./scene/CardAnchor";
 import type { Rect } from "./scene/KitInstances";
 import { clampToGround } from "./scene/walk";
 import { EMPTY_INPUT, KEY_MAP, type MovementInput } from "./scene/input";
+import { EXPLORE_ZONE_IDS, exploreUniforms } from "./scene/explore";
+import { Counter, DPad, Intro, OutLinks, TourBar, WorldCardView } from "./ui";
+
+/** During the tour Steven moves at 1.4× his normal pace: nine stops in about 65 s. */
+const TOUR_PACE = 1.4;
+/** Seconds a tour stop holds after he arrives, before moving on. Pause is always there. */
+const TOUR_DWELL = 3;
+const WALK_SPEED = 2.2;
+const RUN_SPEED = 4.4;
+
+const OBJECT_BY_ID = new Map(OBJECTS.map((o) => [o.id, o]));
 
 /**
- * The /world scene (WORLD.md §11). M1 gave it the orthographic camera, tap-to-move and DOM cards;
- * M2 the Kenney block, hand-made props and idle motion; M3 the avatar, the keyboard and the d-pad.
- * Real card copy, the counter and the tour arrive in M4.
+ * The /world scene (WORLD.md §11).
+ *  M1  orthographic camera, tap-to-move, DOM cards
+ *  M2  the Kenney block, hand-made props, idle motion
+ *  M3  the avatar, keyboard and d-pad
+ *  M4  real cards from content, explorer counter and light-up, Gallery unlock, the guided tour
  */
-export default function Scene() {
-    // Steven starts at the ferry landing, where the career starts (§3).
-    const [start] = useState(() => {
-        const [x, z] = standPoint(ZONES[0]);
-        return new Vector3(x, 0, z);
-    });
+export default function Scene({ cards }: { cards: WorldCard[] }) {
+    const cardById = useMemo(() => new Map(cards.map((c) => [c.id, c])), [cards]);
+
+    // Steven starts on the ferry landing's side of the street, where the career starts (§3).
+    const [start] = useState(() => new Vector3(-26, 0, -10.8));
     const position = useRef(start.clone());
     const target = useRef(start.clone());
+    const pace = useRef(1);
     const card = useRef<HTMLDivElement>(null);
     const solidsRef = useRef<Rect[]>([]);
     const input = useRef<MovementInput>({ ...EMPTY_INPUT });
 
-    const [open, setOpen] = useState<Zone | null>(null);
-    const [hover, setHover] = useState<Zone | null>(null);
+    const [open, setOpen] = useState<string | null>(null);
+    const [hover, setHover] = useState<string | null>(null);
     const [step, setStep] = useState(0);
+    const [explored, setExplored] = useState<string[]>([]);
+    const [intro, setIntro] = useState(true);
+    const [tour, setTour] = useState<{ index: number; ms: number } | null>(null);
+    const [paused, setPaused] = useState(false);
     // False until kit.glb has loaded and the block has mounted (Stage suspends until then).
     const [ready, setReady] = useState(false);
     // The scene only exists in the browser (`ssr: false`), so `window` is safe to read here.
     const [still] = useState(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+
+    const explore = (zone: string) => setExplored((prev) => (prev.includes(zone) || !EXPLORE_ZONE_IDS.includes(zone) ? prev : [...prev, zone]));
 
     const walkTo = (x: number, z: number) => {
         const [cx, cz] = clampToGround(x, z);
         target.current.set(cx, 0, cz);
     };
 
+    /** Never gate information (§2): the card opens at once, and Steven walks over to it. */
+    const openCard = (id: string) => {
+        const object = OBJECT_BY_ID.get(id);
+        const c = cardById.get(id);
+        if (!object || !c) return;
+        setOpen(id);
+        explore(c.zone);
+        const [x, z] = objectStandPoint(object);
+        walkTo(x, z);
+    };
+
+    const endTour = () => {
+        setTour(null);
+        setPaused(false);
+        pace.current = 1;
+    };
+
+    const goToStop = (index: number) => {
+        if (index >= TOUR.length) {
+            // Finishing the tour counts every zone as explored (§2), so the Gallery opens.
+            endTour();
+            setExplored(EXPLORE_ZONE_IDS);
+            return;
+        }
+        const id = TOUR[index];
+        const object = OBJECT_BY_ID.get(id)!;
+        const [x, z] = objectStandPoint(object);
+        // Same rule as Player: a leg over 14 m is run, a shorter one walked.
+        const distance = Math.hypot(x - position.current.x, z - position.current.z);
+        const travel = distance / ((distance > 14 ? RUN_SPEED : WALK_SPEED) * TOUR_PACE);
+        pace.current = TOUR_PACE;
+        setIntro(false);
+        setTour({ index, ms: (travel + TOUR_DWELL) * 1000 });
+        openCard(id);
+    };
+
+    // Auto-advance (§2). Under reduced motion the tour is a stepper: no timer, cuts between stops.
+    useEffect(() => {
+        if (!tour || paused || still) return;
+        const timer = setTimeout(() => goToStop(tour.index + 1), tour.ms);
+        return () => clearTimeout(timer);
+        // goToStop is recreated each render; the stop and its duration are what matter here.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [tour, paused, still]);
+
     // Keyboard (§10): arrows and WASD move, Shift runs, Q and E rotate the view, Escape closes the
     // card. Held keys are tracked as a set, so releasing one of two keys bound to the same move
-    // (W and ↑) doesn't stop him.
+    // (W and ↑) doesn't stop him. Taking the controls ends the tour.
     useEffect(() => {
         const pressed = new Set<string>();
         const typing = (e: KeyboardEvent) =>
@@ -53,8 +119,12 @@ export default function Scene() {
             const control = KEY_MAP[e.code];
             if (control) {
                 e.preventDefault(); // arrows would scroll the page
-                if (e.type === "keydown") pressed.add(e.code);
-                else pressed.delete(e.code);
+                if (e.type === "keydown") {
+                    pressed.add(e.code);
+                    setTour(null);
+                    pace.current = 1;
+                    setIntro(false);
+                } else pressed.delete(e.code);
                 input.current[control] = [...pressed].some((code) => KEY_MAP[code] === control);
                 return;
             }
@@ -78,8 +148,12 @@ export default function Scene() {
         };
     }, []);
 
-    // Leaving the page with a block hovered must not leave the pointer cursor stuck on <body>.
+    // Leaving the page with an object hovered must not leave the pointer cursor stuck on <body>.
     useEffect(() => () => void (document.body.style.cursor = ""), []);
+
+    const openedCard = open ? cardById.get(open) : undefined;
+    const hoverCard = hover ? cardById.get(hover) : undefined;
+    const galleryOpen = explored.length === EXPLORE_ZONE_IDS.length;
 
     return (
         <div className="relative h-[calc(100svh-5rem)] min-h-[480px] w-full touch-manipulation overflow-hidden bg-[#eef1f5]">
@@ -99,46 +173,53 @@ export default function Scene() {
                         skyline={step === 0 || step === 3}
                         onGround={(x, z) => {
                             setOpen(null);
+                            setIntro(false);
+                            endTour();
                             walkTo(x, z);
                         }}
-                        onZone={(zone) => {
-                            // Never gate information (§2): the card opens at once, and Steven walks over.
-                            setOpen(zone);
-                            const [x, z] = standPoint(zone);
-                            walkTo(x, z);
+                        onObject={(object) => {
+                            setIntro(false);
+                            endTour();
+                            openCard(object.id);
                         }}
-                        onHover={setHover}
+                        onHover={(o) => setHover(o?.id ?? null)}
                     />
                     <Ready onReady={() => setReady(true)} />
                 </Suspense>
-                <Player position={position} target={target} input={input} solidsRef={solidsRef} step={step} still={still} />
-                <CardAnchor zone={open} card={card} />
+                <Player position={position} target={target} input={input} pace={pace} solidsRef={solidsRef} step={step} still={still} />
+                <CardAnchor object={open ? (OBJECT_BY_ID.get(open) ?? null) : null} card={card} />
+                <ZoneWatcher position={position} onEnter={explore} />
+                <ExploreFade explored={explored} still={still} />
             </Canvas>
 
-            <div className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between gap-3 p-4">
-                <p className="pointer-events-auto rounded-full bg-white/90 px-4 py-1.5 text-xs font-semibold text-gray-700 shadow-sm">
-                    {hover ? zoneLabel(hover) : "Tap the ground to walk · tap a building to open it"}
-                </p>
-                <div className="pointer-events-auto flex gap-2">
-                    <button
-                        type="button"
-                        onClick={() => setStep((s) => (s + 3) % 4)}
-                        aria-label="Rotate view left (Q)"
-                        className="h-9 w-9 rounded-full bg-white text-sm font-bold text-gray-700 shadow-sm hover:text-blue-600 focus-visible:outline-2 focus-visible:outline-blue-600"
-                    >
-                        ⟲
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => setStep((s) => (s + 1) % 4)}
-                        aria-label="Rotate view right (E)"
-                        className="h-9 w-9 rounded-full bg-white text-sm font-bold text-gray-700 shadow-sm hover:text-blue-600 focus-visible:outline-2 focus-visible:outline-blue-600"
-                    >
-                        ⟳
-                    </button>
+            {/* Phones: links and rotation on the first row, the hint or tour bar under them. */}
+            <div className="pointer-events-none absolute inset-x-0 top-0 flex flex-col-reverse items-start gap-2 p-4 sm:flex-row sm:justify-between">
+                {tour ? (
+                    <TourBar
+                        index={tour.index}
+                        total={TOUR.length}
+                        paused={paused}
+                        autoAdvance={!still}
+                        onPrev={() => goToStop(Math.max(0, tour.index - 1))}
+                        onNext={() => goToStop(tour.index + 1)}
+                        onPause={() => setPaused((p) => !p)}
+                        onExit={endTour}
+                    />
+                ) : (
+                    <p className="pointer-events-auto rounded-full bg-white/90 px-4 py-1.5 text-xs font-semibold text-gray-700 shadow-sm">
+                        {hoverCard ? hoverCard.title : "Tap the ground to walk · tap a building to open it"}
+                    </p>
+                )}
+                <div className="pointer-events-auto flex items-center gap-2 self-end sm:flex-col sm:items-end sm:self-auto">
+                    <OutLinks />
+                    <div className="flex gap-2">
+                        <RotateButton label="Rotate view left (Q)" glyph="⟲" onClick={() => setStep((s) => (s + 3) % 4)} />
+                        <RotateButton label="Rotate view right (E)" glyph="⟳" onClick={() => setStep((s) => (s + 1) % 4)} />
+                    </div>
                 </div>
             </div>
 
+            <Counter explored={explored.length} total={EXPLORE_ZONE_IDS.length} />
             <DPad inputRef={input} />
 
             {!ready && (
@@ -147,48 +228,30 @@ export default function Scene() {
                 </p>
             )}
 
-            {open && <ZoneCard key={open.id} zone={open} cardRef={card} onClose={() => setOpen(null)} />}
+            {ready && intro && !openedCard && (
+                <Intro
+                    onTour={() => goToStop(0)}
+                    onWalk={() => setIntro(false)}
+                />
+            )}
+
+            {openedCard && (
+                <WorldCardView key={openedCard.id} card={openedCard} cardRef={card} galleryOpen={galleryOpen} onClose={() => setOpen(null)} />
+            )}
         </div>
     );
 }
 
-/**
- * The secondary touch input (§0: tap-to-move first, d-pad second), shown on coarse pointers only.
- * Directions are relative to the view, like the arrow keys. Adapted from DECO7381 Team 41's
- * `storefront__touch` buttons, with permission: pointer capture keeps a held button pressed even
- * when the thumb slides off it.
- */
-function DPad({ inputRef }: { inputRef: React.RefObject<MovementInput> }) {
-    const buttons = [
-        ["forward", "↑", "Walk away from the camera", "col-start-2 row-start-1"],
-        ["left", "←", "Walk left", "col-start-1 row-start-2"],
-        ["right", "→", "Walk right", "col-start-3 row-start-2"],
-        ["backward", "↓", "Walk towards the camera", "col-start-2 row-start-3"],
-    ] as const;
-    const set = (control: keyof MovementInput, on: boolean) => {
-        inputRef.current[control] = on;
-    };
+function RotateButton({ label, glyph, onClick }: { label: string; glyph: string; onClick: () => void }) {
     return (
-        <div aria-label="Movement controls" role="group" className="absolute bottom-4 right-4 hidden select-none grid-cols-3 grid-rows-3 gap-1 pointer-coarse:grid">
-            {buttons.map(([control, icon, label, place]) => (
-                <button
-                    key={control}
-                    type="button"
-                    aria-label={label}
-                    className={`${place} h-12 w-12 touch-none rounded-full bg-white/90 text-lg font-bold text-gray-700 shadow-sm active:bg-blue-600 active:text-white`}
-                    onPointerDown={(e) => {
-                        e.preventDefault();
-                        e.currentTarget.setPointerCapture(e.pointerId);
-                        set(control, true);
-                    }}
-                    onPointerUp={() => set(control, false)}
-                    onPointerCancel={() => set(control, false)}
-                    onLostPointerCapture={() => set(control, false)}
-                >
-                    {icon}
-                </button>
-            ))}
-        </div>
+        <button
+            type="button"
+            onClick={onClick}
+            aria-label={label}
+            className="h-9 w-9 rounded-full bg-white text-sm font-bold text-gray-700 shadow-sm hover:text-blue-600 focus-visible:outline-2 focus-visible:outline-blue-600"
+        >
+            {glyph}
+        </button>
     );
 }
 
@@ -198,45 +261,29 @@ function Ready({ onReady }: { onReady: () => void }) {
     return null;
 }
 
-function zoneLabel(zone: Zone): string {
-    return zone.number === null ? zone.name : `${zone.number} · ${zone.name}`;
+/** Walking into a content zone explores it (§2). Fires only when the zone underfoot changes. */
+function ZoneWatcher({ position, onEnter }: { position: RefObject<Vector3>; onEnter: (zone: string) => void }) {
+    const last = useRef<string | null>(null);
+    useFrame(() => {
+        const { x, z } = position.current;
+        // A little slack round each zone: standing at its door counts.
+        const zone = ZONES.find((r) => Math.abs(x - r.x) < r.w / 2 + 2 && Math.abs(z - r.z) < r.d / 2 + 2)?.id ?? null;
+        if (zone !== last.current) {
+            last.current = zone;
+            if (zone) onEnter(zone);
+        }
+    });
+    return null;
 }
 
-/**
- * Pinned above its block on wider screens (CardAnchor writes --card-x/--card-y), a bottom sheet on
- * phones so it never covers the zone you just tapped. Copy is a placeholder until M4 (§7, §8).
- */
-function ZoneCard({ zone, cardRef, onClose }: { zone: Zone; cardRef: React.RefObject<HTMLDivElement | null>; onClose: () => void }) {
-    const close = useRef<HTMLButtonElement>(null);
-    useEffect(() => close.current?.focus(), []);
-    const titleId = `zone-card-${zone.id}`;
-
-    return (
-        <div
-            ref={cardRef}
-            role="dialog"
-            aria-labelledby={titleId}
-            data-testid="zone-card"
-            className="absolute inset-x-3 bottom-3 rounded-2xl bg-white p-5 shadow-lg ring-1 ring-black/5 sm:inset-x-auto sm:bottom-auto sm:left-[var(--card-x,50%)] sm:top-[var(--card-y,50%)] sm:w-80 sm:-translate-x-1/2 sm:-translate-y-[calc(100%+12px)]"
-        >
-            <div className="flex items-start justify-between gap-3">
-                <h2 id={titleId} className="text-base font-bold text-gray-900">
-                    {zoneLabel(zone)}
-                </h2>
-                <button
-                    ref={close}
-                    type="button"
-                    onClick={onClose}
-                    aria-label="Close"
-                    className="-m-1 rounded-full p-1 text-gray-400 hover:text-gray-900 focus-visible:outline-2 focus-visible:outline-blue-600"
-                >
-                    ✕
-                </button>
-            </div>
-            <p className="mt-2 text-sm leading-relaxed text-gray-600">
-                {zone.number === null ? "A facility, not a zone." : `Zone ${zone.number} of 7.`} The card copy arrives in M4.
-            </p>
-        </div>
-    );
+/** Eases each explored zone from grey to full colour over ~0.8 s; instantly under reduced motion. */
+function ExploreFade({ explored, still }: { explored: string[]; still: boolean }) {
+    useFrame((_, dt) => {
+        const lit = exploreUniforms.uZoneLit.value;
+        EXPLORE_ZONE_IDS.forEach((id, i) => {
+            const goal = explored.includes(id) ? 1 : 0;
+            lit[i] = still ? goal : lit[i] + (goal - lit[i]) * Math.min(1, dt * 4);
+        });
+    });
+    return null;
 }
-

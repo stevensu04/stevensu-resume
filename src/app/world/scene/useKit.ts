@@ -5,6 +5,7 @@ import { useLoader } from "@react-three/fiber";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import { Box3, Matrix4, Mesh, MeshBasicMaterial, type BufferGeometry, type Material, type Texture } from "three";
+import { withExplore } from "./explore";
 
 /** One drawable piece of a kit model, in the model's own space. */
 export type KitPart = { geometry: BufferGeometry; material: MeshBasicMaterial; matrix: Matrix4 };
@@ -31,7 +32,7 @@ export function useKit(): Map<string, KitModel> {
             let b = basic.get(m);
             if (!b) {
                 const src = m as Material & { map?: Texture | null };
-                b = new MeshBasicMaterial({ map: src.map ?? null });
+                b = withExplore(new MeshBasicMaterial({ map: src.map ?? null }));
                 basic.set(m, b);
             }
             return b;

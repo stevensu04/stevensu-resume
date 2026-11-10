@@ -66,4 +66,15 @@ callouts:
       mixing them silently would be wrong. Eco Router rebuilds US and Canadian grid intensities
       from each grid's generation mix using Ember's lifecycle factors, and the update script
       refuses to write new data if the US total drifts more than 5% from Ember's published figure.
+
+# The project's card in /world (WORLD.md §7, §8). Title, status and URLs come from the fields above.
+world:
+  zone: shed
+  link: repo
+  linkLabel: Read the source on GitHub
+  card: |
+    The same GPU job emits several times more CO₂ depending on which grid powers the datacentre, but
+    region pickers only show price and latency. Eco Router maps all 134 AWS, Google Cloud and Azure
+    regions to their grids so an agent can ask which is cleanest. The source is public — that's the
+    point of this one.
 ---

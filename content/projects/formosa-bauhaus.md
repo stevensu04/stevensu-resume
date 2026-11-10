@@ -61,4 +61,15 @@ callouts:
       Each Meshy generation spends real credits from one shared account. I added a backend
       guard that checks the live provider balance and refuses to start a run below a reserve,
       replacing a per-machine placeholder budget that couldn't see what teammates had spent.
+
+# The project's card in /world (WORLD.md §7, §8). Title, status and URLs come from the fields above.
+world:
+  zone: site
+  link: projects
+  linkLabel: Read the case study
+  card: |
+    Single-image 3D generators turn one product photo into a whole mesh, so most of what a shopper
+    rotates was never photographed — it was inferred. Our storefront labels which surfaces came from
+    evidence and which the AI invented. Team of six; I built the merchant console and joined it to the
+    live backend.
 ---

@@ -14,7 +14,12 @@ import path from "node:path";
 import matter from "gray-matter";
 import {
     TONES,
+    WORLD_LINKS,
+    WORLD_ZONES,
     type Project,
+    type ProjectWorldCard,
+    type WorldLinkKind,
+    type WorldZone,
     type ProjectCallout,
     type ProjectMeta,
     type Tone,
@@ -99,6 +104,28 @@ function parseCallouts(file: string, value: unknown): ProjectCallout[] | undefin
     });
 }
 
+function parseWorld(file: string, value: unknown, data: Raw): ProjectWorldCard | undefined {
+    if (value === undefined) return undefined;
+    const w = value as Raw;
+    if (!WORLD_ZONES.includes(w?.zone as WorldZone)) {
+        throw new ContentError(file, `world.zone is "${String(w?.zone)}"; expected one of ${WORLD_ZONES.join(", ")}`);
+    }
+    if (!WORLD_LINKS.includes(w.link as WorldLinkKind)) {
+        throw new ContentError(file, `world.link is "${String(w.link)}"; expected one of ${WORLD_LINKS.join(", ")}`);
+    }
+    // A card that links to a field the project doesn't have would ship a dead button.
+    if ((w.link === "demo" || w.link === "repo") && typeof data[w.link] !== "string") {
+        throw new ContentError(file, `world.link is "${w.link}" but the project has no "${w.link}" URL`);
+    }
+    if (typeof w.linkLabel !== "string" || !w.linkLabel.trim()) throw new ContentError(file, `world.linkLabel is required`);
+    if (typeof w.card !== "string" || !w.card.trim()) throw new ContentError(file, `world.card is required`);
+    const card = w.card.trim().replace(/\s+/g, " ");
+    const words = card.split(" ").length;
+    // §7: at most three sentences, ~45–60 words. A little slack, never a wall of text.
+    if (words > 75) throw new ContentError(file, `world.card is ${words} words; keep it under 75 (WORLD.md §7)`);
+    return { zone: w.zone as WorldZone, link: w.link as WorldLinkKind, linkLabel: w.linkLabel.trim(), card };
+}
+
 function parseProject(file: string, data: Raw): Project {
     const slug = optionalString(file, data, "slug") ?? file.replace(/\.md$/, "");
 
@@ -137,6 +164,7 @@ function parseProject(file: string, data: Raw): Project {
         solution: requireString(file, data, "solution"),
         solutionHeading: optionalString(file, data, "solutionHeading"),
         callouts: parseCallouts(file, data.callouts),
+        world: parseWorld(file, data.world, data),
     };
 }
 
