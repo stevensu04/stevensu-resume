@@ -20,7 +20,7 @@ export default function WorldShell() {
 /** Same box as the canvas, so nothing jumps when the scene arrives. Becomes the poster in M1. */
 function ScenePlaceholder() {
     return (
-        <div className="flex h-[70vh] min-h-[420px] w-full items-center justify-center bg-gray-50">
+        <div className="flex h-[calc(100svh-5rem)] min-h-[480px] w-full items-center justify-center bg-[#eef1f5]">
             <p className="text-sm font-medium text-gray-500">Loading the world…</p>
         </div>
     );

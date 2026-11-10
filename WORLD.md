@@ -581,6 +581,49 @@ spinning cube. These are script bytes, gzip, measured on `next start` in the bro
 **Asset kit decided: Kenney** (§6). Ship M1 behind the unlisted URL within the first week, so something
 real exists on the internet early.
 
+### M1 results (11 Nov 2026)
+
+**Passed locally**, in dev and on `next start`. The parts:
+
+- `zones.ts`: the §3 layout as data (metres, +z away from the river), plus the slab, river and walkable
+  bounds.
+- `scene/Stage.tsx`: the slab, river, Taipei skyline and one grey block per zone.
+- `scene/Player.tsx`: the kinematic walk and the camera rig.
+- `scene/CardAnchor.tsx`: projects the open zone onto its DOM card.
+- `scene/shading.ts`: boxes whose faces carry fixed light in vertex colours, so even the placeholders
+  use `MeshBasicMaterial` with no real-time light (§6).
+
+What works:
+
+- Tap or click the ground and Steven walks there at 2.2 m/s. Clicking the river clamps the target to
+  the bank.
+- Tap a block and its card opens at once while he walks over (§2: never gate information).
+- Focus moves to the card's close button. Escape or tapping the ground closes the card.
+- Q, E and two buttons rotate the view in 90° steps, with easing. Under reduced motion there is no
+  easing and he moves instantly.
+- On `sm` and up the card is pinned above its block. On a phone it is a bottom sheet.
+
+Bundle:
+
+- `/`, `/projects` and `/about` load byte-identical chunks to the M0 build (same hashes). To check
+  this, M1 was stashed, M0 rebuilt, and the two compared.
+- `/world` totals 446.7 kB against the shared 201.7 kB, so it adds about 245 kB, still inside the
+  350 kB budget. All the world code lives in the three + R3F chunk (247 kB gzip).
+- **Measure on a second navigation.** The first page load after `next start` over-counted by about
+  13 kB, and that is where M0's 210.0 kB came from. The real shared baseline is 201.7 kB.
+
+Decisions made while building:
+
+- **The skyline hides when the camera looks from the river side** (azimuth steps 1 and 2). From there
+  it would stand between the camera and the block, and a backdrop only works behind.
+- **Zoom:** about 48 m across on a desktop, so Steven is about 37 px tall. Pixels per metre never drop
+  below 14, so on a phone he stays about 24 px tall, and the camera follows him. That is shorter than
+  §6's 60–80 px, which was a texture-budget estimate. Revisit with the real avatar in M3.
+- **Walkable area is a rectangle** for now. The polygon arrives with the real buildings in M2.
+
+Not in M1, per §11: the poster (cards render once the scene loads), the counter, the tour, real card
+copy (M4), WASD and d-pad (M3), the screen-reader list and focus trap (M5).
+
 ---
 
 ## 12. Do these first (from `PLAN.md`)
