@@ -1,13 +1,13 @@
 ---
-# DRAFT — project #9 (WORLD.md §0). The leading "_" keeps it off /projects until /world is finished
-# and listed (§1: "finished, or not shipped"). To publish: rename to world.md, drop `noindex` from
-# src/app/world/page.tsx, and link /world from the nav. Steven: every sentence below is a draft for
-# you to rewrite in your own words, and the AI-assistance line in `meta` is yours to word.
+# Project #9 (WORLD.md §0). Copy approved by Steven on 11 Nov 2026. The leading "_" keeps it off
+# /projects until /world is listed (§1: "finished, or not shipped"). To publish, in one change:
+# rename this to world.md, drop `noindex` from src/app/world/page.tsx, link /world from the nav, and
+# change `status` from "Unlisted" to the live wording.
 
 title: Walk Around My Career
 category: Full-Stack
 order: 9
-img: /projects/World.webp   # TODO: copy src/app/world/poster.webp here, or delete this line
+img: /projects/World.webp   # a copy of src/app/world/poster.webp; refresh it when the poster changes
 summary: A small isometric 3D world on this site — a riverside block in Brisbane where each building is a stop in my career, built to stay fast, honest and accessible on a phone.
 
 tech:
@@ -28,9 +28,9 @@ meta:
   - label: My Role
     value: Design, engineering and content
   - label: Context
-    value: Personal project · built with an AI coding assistant   # TODO(steven): your wording
+    value: Personal project · built with an AI coding assistant
   - label: Budget
-    value: ~6 kB JS until you press a button · 45 draw calls · 23k triangles
+    value: ~6 kB JS until you press a button · one compressed kit + avatar, ~400 kB over the wire
     mono: true
     wide: true
   - label: Architecture
