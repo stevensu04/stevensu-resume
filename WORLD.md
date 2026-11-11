@@ -1025,7 +1025,16 @@ head, which move. Both stop moving under reduced motion. That adds four draw cal
 - **A bus on the street** (`scene/Transit.tsx`): a Metro-style articulated bus that drives on the
   left and pulls in at a shelter on each side. It waits if Steven is in its lane ahead, and is cut
   off at the table's edge so it doesn't drive off into the air. Under reduced motion, and in the
-  poster, it stands at the first stop. The livery is a placeholder until Steven sends a photo.
+  poster, it stands at the first stop.
+- **Brisbane Metro livery**, from Steven's photo:
+  - a dark body, a white skirt under a blue line, and a thin gold roofline;
+  - silver ribbed bellows;
+  - white doors on both sides, striped yellow and black;
+  - the yellow dotted wave along each side;
+  - a blue panel where the "Brisbane Metro" lettering goes.
+
+  The long car carries the cab, and the bus pulls up with its front door at the shelter. It is a
+  city's transit, like the CityCat, so §4 rule 4 doesn't apply.
 
 ### To launch (all content or devices, no code)
 

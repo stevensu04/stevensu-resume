@@ -9,10 +9,16 @@ import { PALETTE } from "./Props";
 import { STREET } from "../zones";
 
 /**
- * A Metro-style articulated bus on the street (Steven's request, alongside the CityCat on the
- * river). It drives on the left: east in the north lane, west in the south lane, pulling in at a
- * stop on each side. It waits for Steven if he is in its lane ahead, and it fades out past the
- * table's edge instead of driving off into the air. Under reduced motion it stands at the first stop.
+ * A Brisbane Metro on the street (Steven's request, alongside the CityCat on the river), after his
+ * photo: a dark bi-articulated bus with a white skirt under a blue line, a thin gold roofline,
+ * silver bellows, white doors striped yellow and black, and the yellow dotted wave along each side.
+ * A city's transit, like the CityCat and Taipei 101, not a brand (§4 rule 4). The "Brisbane Metro"
+ * lettering is a plain blue panel.
+ *
+ * It drives on the left: east in the north lane, west in the south lane, pulling in with its
+ * front door at a shelter on each side. It waits for Steven if he is in its lane ahead, and it is
+ * cut off past the table's edge instead of driving off into the air. Under reduced motion it
+ * stands at the first stop.
  */
 
 const LANE = { east: STREET.z - 1.7, west: STREET.z + 1.7 };
@@ -23,48 +29,92 @@ const STOPS = [
     { x: -14, side: "east" as const },
     { x: -20, side: "west" as const },
 ];
-/** Distance along the loop (east pass, then west pass) at which the bus's nose meets each stop. */
-const NOSE = 9.3;
-// The bus pulls up with its front doors at the shelter, a third of its length past it.
-const STOP_AT = STOPS.map(({ x, side }) => (side === "east" ? x + END + NOSE / 3 : LENGTH / 2 + (END - x) + NOSE / 3));
+/** Rear to front: the long car carries the cab. */
+const CARS = [3.8, 4.4, 8];
+const BELLOWS = 0.9;
+const TOTAL = CARS.reduce((a, b) => a + b, 0) + BELLOWS * (CARS.length - 1);
+const NOSE = TOTAL / 2;
+/** The front door, measured back from the nose. */
+const FRONT_DOOR = 1.3;
+/** Distance along the loop (east pass, then west pass) at which the front door meets each shelter. */
+const STOP_AT = STOPS.map(({ x, side }) =>
+    side === "east" ? x - (NOSE - FRONT_DOOR) + END : LENGTH / 2 + (END - (x + (NOSE - FRONT_DOOR))),
+);
 const CRUISE = 8;
 const ACCEL = 3;
 const DWELL = 4;
 const EDGE = 40;
 
-const BODY = "#f4f4f2";
-const GLASS = "#2a3446";
-const LIVERY = "#0b6e8a";
+const METRO = {
+    body: "#1b2030",
+    glass: "#2b3448",
+    skirt: "#f1f2f4",
+    blue: "#2456d6",
+    gold: "#e8b923",
+    roof: "#e6e8ec",
+    bellows: "#b9bdc5",
+    rib: "#8f949e",
+    door: "#f4f4f4",
+    stripe: "#f2c230",
+    tyre: "#15171c",
+};
 
 const box = (w: number, h: number, d: number, x: number, y: number, z: number, color: string) =>
     paint(new BoxGeometry(w, h, d).translate(x, y, z), color);
 
+/** A white door with the yellow-and-black stripe down its middle, on one side (±1). */
+function door(x: number, side: number): BufferGeometry[] {
+    const z = side * 1.27;
+    const parts = [box(1.25, 2.3, 0.04, x, 1.6, z, METRO.door), box(0.32, 2.1, 0.05, x, 1.6, z + side * 0.01, METRO.stripe)];
+    for (let y = 0.75; y < 2.6; y += 0.32) parts.push(box(0.34, 0.07, 0.06, x, y, z + side * 0.015, METRO.body));
+    return parts;
+}
+
+/** The dotted yellow wave along one side of a car. */
+function wave(x0: number, len: number, side: number, phase: number): BufferGeometry[] {
+    const parts: BufferGeometry[] = [];
+    for (let t = 0.3; t < len - 0.3; t += 0.28) {
+        const y = 1.75 + Math.sin(phase + (t / len) * Math.PI * 2.2) * 0.45;
+        parts.push(box(0.09, 0.09, 0.03, x0 + t, y, side * 1.27, METRO.gold));
+    }
+    return parts;
+}
+
 /** Three cars and two bellows, nose towards +x, centred on the origin at road level. */
 function busGeometry(): BufferGeometry {
-    const cars = [6.2, 5.2, 6.2];
-    const gap = 0.5;
-    const total = cars.reduce((a, b) => a + b, 0) + gap * (cars.length - 1);
     const parts: BufferGeometry[] = [];
-    let x = -total / 2;
-    cars.forEach((len, i) => {
+    let x = -TOTAL / 2;
+    CARS.forEach((len, i) => {
         const cx = x + len / 2;
-        parts.push(box(len, 2.5, 2.5, cx, 1.7, 0, BODY));
-        parts.push(box(len - 0.4, 1.1, 2.52, cx, 2.05, 0, GLASS));
-        parts.push(box(len, 0.35, 2.52, cx, 0.65, 0, LIVERY));
-        parts.push(box(len * 0.6, 0.3, 1.6, cx, 3.1, 0, PALETTE.concrete));
-        for (const dx of [-0.3, 0.3]) parts.push(box(0.9, 0.9, 2.56, cx + dx * len, 0.45, 0, "#1d2027"));
-        // Doors on the kerb side (−z for the east pass; the whole bus turns round for the west).
-        parts.push(box(1.1, 2.1, 0.04, cx, 1.5, -1.27, "#c9ccd2"));
+        parts.push(box(len, 2.55, 2.5, cx, 1.83, 0, METRO.body));
+        parts.push(box(len - 0.3, 1.15, 2.52, cx, 2.1, 0, METRO.glass));
+        parts.push(box(len, 0.32, 2.52, cx, 0.5, 0, METRO.skirt));
+        parts.push(box(len, 0.1, 2.53, cx, 0.71, 0, METRO.blue));
+        parts.push(box(len, 0.06, 2.54, cx, 3.06, 0, METRO.gold));
+        parts.push(box(len, 0.14, 2.4, cx, 3.17, 0, METRO.roof));
+        for (const side of [-1, 1]) parts.push(...wave(x, len, side, i * 1.7));
+        const front = i === CARS.length - 1;
+        // Wheels: two axles on the front car, one on each of the others.
+        const axles = front ? [cx - len * 0.32, cx + len * 0.3] : [cx - len * 0.1];
+        for (const ax of axles) parts.push(box(1, 1, 2.56, ax, 0.5, 0, METRO.tyre));
+        // Doors on both sides, as the Metro has them.
+        const doors = front ? [x + len - FRONT_DOOR, cx - 0.6] : [cx + 0.4];
+        for (const dx of doors) for (const side of [-1, 1]) parts.push(...door(dx, side));
         x += len;
-        if (i < cars.length - 1) {
-            parts.push(box(gap, 2.3, 2.3, x + gap / 2, 1.65, 0, "#3a3f4a"));
-            x += gap;
+        if (i < CARS.length - 1) {
+            parts.push(box(BELLOWS, 2.6, 2.34, x + BELLOWS / 2, 1.75, 0, METRO.bellows));
+            for (let r = 0.12; r < BELLOWS; r += 0.16) parts.push(box(0.04, 2.6, 2.36, x + r, 1.75, 0, METRO.rib));
+            x += BELLOWS;
         }
     });
-    const nose = total / 2;
-    parts.push(box(0.06, 1.4, 2.3, nose + 0.02, 2.0, 0, GLASS));
-    parts.push(box(0.07, 0.3, 1.6, nose + 0.03, 2.8, 0, "#f0a92e"));
-    for (const z of [-0.9, 0.9]) parts.push(box(0.06, 0.18, 0.4, nose + 0.03, 0.85, z, "#fff6d8"));
+    // The nose: dark glass, the blue band low down, a sign panel and headlights.
+    const nose = TOTAL / 2;
+    parts.push(box(0.08, 1.6, 2.3, nose + 0.03, 2.05, 0, METRO.glass));
+    parts.push(box(0.09, 0.14, 2.4, nose + 0.04, 0.9, 0, METRO.blue));
+    parts.push(box(0.09, 0.28, 1.7, nose + 0.04, 2.95, 0, "#f0a92e"));
+    for (const z of [-0.95, 0.95]) parts.push(box(0.08, 0.16, 0.36, nose + 0.05, 0.62, z, "#fff6d8"));
+    // The "Brisbane Metro" panel behind the front door, on both sides.
+    for (const side of [-1, 1]) parts.push(box(2, 0.32, 0.03, nose - 3.4, 2.15, side * 1.275, METRO.blue));
     return mergeParts(parts);
 }
 
