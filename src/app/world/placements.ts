@@ -107,14 +107,16 @@ export const PLACEMENTS: Placement[] = [
  * Taipei, on the far bank (§3: "visible, not walkable"), right across the river from the ferry
  * landing so it's in view while you're there, not only in the overview. Kenney's 188-triangle
  * low-detail towers and a row of trees, tinted towards the sky so the far side reads as another
- * place. Past tense only: nothing over there can be walked to or opened.
+ * place, with Taipei 101 (hand-made, scene/Taipei101.tsx) standing over them at TAIPEI_101.
+ * Past tense only: nothing over there can be walked to or opened.
  */
+export const TAIPEI_101 = { x: 0, z: -36.6 };
+
 export const SKYLINE: Placement[] = [
     { model: "low-detail-building-a", x: -35, z: -36.5, scale: 5 },
     { model: "low-detail-building-e", x: -27, z: -37.5, scale: 5.5 },
     { model: "low-detail-building-c", x: -19, z: -36, scale: 5 },
     { model: "low-detail-building-wide-a", x: -10, z: -37, scale: 5 },
-    { model: "low-detail-building-m", x: 0, z: -37.5, scale: 7 }, // the tall one, generic on purpose (§4 rule 4)
     { model: "low-detail-building-g", x: 10, z: -36.5, scale: 5.5 },
     { model: "low-detail-building-i", x: 20, z: -37.5, scale: 5.5 },
     { model: "low-detail-building-k", x: 30, z: -36, scale: 5 },

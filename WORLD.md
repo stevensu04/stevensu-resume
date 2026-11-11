@@ -86,7 +86,8 @@ reward.
   an easy pace.
 - **The snake route is a suggestion, not a rail.** The block is open, so visitors can walk straight to
   any zone. Following it front to back simply tells the career in order.
-- **Taipei is past tense only.** The skyline and the E.SUN sign tell the visitor where he came from.
+- **Taipei is past tense only.** The skyline, with Taipei 101 standing over it, and the E.SUN sign
+  tell the visitor where he came from.
   Nothing anywhere suggests going back (`PLAN.md` §1, "Not on the site").
 
 | # | Zone | Objects (cards) | Source |
@@ -130,6 +131,8 @@ Rules:
 3. **No invented interiors and no invented screens.** Confidential objects stay closed.
 4. **No recognisable employer branding.** E.SUN's sign is text on a generic facade. There are no
    government crests or real logos. A playful world can't imply an endorsement nobody gave.
+   A city landmark is not a brand: Taipei 101 on the far bank implies nobody's endorsement, so
+   it is modelled as itself. The rule covers employers and institutions.
 5. **If BrisPulse's walking skeleton ships** (`PLAN.md` §5), it moves from the blueprint table to a
    building. That move is the reward for doing the real work.
 
@@ -925,6 +928,16 @@ Fixed from what the recordings showed:
     phone-sized viewport.
   - **The poster was re-rendered** with Taipei on its new bank, which also brings in the CityCat and
     the racquet.
+
+- **Taipei 101 is the tallest building on the far bank**, at Steven's request. It replaces the
+  generic tall tower that §4 rule 4 had been stretched to cover; that rule is about employers and
+  institutions, not city landmarks.
+  - `scene/Taipei101.tsx` builds it box-level: a podium, a base that narrows as it rises, the eight
+    flared bamboo sections, the crown and the spire. It's about 28 m to the tip, roughly twice the
+    towers round it.
+  - It's tinted like the rest of the far bank, merged into one draw call, and hidden with the
+    skyline.
+  - The poster was re-rendered with it.
 
 ### To launch (all content or devices, no code)
 

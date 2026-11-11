@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState, type RefObject } from "react";
 import type { ThreeEvent } from "@react-three/fiber";
-import { PLACEMENTS, PROP_SOLIDS, SKYLINE } from "../placements";
+import { PLACEMENTS, PROP_SOLIDS, SKYLINE, TAIPEI_101 } from "../placements";
+import Taipei101 from "./Taipei101";
 import { FAR_BANK, RIVER, SLAB } from "../zones";
 import { OBJECTS, type WorldObject } from "../objects";
 import { InstancedMesh, Matrix4, MeshBasicMaterial, PlaneGeometry } from "three";
@@ -85,6 +86,7 @@ export default function Stage({
                 <meshBasicMaterial vertexColors color="#cfd6d9" />
             </mesh>
             {skyline && <KitInstances kit={kit} placements={SKYLINE} tint={SKY_TINT} />}
+            {skyline && <Taipei101 x={TAIPEI_101.x} z={TAIPEI_101.z} />}
             <Props still={still} />
 
             {OBJECTS.map((object) => (
