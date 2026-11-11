@@ -103,7 +103,7 @@ const STATIC_BOXES: BoxSpec[] = [
     ...siteBoxes(),
     // 5 · The arcade cabinet's body (the screen flickers, below).
     box([ARCADE.x, 0.9, ARCADE.z], [0.9, 1.8, 0.8], PALETTE.slate),
-    // 7 · The park: grass, the blueprint table, two plinths (their scale models are kit placements).
+    // 7 · The park: grass, the blueprint table, two plinths (their models are in Landmarks.tsx).
     box([-26, 0.04, 24], [18, 0.08, 10], PALETTE.green),
     box([-31, 0.45, 24.5], [3.2, 0.9, 2.2], PALETTE.wood),
     box([-31, 0.92, 24.5], [2.9, 0.04, 1.9], "#3b6fd8"),

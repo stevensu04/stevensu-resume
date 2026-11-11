@@ -129,10 +129,12 @@ Rules:
 2. **Print `status.label` on every project card, verbatim**, read from the markdown. Geometry can be
    misread. A sentence can't.
 3. **No invented interiors and no invented screens.** Confidential objects stay closed.
-4. **No recognisable employer branding.** E.SUN's sign is text on a generic facade. There are no
-   government crests or real logos. A playful world can't imply an endorsement nobody gave.
-   A city landmark is not a brand: Taipei 101 on the far bank implies nobody's endorsement, so
-   it is modelled as itself. The rule covers employers and institutions.
+4. **Real marks only where Steven chose them.** The UQ crest (he is an alumnus) and E.SUN's logo
+   (his employer) are shown because he supplied them and decided to use them on 11 Nov 2026. They
+   mark where he studied and worked, and nothing else. There are still no government crests
+   (Finance Forms stays frosted), and no mark goes on a project that isn't Steven's own. A city
+   landmark is not a brand: Taipei 101 on the far bank implies nobody's endorsement, so it is
+   modelled as itself.
 5. **If BrisPulse's walking skeleton ships** (`PLAN.md` §5), it moves from the blueprint table to a
    building. That move is the reward for doing the real work.
 
@@ -999,6 +1001,31 @@ head, which move. Both stop moving under reduced motion. That adds four draw cal
   on a plinth out front. It is still scenery until the photos exist. Its footprint, the
   sculpture's and the flagpole's are in `PROP_SOLIDS`.
 - The poster and `public/projects/World.webp` have been re-rendered.
+
+**Second pass, the same day.** Steven sent the UQ crest and the E.SUN logo, and asked for more:
+
+- **Real marks.** The UQ crest replaces the generic shield, out flush with the balconies so they
+  don't hide it. E.SUN's round mark sits on a white disc on the bank's front. Both are images in
+  `public/world/brand/`, shown on planes under the world shader, so they grey out with their zone
+  until it is explored. §4 rule 4 is amended to match.
+- **Two flags.** The Australian flag now flies beside the Aboriginal flag, in the place of honour
+  (the viewer's left). It is drawn on a canvas: Union Jack, Commonwealth Star, Southern Cross. Both
+  flags keep their full colours in an unexplored zone.
+- **Jacarandas.** The two Kenney trees beside UQ are now jacarandas in flower, each with a ring of
+  fallen blossom.
+- **The tennis fence.** The orange Kenney fence the racquet leaned on looked like construction
+  hoarding, which belongs to the site across the street. It is now a dark green chain-link fence,
+  like a tennis court's.
+- **The prototype park says what each prototype is:**
+  - BrisPulse (traffic, 2032 Olympics): a traffic signal and a gold, silver and bronze podium
+    beside the blueprint table.
+  - ParkEase (parking): a model car park with a sensor light over each bay.
+  - JourneyMate (travel, public transport): a model bus stop under a bobbing map pin.
+  - The two kit scale models are gone.
+- **A bus on the street** (`scene/Transit.tsx`): a Metro-style articulated bus that drives on the
+  left and pulls in at a shelter on each side. It waits if Steven is in its lane ahead, and is cut
+  off at the table's edge so it doesn't drive off into the air. Under reduced motion, and in the
+  poster, it stands at the first stop. The livery is a placeholder until Steven sends a photo.
 
 ### To launch (all content or devices, no code)
 

@@ -44,7 +44,7 @@ const siteFence: Placement[] = [
 export const PLACEMENTS: Placement[] = [
     ...street,
 
-    // 1 · Ferry landing: E.SUN (generic facade, §4 rule 4) and StarLens (shuttered, see Props).
+    // 1 · Ferry landing: E.SUN (its sign is in Landmarks) and StarLens (shuttered, see Props).
     { model: "building-c", x: -31, z: -18, solid: true },
     { model: "building-a", x: -22, z: -18, solid: true },
     { model: "boat-row-small", x: -23.4, z: -26.5, rot: 1, scale: WATER_SCALE, solid: false },
@@ -55,10 +55,7 @@ export const PLACEMENTS: Placement[] = [
     { model: "building-j", x: 2, z: -17.5, solid: true },
     { model: "detail-parasol-a", x: -9, z: -11.5, scale: 9, solid: true },
     { model: "detail-parasol-b", x: -5.5, z: -11.5, scale: 9, solid: true },
-    { model: "tree-large", x: -11, z: -20, solid: true },
-    { model: "tree-small", x: 13.5, z: -21, solid: true },
-    // The easter-egg fence (§3): the racquet leans on it in M6.
-    { model: "fence-1x3", x: 14.5, z: -12, rot: 1, solid: true },
+    // The jacarandas either side and the easter-egg tennis fence (§3) are hand-made: Landmarks.tsx.
 
     // 3 · Government tower (frosted and padlocked: see Props).
     { model: "building-skyscraper-c", x: 27, z: -17.5, solid: true },
@@ -92,9 +89,7 @@ export const PLACEMENTS: Placement[] = [
     { model: "tree-large", x: -34, z: 21, solid: true },
     { model: "tree-small", x: -18.5, z: 27.5, solid: true },
     { model: "tree-large", x: -34.5, z: 27.5, solid: true },
-    // Scale models on the plinths (§4: a prototype is a model on a plinth, not a building).
-    { model: "building-type-g", x: -25, z: 24.5, y: 1.1, scale: 1.4, solid: false }, // ParkEase
-    { model: "building-c", x: -20, z: 24.5, y: 1.1, scale: 1.2, solid: false }, // JourneyMate
+    // The models on the plinths (§4: a prototype is a model on a plinth) are hand-made: Landmarks.tsx.
 
     // Gallery and exit. The gallery itself is hand-made (Landmarks.tsx).
     { model: "tree-small", x: -9, z: 20, solid: true },
@@ -143,5 +138,14 @@ export const PROP_SOLIDS: { x: number; z: number; w: number; d: number }[] = [
     { x: 26, z: 22, w: 4.4, d: 0.6 }, // exit noticeboard
     { x: 0, z: 23.5, w: 12.4, d: 8 }, // the gallery (Landmarks.tsx)
     { x: -4.6, z: 29.1, w: 1.7, d: 1.7 }, // its sculpture
-    { x: 10.4, z: -10.7, w: 0.8, d: 0.8 }, // UQ flagpole
+    { x: 10.4, z: -10.7, w: 0.8, d: 0.8 }, // UQ flagpoles: Aboriginal
+    { x: 7.4, z: -10.7, w: 0.8, d: 0.8 }, // and Australian
+    { x: -11.65, z: -17, w: 0.9, d: 0.9 }, // jacaranda trunks
+    { x: 13.47, z: -19.5, w: 0.9, d: 0.9 },
+    { x: 15.6, z: -12, w: 0.4, d: 10.2 }, // tennis fence, and its return
+    { x: 17.3, z: -17, w: 3.6, d: 0.4 },
+    { x: -33.2, z: 23, w: 0.6, d: 0.6 }, // BrisPulse's traffic signal
+    { x: -31, z: 26.9, w: 2.6, d: 1 }, // and its podium
+    { x: -14, z: -9.3, w: 3.2, d: 1.2 }, // bus stop, eastbound (Transit.tsx)
+    { x: -20, z: 1.3, w: 3.2, d: 1.2 }, // bus stop, westbound
 ];

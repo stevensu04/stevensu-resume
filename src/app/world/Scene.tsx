@@ -8,6 +8,7 @@ import type { WorldCard } from "@/lib/world";
 import { ZONES } from "./zones";
 import { OBJECTS, TOUR, objectStandPoint } from "./objects";
 import Stage from "./scene/Stage";
+import Transit from "./scene/Transit";
 import Player, { MAX_ZOOM, type ZoomState } from "./scene/Player";
 import CardAnchor from "./scene/CardAnchor";
 import type { Nav } from "./scene/nav";
@@ -296,6 +297,7 @@ export default function Scene({
                 </Suspense>
                 <Player position={position} target={target} input={input} pace={pace} navRef={navRef} step={step} still={still} overview={posterMode} lookAt={lookAt} onRacquet={setCheer} zoomRef={zoomRef} />
                 <PlayerAnchor position={position} el={emote} />
+                <Transit still={still} player={position} />
                 <FocusAnchor object={focused ? (OBJECT_BY_ID.get(focused) ?? null) : null} ring={ring} />
                 {!posterMode && <Watchdog onSlow={onFallback} />}
                 <CardAnchor object={open ? (OBJECT_BY_ID.get(open) ?? null) : null} card={card} />
