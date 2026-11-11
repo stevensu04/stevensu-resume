@@ -24,7 +24,9 @@ import { STREET } from "../zones";
 const LANE = { east: STREET.z - 1.7, west: STREET.z + 1.7 };
 /** Off-stage at both ends: the bus turns round out of sight, beyond the slab. */
 const END = 52;
-const LENGTH = 2 * END;
+/** One pass runs the whole street, −END to END; the loop is a pass each way. */
+const PASS = 2 * END;
+const LENGTH = 2 * PASS;
 const STOPS = [
     { x: -14, side: "east" as const },
     { x: -20, side: "west" as const },
@@ -38,7 +40,7 @@ const NOSE = TOTAL / 2;
 const FRONT_DOOR = 1.3;
 /** Distance along the loop (east pass, then west pass) at which the front door meets each shelter. */
 const STOP_AT = STOPS.map(({ x, side }) =>
-    side === "east" ? x - (NOSE - FRONT_DOOR) + END : LENGTH / 2 + (END - (x + (NOSE - FRONT_DOOR))),
+    side === "east" ? x - (NOSE - FRONT_DOOR) + END : PASS + (END - (x + (NOSE - FRONT_DOOR))),
 );
 const CRUISE = 8;
 const ACCEL = 3;
@@ -154,7 +156,7 @@ function edgeCutMaterial(): MeshBasicMaterial {
 
 /** Where on the loop `u` puts the bus: its centre and heading. */
 function place(u: number): { x: number; z: number; rot: number } {
-    return u < LENGTH / 2 ? { x: u - END, z: LANE.east, rot: 0 } : { x: END - (u - LENGTH / 2), z: LANE.west, rot: Math.PI };
+    return u < PASS ? { x: u - END, z: LANE.east, rot: 0 } : { x: END - (u - PASS), z: LANE.west, rot: Math.PI };
 }
 
 export default function Transit({ still, player }: { still: boolean; player: RefObject<Vector3> }) {

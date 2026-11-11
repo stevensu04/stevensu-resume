@@ -1035,6 +1035,10 @@ head, which move. Both stop moving under reduced motion. That adds four draw cal
 
   The long car carries the cab, and the bus pulls up with its front door at the shelter. It is a
   city's transit, like the CityCat, so §4 rule 4 doesn't apply.
+- **Fix: the bus vanished mid-road.** The loop was half as long as it should have been. Each pass
+  ended at x = 0, and the bus jumped to the start of the other lane. Each pass now runs the whole
+  street (−52 to 52), so the bus changes lanes only off the table. A simulation of two loops
+  confirms both stops and no jumps.
 
 ### To launch (all content or devices, no code)
 
