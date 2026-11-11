@@ -30,7 +30,7 @@ export type GalleryPhoto = {
 };
 
 /** Career and story cards. Copy from WORLD.md §7, which is where it is reviewed. */
-export const WORLD_CARDS: WorldCard[] = [
+const ALL_WORLD_CARDS: WorldCard[] = [
     {
         id: "esun",
         zone: "ferry",
@@ -117,6 +117,16 @@ export const GALLERY_PHOTOS: GalleryPhoto[] = [
     { src: null, alt: "Photo to come", caption: "Caption to come." },
     { src: null, alt: "Photo to come", caption: "Caption to come." },
 ];
+
+/**
+ * The Gallery opens to visitors only once every photo exists. Until then the building stands as
+ * scenery: no card, no tour stop, nothing that says "Photo to come" on a public page (§1:
+ * finished, or not shipped). Filling in all seven `src` values above switches it on everywhere.
+ */
+export const GALLERY_READY = GALLERY_PHOTOS.every((p) => p.src !== null);
+
+/** The non-project cards that are live: everything, minus the Gallery until its photos exist. */
+export const WORLD_CARDS: WorldCard[] = ALL_WORLD_CARDS.filter((c) => c.id !== "gallery" || GALLERY_READY);
 
 /** A project's front-matter `world:` block, as a card. Title, status and URLs are the project's own. */
 export function projectWorldCards(projects: Project[]): WorldCard[] {

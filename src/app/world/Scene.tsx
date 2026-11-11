@@ -119,7 +119,7 @@ export default function Scene({
 
     const goToStop = (index: number) => {
         if (index >= TOUR.length) {
-            // Finishing the tour counts every zone as explored (§2), so the Gallery opens.
+            // Finishing the tour counts every zone as explored (§2), which opens the Gallery once it has photos.
             endTour();
             setExplored(EXPLORE_ZONE_IDS);
             return;

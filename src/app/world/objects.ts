@@ -6,6 +6,8 @@
  * Plain data, no three.js, so the server page can check that every card has an object and every
  * object has a card before the route builds.
  */
+import { GALLERY_READY } from "@/lib/world";
+
 export type WorldObject = {
     /** The card id: a project slug, or a key in `src/lib/world.ts`. */
     id: string;
@@ -17,7 +19,7 @@ export type WorldObject = {
     h: number;
 };
 
-export const OBJECTS: WorldObject[] = [
+const ALL_OBJECTS: WorldObject[] = [
     // 1 · Ferry landing
     { id: "esun", x: -31, z: -18, w: 7.2, d: 7.4, h: 9 },
     { id: "starlens", x: -22, z: -18, w: 7.2, d: 7.8, h: 10.5 },
@@ -44,6 +46,9 @@ export const OBJECTS: WorldObject[] = [
     { id: "exit", x: 26, z: 22, w: 4.6, d: 1, h: 3.2 },
 ];
 
+/** The Gallery's hit area exists only once its photos do (GALLERY_READY in src/lib/world.ts). */
+export const OBJECTS: WorldObject[] = ALL_OBJECTS.filter((o) => o.id !== "gallery" || GALLERY_READY);
+
 /**
  * The guided tour (§2): one card per zone, in route order. Steven walks it himself and each card
  * opens in turn. The crossing stands for the ferry landing because it's the one card that isn't on
@@ -59,7 +64,7 @@ export const TOUR: string[] = [
     "brispulse",
     "gallery",
     "exit",
-];
+].filter((id) => id !== "gallery" || GALLERY_READY);
 
 /** Just south of an object (towards the default camera), clear of its footprint. */
 export function objectStandPoint(o: WorldObject): [number, number] {

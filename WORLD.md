@@ -939,6 +939,15 @@ Fixed from what the recordings showed:
     skyline.
   - The poster was re-rendered with it.
 
+- **The Gallery is hidden until it has photos**, so a public page never shows seven "Photo to come"
+  slots (§1: finished, or not shipped). `GALLERY_READY` in `src/lib/world.ts` is true only once
+  every one of the seven `src` values is filled in. Until then:
+  - the Gallery building is scenery, with no card and no tap target;
+  - the tour has eight stops and ends at the exit board;
+  - the list view skips it;
+  - at 7 of 7 the counter reads "you've seen it all".
+  Filling in the photos switches all of it back on, with no other change.
+
 ### To launch (all content or devices, no code)
 
 1. **A real phone**, ideally a mid-range Android. *iPhone 18 Pro done (see above); no Android
@@ -949,7 +958,8 @@ Fixed from what the recordings showed:
    - the feet look right at 60 fps.
 2. **A screen reader** (VoiceOver on iOS or macOS) through the list and a card, and the OS
    reduced-motion setting.
-3. **Seven Gallery photos** and their captions (`GALLERY_PHOTOS` in `src/lib/world.ts`).
+3. ~~Seven Gallery photos~~ **Not blocking any more:** the Gallery stays hidden until all seven are in
+   (`GALLERY_PHOTOS` in `src/lib/world.ts`).
 4. **`site.workRights`** for the exit board.
 5. **Veilcore** (§14 Q1). Skyveil's card links to `/about#experience` until there's a project file.
 6. **The case study.** Rewrite `_world.md` in your own words, add its image, and rename it to

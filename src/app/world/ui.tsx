@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, type RefObject } from "react";
-import { EXIT_FOOTNOTE, GALLERY_PHOTOS, type WorldCard } from "@/lib/world";
+import { EXIT_FOOTNOTE, GALLERY_PHOTOS, GALLERY_READY, type WorldCard } from "@/lib/world";
 import { site } from "@/lib/site";
 import type { MovementInput } from "./scene/input";
 
@@ -171,7 +171,7 @@ export function TourBar({
 export function Counter({ explored, total }: { explored: number; total: number }) {
     return (
         <p className={`${chip} absolute bottom-4 left-4`} aria-live="polite">
-            {explored} of {total} explored{explored === total ? " · the Gallery is open" : ""}
+            {explored} of {total} explored{explored === total ? (GALLERY_READY ? " · the Gallery is open" : " · you've seen it all") : ""}
         </p>
     );
 }
