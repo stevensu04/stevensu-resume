@@ -96,8 +96,7 @@ export const PLACEMENTS: Placement[] = [
     { model: "building-type-g", x: -25, z: 24.5, y: 1.1, scale: 1.4, solid: false }, // ParkEase
     { model: "building-c", x: -20, z: 24.5, y: 1.1, scale: 1.2, solid: false }, // JourneyMate
 
-    // Gallery and exit.
-    { model: "building-e", x: 0, z: 23.5, solid: true },
+    // Gallery and exit. The gallery itself is hand-made (Landmarks.tsx).
     { model: "tree-small", x: -9, z: 20, solid: true },
     { model: "tree-small", x: 9, z: 20, solid: true },
     { model: "light-curved", x: 31, z: 22.5, rot: 3, solid: false },
@@ -142,4 +141,7 @@ export const PROP_SOLIDS: { x: number; z: number; w: number; d: number }[] = [
     { x: -25, z: 24.5, w: 2, d: 2 }, // ParkEase plinth
     { x: -20, z: 24.5, w: 2, d: 2 }, // JourneyMate plinth
     { x: 26, z: 22, w: 4.4, d: 0.6 }, // exit noticeboard
+    { x: 0, z: 23.5, w: 12.4, d: 8 }, // the gallery (Landmarks.tsx)
+    { x: -4.6, z: 29.1, w: 1.7, d: 1.7 }, // its sculpture
+    { x: 10.4, z: -10.7, w: 0.8, d: 0.8 }, // UQ flagpole
 ];

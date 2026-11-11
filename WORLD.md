@@ -977,6 +977,29 @@ checks; both remain on the list below.
   status "Live on this site" and the poster as its card image. Its "Live Demo" opens `/world` in
   the same tab, because on-site demos no longer open a new tab.
 
+### Landmarks (11 Nov 2026)
+
+At Steven's request, each building now carries something that says whose it is. They live in
+`scene/Landmarks.tsx`: one merged mesh for everything that stays still, plus the flag and Olie's
+head, which move. Both stop moving under reduced motion. That adds four draw calls.
+
+- **StarLens:** six solar panels on the roof, raised on frames so they clear the parapet. They tilt
+  north, which is the way panels face in Brisbane.
+- **UQ:**
+  - A purple shield with a gold rim and an open book sits over the entrance. It is a generic
+    university crest, not UQ's registered one, which §4 rule 4 still keeps off the page.
+  - The Aboriginal flag flies on a pole out front: black over red, with the yellow circle in the
+    middle. It has been free to reproduce since 2022. It stays in full colour while the rest of the
+    unexplored zone is greyed out.
+- **Skyveil:** Olie the owl perches on the garage ridge. She is brown and cream, with ear tufts, a
+  facial disc and yellow eyes, and turns her head every few seconds. Her look is a stand-in until
+  Steven sends a reference.
+- **The Gallery is now a gallery.** The Kenney `building-e` is gone. In its place is a white
+  building with a glass front, sawtooth skylights, a canopy and two banners, plus a red sculpture
+  on a plinth out front. It is still scenery until the photos exist. Its footprint, the
+  sculpture's and the flagpole's are in `PROP_SOLIDS`.
+- The poster and `public/projects/World.webp` have been re-rendered.
+
 ### To launch (all content or devices, no code)
 
 *Kept for the record. What's still open, all non-blocking:*

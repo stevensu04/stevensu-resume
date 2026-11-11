@@ -42,7 +42,7 @@ const ALL_OBJECTS: WorldObject[] = [
     { id: "parkease", x: -25, z: 24.5, w: 2.2, d: 2.2, h: 2.6 },
     { id: "journeymate", x: -20, z: 24.5, w: 2.2, d: 2.2, h: 2.6 },
     // Facilities
-    { id: "gallery", x: 0, z: 23.5, w: 13.3, d: 8.3, h: 7.3 },
+    { id: "gallery", x: 0, z: 23.5, w: 12.4, d: 8, h: 7.4 },
     { id: "exit", x: 26, z: 22, w: 4.6, d: 1, h: 3.2 },
 ];
 
