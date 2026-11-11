@@ -29,3 +29,7 @@ export type Motion = {
 /** Ground speeds, m/s (§3: an easy 2.2 m/s walk). Shared by the controller, the tour and the avatar. */
 export const WALK_SPEED = 2.2;
 export const RUN_SPEED = 4.4;
+/** A tap further away than this, he runs rather than walks (Player and the tour timer share it). */
+export const RUN_DISTANCE = 8;
+/** Holding the d-pad this long switches a walk to a run: the phone's Shift. */
+export const DPAD_RUN_AFTER_MS = 800;

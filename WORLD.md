@@ -948,6 +948,24 @@ Fixed from what the recordings showed:
   - at 7 of 7 the counter reads "you've seen it all".
   Filling in the photos switches all of it back on, with no other change.
 
+- **Running is easier to find, and phones can run.** Shift-to-run had worked since M3 but nothing
+  said so.
+  - On mouse-and-keyboard screens (`pointer: fine`) the hint now ends "· hold Shift to run".
+  - On phones, holding any d-pad direction for 0.8 s (`DPAD_RUN_AFTER_MS`) breaks into a run, and
+    letting go drops back to a walk. That's the phone's Shift. Verified: the run flag is off at
+    0.4 s, on at 1.1 s, and off on release.
+  - A tap more than 8 m away now runs, down from 14 m (`RUN_DISTANCE` in `scene/input.ts`). The tour
+    timer shares the same constant.
+  - The 2.2 m/s walk is unchanged, because the walk cycle is tuned to it.
+
+- **The shortcuts are written down.** Q and E rotating the view is the convention in isometric and
+  city-builder games, with both keys beside WASD, so they stay. Nothing on screen said so, though.
+  - The rotate and zoom buttons now carry hover tooltips: "Rotate view left (Q)", "Rotate view
+    right (E)" and "Zoom out to the whole block (−)".
+  - A keyboard button beside them, on `pointer: fine` screens only, opens a short legend: WASD and
+    arrows walk, Shift runs, Q/E turn the view, +/− zoom, Tab/Enter visit and open, Esc closes.
+    Escape or the button closes it.
+
 ### Launched (11 Nov 2026)
 
 `/world` is listed. Steven chose to launch before the on-device reduced-motion and VoiceOver

@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef, type RefObject } from "react";
+import { useEffect, useId, useRef, useState, type RefObject } from "react";
 import { EXIT_FOOTNOTE, GALLERY_PHOTOS, GALLERY_READY, type WorldCard } from "@/lib/world";
 import { site } from "@/lib/site";
-import type { MovementInput } from "./scene/input";
+import { DPAD_RUN_AFTER_MS, type MovementInput } from "./scene/input";
 
 /** The DOM half of /world: cards, the intro, the tour bar, the counter and the d-pad. */
 
@@ -167,6 +167,63 @@ export function TourBar({
     );
 }
 
+/** Every shortcut, in one place (§10 lists them; nothing on screen did). */
+const KEYS: [string, string][] = [
+    ["W A S D / ← ↑ → ↓", "Walk"],
+    ["Shift", "Run"],
+    ["Q / E", "Turn the view"],
+    ["+ / −", "Zoom (or the wheel)"],
+    ["Tab / Enter", "Visit each stop, open it"],
+    ["Esc", "Close the card"],
+];
+
+/**
+ * The keyboard's legend, on mouse-and-keyboard screens only (`pointer: fine`): phones have no keys,
+ * and the d-pad explains itself. Escape or the button closes it.
+ */
+export function KeysHelp() {
+    const [open, setOpen] = useState(false);
+    const panelId = useId();
+    useEffect(() => {
+        if (!open) return;
+        const onKey = (e: KeyboardEvent) => {
+            if (e.key === "Escape") setOpen(false);
+        };
+        window.addEventListener("keydown", onKey);
+        return () => window.removeEventListener("keydown", onKey);
+    }, [open]);
+    return (
+        <div className="relative hidden pointer-fine:block">
+            <button
+                type="button"
+                onClick={() => setOpen((o) => !o)}
+                aria-expanded={open}
+                aria-controls={panelId}
+                aria-label="Keyboard shortcuts"
+                title="Keyboard shortcuts"
+                className={`flex h-9 w-9 items-center justify-center rounded-full shadow-sm ${open ? "bg-blue-600 text-white" : "bg-white text-gray-700 hover:text-blue-600"} ${focusRing}`}
+            >
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                    <rect x="2.5" y="6" width="19" height="12" rx="2" />
+                    <path d="M6.5 10h.01M10 10h.01M13.5 10h.01M17 10h.01M8 14h8" />
+                </svg>
+            </button>
+            {open && (
+                <div id={panelId} role="dialog" aria-label="Keyboard shortcuts" className="absolute right-0 top-11 w-64 rounded-2xl bg-white p-4 text-xs shadow-lg ring-1 ring-black/5">
+                    <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-2">
+                        {KEYS.map(([keys, action]) => (
+                            <div key={keys} className="contents">
+                                <dt className="whitespace-nowrap font-mono font-semibold text-gray-900">{keys}</dt>
+                                <dd className="text-gray-600">{action}</dd>
+                            </div>
+                        ))}
+                    </dl>
+                </div>
+            )}
+        </div>
+    );
+}
+
 /** Bottom left (§2): `3 of 7`. */
 export function Counter({ explored, total }: { explored: number; total: number }) {
     return (
@@ -199,9 +256,9 @@ export function OutLinks() {
 
 /**
  * The secondary touch input (§0: tap-to-move first, d-pad second), shown on coarse pointers only.
- * Directions are relative to the view, like the arrow keys. Adapted from DECO7381 Team 41's
- * `storefront__touch` buttons, with permission: pointer capture keeps a held button pressed even
- * when the thumb slides off it.
+ * Directions are relative to the view, like the arrow keys; holding one breaks into a run. Adapted
+ * from DECO7381 Team 41's `storefront__touch` buttons, with permission: pointer capture keeps a held
+ * button pressed even when the thumb slides off it.
  */
 export function DPad({ inputRef }: { inputRef: RefObject<MovementInput> }) {
     const buttons = [
@@ -210,8 +267,24 @@ export function DPad({ inputRef }: { inputRef: RefObject<MovementInput> }) {
         ["right", "→", "Walk right", "col-start-3 row-start-2"],
         ["backward", "↓", "Walk towards the camera", "col-start-2 row-start-3"],
     ] as const;
+    // Hold any direction for DPAD_RUN_AFTER_MS and he breaks into a run; letting go of every button
+    // drops back to a walk. The phone's version of holding Shift.
+    const held = useRef(new Set<string>());
+    const runTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
     const set = (control: keyof MovementInput, on: boolean) => {
         inputRef.current[control] = on;
+        if (on) held.current.add(control);
+        else held.current.delete(control);
+        if (on && !runTimer.current) {
+            runTimer.current = setTimeout(() => {
+                if (held.current.size) inputRef.current.run = true;
+            }, DPAD_RUN_AFTER_MS);
+        }
+        if (!held.current.size) {
+            if (runTimer.current) clearTimeout(runTimer.current);
+            runTimer.current = null;
+            inputRef.current.run = false;
+        }
     };
     return (
         <div aria-label="Movement controls" role="group" className="absolute bottom-14 right-4 hidden select-none grid-cols-3 grid-rows-3 gap-1 pointer-coarse:grid">
@@ -223,8 +296,11 @@ export function DPad({ inputRef }: { inputRef: RefObject<MovementInput> }) {
                     className={`${place} h-12 w-12 touch-none rounded-full bg-white/90 text-lg font-bold text-gray-700 shadow-sm active:bg-blue-600 active:text-white`}
                     onPointerDown={(e) => {
                         e.preventDefault();
-                        e.currentTarget.setPointerCapture(e.pointerId);
                         set(control, true);
+                        // Capture can throw for a pointer the browser no longer tracks; the press still counts.
+                        try {
+                            e.currentTarget.setPointerCapture(e.pointerId);
+                        } catch {}
                     }}
                     onPointerUp={() => set(control, false)}
                     onPointerCancel={() => set(control, false)}

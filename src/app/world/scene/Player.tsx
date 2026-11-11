@@ -8,14 +8,12 @@ import { canStandAt, findPath, type Nav } from "./nav";
 import { worldUniforms } from "./worldShader";
 import { RACQUET } from "../placements";
 import Avatar from "./Avatar";
-import { RUN_SPEED, WALK_SPEED, type Motion, type MovementInput } from "./input";
+import { RUN_DISTANCE, RUN_SPEED, WALK_SPEED, type Motion, type MovementInput } from "./input";
 
 /** Zoom shared with Scene: what the visitor asked for, and the widest this screen allows. */
 export type ZoomState = { target: number; min: number };
 
 /** He is 1.72 m tall; speeds live in input.ts. */
-/** A tap further away than this, he runs: crossing the 80 m block at a walk takes too long. */
-const RUN_DISTANCE = 14;
 const HEIGHT = 1.72;
 const ISO_PITCH = Math.atan(1 / Math.SQRT2); // 35.264°, true isometric
 const CAMERA_DISTANCE = 120;

@@ -12,9 +12,9 @@ import Player, { MAX_ZOOM, type ZoomState } from "./scene/Player";
 import CardAnchor from "./scene/CardAnchor";
 import type { Nav } from "./scene/nav";
 import { clampToGround } from "./scene/walk";
-import { EMPTY_INPUT, KEY_MAP, RUN_SPEED, WALK_SPEED, type MovementInput } from "./scene/input";
+import { EMPTY_INPUT, KEY_MAP, RUN_DISTANCE, RUN_SPEED, WALK_SPEED, type MovementInput } from "./scene/input";
 import { EXPLORE_ZONE_IDS, worldUniforms } from "./scene/worldShader";
-import { Counter, DPad, OutLinks, TourBar, WorldCardView } from "./ui";
+import { Counter, DPad, KeysHelp, OutLinks, TourBar, WorldCardView } from "./ui";
 import FocusAnchor from "./scene/FocusAnchor";
 import PlayerAnchor from "./scene/PlayerAnchor";
 import poster from "./poster.webp";
@@ -127,9 +127,9 @@ export default function Scene({
         const id = TOUR[index];
         const object = OBJECT_BY_ID.get(id)!;
         const [x, z] = objectStandPoint(object);
-        // Same rule as Player: a leg over 14 m is run, a shorter one walked.
+        // Same rule as Player: a leg over RUN_DISTANCE is run, a shorter one walked.
         const distance = Math.hypot(x - position.current.x, z - position.current.z);
-        const travel = distance / ((distance > 14 ? RUN_SPEED : WALK_SPEED) * TOUR_PACE);
+        const travel = distance / ((distance > RUN_DISTANCE ? RUN_SPEED : WALK_SPEED) * TOUR_PACE);
         pace.current = TOUR_PACE;
         setTour({ index, ms: (travel + TOUR_DWELL) * 1000 });
         openCard(id);
@@ -320,7 +320,15 @@ export default function Scene({
                     />
                 ) : (
                     <p className="pointer-events-auto rounded-full bg-white/90 px-4 py-1.5 text-xs font-semibold text-gray-700 shadow-sm">
-                        {hoverCard ? hoverCard.title : "Tap the ground to walk · tap a building to open it"}
+                        {hoverCard ? (
+                            hoverCard.title
+                        ) : (
+                            <>
+                                Tap the ground to walk · tap a building to open it
+                                {/* Mouse and keyboard only: phones run by holding the d-pad instead. */}
+                                <span className="hidden pointer-fine:inline"> · hold Shift to run</span>
+                            </>
+                        )}
                     </p>
                 )}
                 <div className="pointer-events-auto flex items-center gap-2 self-end sm:flex-col sm:items-end sm:self-auto">
@@ -329,6 +337,7 @@ export default function Scene({
                         <RotateButton label="Rotate view left (Q)" direction="left" onClick={() => setStep((s) => (s + 3) % 4)} />
                         <RotateButton label="Rotate view right (E)" direction="right" onClick={() => setStep((s) => (s + 1) % 4)} />
                         <WideButton wide={wide} onClick={() => setZoom(wide ? 1 : zoomRef.current.min)} />
+                        <KeysHelp />
                     </div>
                 </div>
             </div>
@@ -402,6 +411,7 @@ function WideButton({ wide, onClick }: { wide: boolean; onClick: () => void }) {
             type="button"
             onClick={onClick}
             aria-label={wide ? "Zoom back in to Steven" : "Zoom out to the whole block"}
+            title={wide ? "Zoom back in to Steven (+)" : "Zoom out to the whole block (−)"}
             aria-pressed={wide}
             className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-gray-700 shadow-sm hover:text-blue-600 focus-visible:outline-2 focus-visible:outline-blue-600"
         >
@@ -428,6 +438,7 @@ function RotateButton({ label, direction, onClick }: { label: string; direction:
             type="button"
             onClick={onClick}
             aria-label={label}
+            title={label}
             className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-gray-700 shadow-sm hover:text-blue-600 focus-visible:outline-2 focus-visible:outline-blue-600"
         >
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden className={direction === "right" ? "-scale-x-100" : ""}>
