@@ -15,8 +15,6 @@ export const metadata: Metadata = {
     title: "World",
     description: "Walk around Steven Su's career as a small 3D world.",
     alternates: { canonical: "/world" },
-    // Unlisted until it is finished (WORLD.md §1).
-    robots: { index: false, follow: false },
 };
 
 export default function WorldPage() {

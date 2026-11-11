@@ -948,7 +948,25 @@ Fixed from what the recordings showed:
   - at 7 of 7 the counter reads "you've seen it all".
   Filling in the photos switches all of it back on, with no other change.
 
+### Launched (11 Nov 2026)
+
+`/world` is listed. Steven chose to launch before the on-device reduced-motion and VoiceOver
+checks; both remain on the list below.
+
+- **Nav:** World sits to the right of Projects, on desktop and in the mobile menu.
+- **`noindex` is dropped**, so the route is indexable, with its canonical on the production domain.
+- **Project #9:** `content/projects/world.md` is published as *Walk Around My Career*, with
+  status "Live on this site" and the poster as its card image. Its "Live Demo" opens `/world` in
+  the same tab, because on-site demos no longer open a new tab.
+
 ### To launch (all content or devices, no code)
+
+*Kept for the record. What's still open, all non-blocking:*
+
+- On-device checks of reduced motion and VoiceOver.
+- The Gallery photos.
+- Veilcore's project file.
+- A mid-range Android.
 
 1. **A real phone**, ideally a mid-range Android. *iPhone 18 Pro done (see above); no Android
    available.* Check:

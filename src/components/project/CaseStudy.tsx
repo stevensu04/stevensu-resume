@@ -53,7 +53,8 @@ export function ProjectLinks({
     return (
         <div className={`flex flex-wrap items-center ${variant === "inline" ? "gap-4" : "gap-3"} ${className}`}>
             {project.demo && (
-                <a href={project.demo} target="_blank" rel="noopener noreferrer" className={demoClass}>
+                // A demo on this site (/world) opens in place; anything else in a new tab.
+                <a href={project.demo} {...(project.demo.startsWith("/") ? {} : { target: "_blank", rel: "noopener noreferrer" })} className={demoClass}>
                     <FaExternalLinkAlt className={variant === "inline" ? "text-[10px]" : "text-xs"} /> Live Demo
                 </a>
             )}

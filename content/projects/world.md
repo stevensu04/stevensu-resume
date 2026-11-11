@@ -1,8 +1,6 @@
 ---
-# Project #9 (WORLD.md §0). Copy approved by Steven on 11 Nov 2026. The leading "_" keeps it off
-# /projects until /world is listed (§1: "finished, or not shipped"). To publish, in one change:
-# rename this to world.md, drop `noindex` from src/app/world/page.tsx, link /world from the nav, and
-# change `status` from "Unlisted" to the live wording.
+# Project #9 (WORLD.md §0). Copy approved by Steven on 11 Nov 2026; listed on 11 Nov 2026, the same
+# day /world went into the nav.
 
 title: Walk Around My Career
 category: Full-Stack
@@ -19,8 +17,8 @@ tech:
   - glTF / meshopt
 
 status:
-  label: In Progress · Unlisted
-  tone: amber
+  label: Live on this site
+  tone: green
 
 demo: /world
 

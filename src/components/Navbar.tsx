@@ -50,6 +50,7 @@ const Navbar = () => {
                     <CustomLink href="/" title="Home" />
                     <CustomLink href="/about" title="About" />
                     <CustomLink href="/projects" title="Projects" />
+                    <CustomLink href="/world" title="World" />
                 </nav>
 
                 <nav className='flex items-center justify-center gap-6'>
@@ -88,6 +89,7 @@ const Navbar = () => {
                                 <Link href="/" onClick={handleClick} className="text-xl font-medium text-gray-800 hover:text-blue-600 transition-colors">Home</Link>
                                 <Link href="/about" onClick={handleClick} className="text-xl font-medium text-gray-800 hover:text-blue-600 transition-colors">About</Link>
                                 <Link href="/projects" onClick={handleClick} className="text-xl font-medium text-gray-800 hover:text-blue-600 transition-colors">Projects</Link>
+                                <Link href="/world" onClick={handleClick} className="text-xl font-medium text-gray-800 hover:text-blue-600 transition-colors">World</Link>
                             </nav>
 
                             <div className='flex items-center gap-8 mt-auto mb-8'>
