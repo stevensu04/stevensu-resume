@@ -14,7 +14,7 @@ export default function AboutPage() {
         {/* 1. Hero Section: The Career Pivot Story */}
         <section className="grid w-full grid-cols-1 lg:grid-cols-2 gap-16 mb-24 items-center">
             <div className="flex flex-col items-start justify-start">
-                <AnimatedText text="Bridging Strategy and Code." className="!text-5xl !text-left mb-8" />
+                <AnimatedText text="Bridging Strategy and Code." className="!text-4xl md:!text-5xl !text-left mb-8" />
                 <p className="font-medium text-gray-600 mb-4 text-lg">
                     G&apos;day! I&apos;m Steven — a full-stack developer completing a Master of IT at UQ, with a professional background in Economics and Finance.
                 </p>

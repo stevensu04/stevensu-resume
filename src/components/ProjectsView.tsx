@@ -40,19 +40,22 @@ export default function ProjectsView({ projects }: { projects: Project[] }) {
         // A <div>, not <main>: the root layout already provides the page's one <main> landmark.
         <div className="w-full min-h-screen py-20 px-8 lg:px-32 bg-white text-black relative">
             <div className="flex flex-col items-center mb-16">
-                <AnimatedText text="Innovating Through Code." className="!text-6xl mb-4" />
+                <AnimatedText text="Innovating Through Code." className="!text-4xl md:!text-5xl lg:!text-6xl mb-4" />
                 <p className="text-gray-500 font-medium text-lg text-center max-w-2xl">
                     Bridging Economics and Information Technology to build user-centered digital solutions.
                 </p>
             </div>
 
-            <div className="flex justify-center flex-wrap gap-4 mb-20">
+            {/* Phones: one horizontally scrolling row. Wrapped, the four chips stacked into
+                three rows (~190px) and the first project started below the fold. Desktop keeps
+                the centred, wrapping row. */}
+            <div className="-mx-8 mb-10 flex gap-2 overflow-x-auto px-8 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:mx-0 lg:mb-20 lg:flex-wrap lg:justify-center lg:gap-4 lg:overflow-visible lg:px-0">
                 {categories.map((cat) => (
                     <button
                         key={cat}
                         onClick={() => setFilter(cat)}
                         aria-pressed={filter === cat}
-                        className={`px-6 py-2 rounded-full font-bold transition-all border-2 ${
+                        className={`shrink-0 whitespace-nowrap rounded-full border-2 px-4 py-2 text-sm font-bold transition-all lg:px-6 lg:text-base ${
                             filter === cat ? "bg-black text-white border-black" : "bg-white text-gray-500 border-gray-100 hover:border-black"
                         }`}
                     >
