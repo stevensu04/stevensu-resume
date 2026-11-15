@@ -33,9 +33,10 @@ export async function generateMetadata(
     const project = getProject(slug);
     if (!project) return {};
 
-    // Overriding openGraph/twitter replaces the parent's objects whole, so carry over the
-    // site name, locale and the root opengraph-image rather than silently dropping them.
-    const { openGraph, twitter } = await parent;
+    // Overriding openGraph replaces the parent's object whole, so carry over the site name and
+    // locale. Images are not carried over any more: ./opengraph-image.tsx gives every case study
+    // its own card, and file-based metadata takes priority over generateMetadata.
+    const { openGraph } = await parent;
     const url = caseStudyHref(project.slug);
     return {
         title: project.title,
@@ -48,13 +49,11 @@ export async function generateMetadata(
             description: project.summary,
             siteName: openGraph?.siteName,
             locale: openGraph?.locale,
-            images: openGraph?.images,
         },
         twitter: {
             card: "summary_large_image",
             title: project.title,
             description: project.summary,
-            images: twitter?.images,
         },
     };
 }
