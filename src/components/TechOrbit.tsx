@@ -220,6 +220,18 @@ export default function TechOrbit() {
                         </span>
                     ))}
                 </div>
+
+                {/* A still, fully opaque copy of the stack for recruiters scanning for keywords.
+                    The orbit's depth of field keeps about six labels faint and blurred at any
+                    moment, and on desktop the orbit is the only visible list (.tech-grid is
+                    screen-reader-only there). Lives inside .tech-orbit on purpose: it hides
+                    with the orbit on phones and under reduced motion, where the full .tech-grid
+                    shows instead, so the two never appear together, and it inherits the
+                    orbit's aria-hidden so screen readers still hear one list. Absolutely
+                    positioned below the square so it can't push the hero's CTAs down. */}
+                <p className="absolute inset-x-0 top-full mt-4 cursor-auto text-center text-[11px] font-semibold leading-relaxed text-gray-500">
+                    {techRings.flatMap((ring) => ring.items).join(" · ")}
+                </p>
             </div>
 
             {/* Flat fallback: visible on mobile and under reduced motion, screen-reader-only
