@@ -53,7 +53,7 @@ const ALL_WORLD_CARDS: WorldCard[] = [
         zone: "uq",
         title: "Master of Information Technology",
         subtitle: "The University of Queensland · Feb 2025 – Nov 2026",
-        body: "GPA 6.0/7.0, Distinction average. Databases, HCI, cloud, algorithms, information retrieval. Graduating November 2026.",
+        body: "GPA 6.0/7.0, Distinction average. Databases, HCI, cloud, algorithms, information retrieval. Coursework finishes November 2026; graduating December 2026.",
         links: [{ label: "Education", href: "/about#education" }],
     },
     {

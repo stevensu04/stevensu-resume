@@ -72,7 +72,7 @@ export default function Home() {
               href="/world"
               className="group underline decoration-gray-300 decoration-2 underline-offset-4 transition-colors hover:text-blue-600 hover:decoration-blue-600"
             >
-              Or walk around my career as a 3D city — one minute, seven stops
+              Or walk around my career as a 3D city — one minute, same seven stops as my CV
               <span aria-hidden="true" className="ml-1.5 inline-block transition-transform group-hover:translate-x-0.5">
                 →
               </span>
@@ -96,7 +96,6 @@ export default function Home() {
               <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0" />
             </Link>
 
-            {/* TODO(steven): this 404s until public/StevenSu_Resume.pdf exists. See PLAN.md §3. */}
             <a
               href={site.cv}
               download
