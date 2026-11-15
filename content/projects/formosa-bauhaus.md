@@ -22,9 +22,12 @@ tech:
   - AWS
   - Meshy API
 
+# Supervisor-nominated, accepted 16 Nov 2026, team confirmed. It's a judged exhibition, not a
+# competition final: never "finalist" or "award-nominated", and no prize money until it's won.
+# After the event: "Winner · …" if it places, otherwise "Exhibited · UQ Illuminate 2026".
 status:
-  label: Completed · UQ Capstone
-  tone: green
+  label: Selected · UQ Illuminate 2026
+  tone: blue
 
 # Repo is private to the course org (Studio3Build-2026s2) and has six authors — no public link.
 # The EC2 deployment (3.25.135.82) is the team's, on plain HTTP, and can go away at any time, so
@@ -35,6 +38,10 @@ meta:
     value: Full-Stack Developer
   - label: Context
     value: UQ DECO7381 Capstone (Part 2) · team of 6
+  # Few readers will know the event, so the value says what it is. Update the tense after it.
+  - label: Recognition
+    value: Nominated by our supervisor and selected to exhibit at UQ Illuminate 2026, the industry-judged end-of-year showcase of UQ's School of EECS and School of Architecture, Design and Planning
+    wide: true
   - label: Timeline
     value: Semester 2, 2026 · submitted 23 Oct · showcased 26 Oct
     badge: green
@@ -67,7 +74,8 @@ solution: |
 
 result: |
   Submitted on 23 Oct and shown at the UQ showcase on 26 Oct, with 15 products published on the
-  team's AWS deployment. Three evaluators finished every storefront task; the bag and fitting-room
+  team's AWS deployment. Our supervisor then nominated it for UQ Illuminate 2026, where it was
+  selected to exhibit before industry judges. Three evaluators finished every storefront task; the bag and fitting-room
   counters that confused them were fixed before the code freeze. The shop assistant answered 16 of
   20 test questions correctly and invented no products. Not met: on the reference Android phone
   the store's 95th-percentile frame time stayed near 50 ms against a 22 ms target.
