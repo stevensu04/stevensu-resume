@@ -63,6 +63,22 @@ export default function Home() {
             </a>
           </p>
 
+          {/* A reason to open /world. In the navbar, "World" sits next to Home / About / Projects
+              and reads as a fourth tab. This line turns it into an invitation and says up front
+              that it takes one minute. It is a text link with no 3D cost: three.js only loads
+              once the visitor presses the button on /world (see WorldShell). */}
+          <p className="mt-4 text-sm font-semibold text-gray-600">
+            <Link
+              href="/world"
+              className="group underline decoration-gray-300 decoration-2 underline-offset-4 transition-colors hover:text-blue-600 hover:decoration-blue-600"
+            >
+              Or walk around my career as a 3D city — one minute, seven stops
+              <span aria-hidden="true" className="ml-1.5 inline-block transition-transform group-hover:translate-x-0.5">
+                →
+              </span>
+            </Link>
+          </p>
+
           {/* 可用性：the objection recruiters filter on, answered before they ask */}
           <p className="mt-6 inline-flex items-center gap-2 rounded-full bg-green-50 px-4 py-1.5 text-xs font-semibold text-green-800">
             <span className="h-1.5 w-1.5 rounded-full bg-green-600" aria-hidden="true" />
