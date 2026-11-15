@@ -2,7 +2,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { site } from "@/lib/site";
 
-const ContactMe = () => {
+/**
+ * `compact`: the small button only, bottom-right, at every width. The full rotating ring was
+ * sized for the homepage, whose left gutter is lg:px-48 (192px); on /about and /projects the
+ * gutter is lg:px-32 (128px), and the ring (out to x≈176) sat on top of their content.
+ */
+const ContactMe = ({ compact = false }: { compact?: boolean }) => {
     const ringRef = useRef<HTMLDivElement>(null);
     /** True while the badge is sitting over the dark footer band. */
     const [onDark, setOnDark] = useState(false);
@@ -30,16 +35,16 @@ const ContactMe = () => {
 
     return (
         // 💡 透過 md:left-4 md:right-auto md:bottom-4 確保桌面版在左下，手機版預設在右下
-        <div className="fixed right-4 bottom-4 md:left-4 md:right-auto flex items-center justify-center z-50">
+        <div className={`fixed right-4 bottom-4 flex items-center justify-center z-50 ${compact ? "" : "md:left-4 md:right-auto"}`}>
             {/* 縮小至 40：at w-48 the rotating ring reached x=208 and clipped the hero's proof
                 numbers, which start at the page gutter (x=192). */}
-            <div ref={ringRef} className="w-20 h-20 md:w-40 md:h-40 flex items-center justify-center relative">
+            <div ref={ringRef} className={`w-20 h-20 flex items-center justify-center relative ${compact ? "" : "md:w-40 md:h-40"}`}>
                 {/* 深色區塊自動換色：the badge is fixed, so it travels over the white pages and the
                     #121212 footer alike. It was fill-black and disappeared on the dark band.
                     (mix-blend-mode looks like the elegant fix but does not work here — the
                     `fixed z-50` wrapper forms its own stacking context, so the blend resolves
                     against transparency inside that group rather than against the page.) */}
-                <svg viewBox="0 0 100 100" className="animate-spin-slow w-full h-full hidden md:block">
+                <svg viewBox="0 0 100 100" className={`animate-spin-slow w-full h-full hidden ${compact ? "" : "md:block"}`}>
                 <path
                     id="circlePath"
                     d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0"
@@ -67,12 +72,12 @@ const ContactMe = () => {
                 <a
                 href={`mailto:${site.email}`}
                 aria-label={`Email ${site.name}`}
-                className={`flex items-center justify-center absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-600 text-white shadow-xl w-14 h-14 md:w-16 md:h-16 rounded-full font-bold text-[10px] transition-all duration-300 ${
+                className={`flex items-center justify-center absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-600 text-white shadow-xl w-14 h-14 ${compact ? "" : "md:w-16 md:h-16"} rounded-full font-bold text-[10px] transition-all duration-300 ${
                     /* hover:bg-gray-900 would vanish into the #121212 footer. */
                     onDark ? "hover:bg-white hover:text-blue-600" : "hover:bg-gray-900"
                 }`}
                 >
-                    <span className="text-[10px] md:text-xs leading-none text-center">
+                    <span className={`text-[10px] leading-none text-center ${compact ? "" : "md:text-xs"}`}>
                         Contact<br />Me
                     </span>
                 </a>

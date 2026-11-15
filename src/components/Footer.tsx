@@ -36,6 +36,18 @@ const Footer = () => {
                 icon={<IoMdMail size={22} />}
                 />
             </div>
+
+            {/* Selectable text, not just a mailto: icon. A recruiter pasting this into an ATS or
+                a message needs to see the address, and mailto: does nothing in many webmail setups. */}
+            <a
+                href={`mailto:${site.email}`}
+                className="text-base font-semibold text-white underline-offset-4 hover:text-blue-400 hover:underline"
+            >
+                {site.email}
+            </a>
+            <p className="mt-2 text-sm text-gray-500">
+                {site.location} · {site.availability}
+            </p>
         </div>
 
         <div className="w-full bg-black py-6 border-t border-gray-800/50">

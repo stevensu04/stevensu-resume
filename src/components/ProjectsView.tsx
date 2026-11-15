@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import AnimatedText from '@/components/AnimatedText';
 import ProjectImage from '@/components/project/ProjectImage';
+import HireCta from '@/components/HireCta';
 import { ProjectLinks, StatusBadge, TechTags } from '@/components/project/CaseStudy';
 import { caseStudyHref, categoriesFrom, type Project } from '@/lib/project-schema';
 
@@ -36,7 +37,8 @@ export default function ProjectsView({ projects }: { projects: Project[] }) {
     );
 
     return (
-        <main className="w-full min-h-screen py-20 px-8 lg:px-32 bg-white text-black relative">
+        // A <div>, not <main>: the root layout already provides the page's one <main> landmark.
+        <div className="w-full min-h-screen py-20 px-8 lg:px-32 bg-white text-black relative">
             <div className="flex flex-col items-center mb-16">
                 <AnimatedText text="Innovating Through Code." className="!text-6xl mb-4" />
                 <p className="text-gray-500 font-medium text-lg text-center max-w-2xl">
@@ -70,7 +72,10 @@ export default function ProjectsView({ projects }: { projects: Project[] }) {
                     <ProjectCard key={project.slug} project={project} />
                 ))}
             </div>
-        </main>
+
+            {/* Someone who has just read the projects is at the point of reaching out. */}
+            <HireCta className="mt-24 max-w-4xl" />
+        </div>
     );
 }
 

@@ -1,13 +1,13 @@
 "use client";
 import AnimatedText from "@/components/AnimatedText";
-import ContactMe from "@/components/ContactMe";
 import TechOrbit from "@/components/TechOrbit";
 import Link from 'next/link';
 import { site } from "@/lib/site";
 
 export default function Home() {
   return (
-    <main className="relative flex min-h-screen w-full flex-col items-center justify-center bg-white text-black overflow-x-hidden">
+    // A <div>, not <main>: the root layout already provides the page's one <main> landmark.
+    <div className="relative flex min-h-screen w-full flex-col items-center justify-center bg-white text-black overflow-x-hidden">
       <div className="flex flex-col lg:flex-row items-center justify-between w-full px-8 lg:px-48 py-20 lg:py-0">
 
         {/* 左側：文字區 */}
@@ -81,7 +81,7 @@ export default function Home() {
 
           {/* 可用性：the objection recruiters filter on, answered before they ask */}
           <p className="mt-6 inline-flex items-center gap-2 rounded-full bg-green-50 px-4 py-1.5 text-xs font-semibold text-green-800">
-            <span className="h-1.5 w-1.5 rounded-full bg-green-600" aria-hidden="true" />
+            <span className="h-1.5 w-1.5 shrink-0 self-center rounded-full bg-green-600" aria-hidden="true" />
             {site.availability}
             {site.workRights ? ` · ${site.workRights}` : ""}
           </p>
@@ -113,7 +113,6 @@ export default function Home() {
           <TechOrbit />
         </div>
       </div>
-      <ContactMe />
-    </main>
+    </div>
   );
 }

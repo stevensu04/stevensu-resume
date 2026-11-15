@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import ContactMeMount from "@/components/ContactMeMount";
 import Navbar from '@/components/Navbar';
 import Footer from "@/components/Footer";
 import { site, SITE_URL } from "@/lib/site";
@@ -70,6 +71,9 @@ export default function RootLayout({
         </main>
 
         <Footer />
+        {/* Every page gets a way out. This used to render on the homepage only, so /about
+            (about ten screens tall on a phone) and all of /projects had no floating contact. */}
+        <ContactMeMount />
       </body>
     </html>
   );
