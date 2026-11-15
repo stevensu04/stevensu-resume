@@ -135,7 +135,7 @@ function ProjectCard({ project }: { project: Project }) {
                 {/* Fully opaque, not /80 — a translucent scrim let the confidential placeholder's
                     own "Under NDA" card ghost through behind the tech tags on hover. Also shown
                     on keyboard focus, so the link inside is never focused while invisible. */}
-                <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center p-6 text-center">
+                <div className="card-hover-overlay absolute inset-0 bg-black opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-300 flex-col justify-center items-center p-6 text-center">
                     <p className="text-white mb-4 text-sm font-medium">{project.summary}</p>
                     <TechTags tech={project.tech} className="justify-center mb-6" />
                     <Link
@@ -161,6 +161,14 @@ function ProjectCard({ project }: { project: Project }) {
                 <h3 className="text-xl font-bold text-black">
                     <Link href={href} className="hover:text-blue-600 transition-colors">{project.title}</Link>
                 </h3>
+
+                {/* On touch devices this is the only place the summary and stack appear — the
+                    hover overlay never fires there. Hidden by CSS for mouse users, so desktop
+                    looks unchanged. See .card-inline-detail in globals.css. */}
+                <div className="card-inline-detail">
+                    <p className="mt-2 text-sm leading-relaxed text-gray-600">{project.summary}</p>
+                    <TechTags tech={project.tech} className="mt-3" />
+                </div>
 
                 {/* 可驗證性：live demo and source, always visible — never behind a hover state */}
                 <ProjectLinks project={project} variant="inline" className="mt-4 border-t border-gray-100 pt-4" />

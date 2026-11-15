@@ -166,3 +166,30 @@ html {
   }
 }
 
+/* ─────────────────────────────────────────────────────────────────────────
+   /projects cards: summary and tech tags used to live only in the hover
+   overlay, so phones and tablets never saw them — and they are exactly what a
+   recruiter scans for. (Live Demo / Source were never part of this problem;
+   they are always visible.)
+
+   The default is the always-visible side. The overlay only takes over when the
+   device reports real hover. A width breakpoint would not do: a 1024px touch
+   tablet has no hover and would fall into the same hole.
+   ───────────────────────────────────────────────────────────────────────── */
+.card-hover-overlay { display: none; }
+.card-inline-detail { display: block; }
+
+@media (hover: hover) and (pointer: fine) {
+  .card-hover-overlay { display: flex; }
+  .card-inline-detail { display: none; }
+}
+
+/* Hybrid devices: an iPad with a trackpad and touchscreen Windows laptops report
+   (hover: hover) and (pointer: fine), so they match the rule above — but a finger
+   never triggers hover. Any coarse pointer brings the inline detail back. This
+   only restores the inline copy and leaves the overlay on, so a trackpad user may
+   briefly see the summary twice. Duplicated information is an acceptable failure
+   here; missing information is not. Kept after the rule above on purpose. */
+@media (any-pointer: coarse) {
+  .card-inline-detail { display: block; }
+}
