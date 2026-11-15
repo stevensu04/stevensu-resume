@@ -60,6 +60,9 @@ const Footer = () => {
                 <Link href="/" className="hover:text-white transition-colors">Home</Link>
                 <Link href="/about" className="hover:text-white transition-colors">About</Link>
                 <Link href="/projects" className="hover:text-white transition-colors">Projects</Link>
+                {/* Same four pages as the navbar. /world was missing, so a reader who scrolled
+                    to the bottom never saw it offered. */}
+                <Link href="/world" className="hover:text-white transition-colors">World</Link>
             </div>
             </div>
         </div>
