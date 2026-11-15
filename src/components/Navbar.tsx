@@ -38,7 +38,17 @@ const Navbar = () => {
 
 
             {/* 漢堡按鈕 (僅手機顯示) */}
-            <button className='flex-col justify-center items-center lg:hidden flex' onClick={handleClick}>
+            {/* The three visible lines measure 24 × 10px — this is the only navigation on a phone.
+                px-3 / py-5 grow the tap target to 48 × 50 and the matching negative margins cancel
+                it out, so the layout doesn't move. No aria-controls yet: the drawer is only in the
+                DOM while open, so it would point at a missing id whenever aria-expanded="false". */}
+            <button
+                type="button"
+                onClick={handleClick}
+                aria-label={isOpen ? "Close menu" : "Open menu"}
+                aria-expanded={isOpen}
+                className='-mx-3 -my-5 flex flex-col items-center justify-center px-3 py-5 lg:hidden'
+            >
                 <span className={`bg-gray-800 block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm ${isOpen ? 'rotate-45 translate-y-1' : '-translate-y-0.5'}`}></span>
                 <span className={`bg-gray-800 block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm my-0.5 ${isOpen ? 'opacity-0' : 'opacity-100'}`}></span>
                 <span className={`bg-gray-800 block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm ${isOpen ? '-rotate-45 -translate-y-1' : 'translate-y-0.5'}`}></span>
@@ -54,10 +64,22 @@ const Navbar = () => {
                 </nav>
 
                 <nav className='flex items-center justify-center gap-6'>
-                    <a href={site.github} target={"_blank"} className='text-2xl hover:text-blue-600 transition-all duration-300'>
+                    <a
+                        href={site.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`${site.name} on GitHub`}
+                        className='text-2xl hover:text-blue-600 transition-all duration-300'
+                    >
                         <FaGithub />
                     </a>
-                    <a href={site.linkedin} target={"_blank"} className='text-2xl hover:text-blue-600 transition-all duration-300'>
+                    <a
+                        href={site.linkedin}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`${site.name} on LinkedIn`}
+                        className='text-2xl hover:text-blue-600 transition-all duration-300'
+                    >
                         <FaLinkedin />
                     </a>
                 </nav>
@@ -82,7 +104,7 @@ const Navbar = () => {
                             transition={{ type: "spring", damping: 25, stiffness: 200 }}
                             className='fixed top-0 right-0 w-[50vw] h-full z-50 bg-white shadow-2xl flex flex-col p-8 lg:hidden'
                         >
-                            <button onClick={handleClick} className="self-end text-3xl text-gray-800 mb-8">&times;</button>
+                            <button type="button" onClick={handleClick} aria-label="Close menu" className="self-end text-3xl text-gray-800 mb-8">&times;</button>
                             <h2 className="text-lg font-bold mb-6 text-blue-600 border-b border-gray-100 pb-2">Menu</h2>
 
                             <nav className='flex flex-col items-start gap-6'>
@@ -94,16 +116,20 @@ const Navbar = () => {
 
                             <div className='flex items-center gap-8 mt-auto mb-8'>
                                 <a 
-                                    href={site.github} 
-                                    target={"_blank"} 
+                                    href={site.github}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    aria-label={`${site.name} on GitHub`}
                                     className='text-gray-800 hover:text-blue-600 transition-all duration-300'
                                 >
                                     {/* 💡 這裡同樣使用 FaGithub，大小可以用 text-3xl 讓它在手機上更好點擊 */}
                                     <FaGithub className="text-3xl" />
                                 </a>
                                 <a 
-                                    href={site.linkedin} 
-                                    target={"_blank"} 
+                                    href={site.linkedin}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    aria-label={`${site.name} on LinkedIn`}
                                     className='text-gray-800 hover:text-blue-600 transition-all duration-300'
                                 >
                                     {/* 💡 同樣使用 FaLinkedin */}
