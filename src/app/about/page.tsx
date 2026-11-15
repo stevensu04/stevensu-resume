@@ -3,11 +3,13 @@ import React from 'react';
 import AnimatedText from '@/components/AnimatedText';
 import { FaArrowUp } from 'react-icons/fa';
 import { site } from '@/lib/site';
-import { professionalSkills } from '@/lib/stack';
+import { professionalSkills, techRings } from '@/lib/stack';
+import HireCta from '@/components/HireCta';
 
 export default function AboutPage() {
     return (
-        <main className="flex w-full flex-col items-center justify-center py-20 px-8 lg:px-32 bg-white text-black scroll-smooth">
+        // A <div>, not <main>: the root layout already provides the page's one <main> landmark.
+        <div className="flex w-full flex-col items-center justify-center py-20 px-8 lg:px-32 bg-white text-black scroll-smooth">
         
         {/* 1. Hero Section: The Career Pivot Story */}
         <section className="grid w-full grid-cols-1 lg:grid-cols-2 gap-16 mb-24 items-center">
@@ -20,14 +22,29 @@ export default function AboutPage() {
                     My career began in the banking sector at E.SUN Bank, where I first discovered the power of tech-driven optimisation. By streamlining service workflows, I helped reduce client wait times by 10%. The work was stable and structured, and over time it stopped pulling me forward. The AI era arrived while I was still there, and I could see it would start replacing the work people do — so I moved to the side that builds it.
                 </p>
                 <p className="font-medium text-gray-600 mb-4">
-                    Now, I combine my analytical mindset from Economics with full-stack development skills to build high-impact software. I thrive on tackling complex problems and turning them into seamless user experiences.
+                    Now I build the whole thing: a Django service with an Airflow pipeline behind it at Star Trade, an open-source MCP server on npm, and hand-tracked browser games at Skyveil Studio. The Economics background is why I ask what the workflow is for before I write the code that replaces it.
                 </p>
                 
-                {/* Permanent home, confirmed against the Aug 2026 resume — this is the resume's own
-                    third competency bucket ("Consulting & Delivery"), rendered here rather than in
-                    the hero orbit because it's soft/consulting skills, not core technical stack.
-                    Originally parked pending resume review; see PLAN.md §9. */}
+                {/* Technical stack first, delivery skills second. This used to be the page's only
+                    skills list, so a recruiter reading just /about saw consulting skills and no
+                    stack (the orbit is homepage-only). Same techRings data as the homepage orbit,
+                    so the two can't drift. The second list is the resume's third competency
+                    bucket; see PLAN.md §9. */}
                 <div className="mt-6 w-full">
+                    <h2 className="mb-3 text-[11px] font-bold uppercase tracking-[0.18em] text-gray-500">
+                        Technical Stack
+                    </h2>
+                    <ul className="mb-8 flex flex-wrap gap-2">
+                        {techRings.flatMap((ring) => ring.items).map((item) => (
+                            <li
+                                key={item}
+                                className="rounded-full bg-black px-4 py-1.5 text-sm font-bold text-white"
+                            >
+                                {item}
+                            </li>
+                        ))}
+                    </ul>
+
                     <h2 className="mb-3 text-[11px] font-bold uppercase tracking-[0.18em] text-gray-500">
                         Delivery & Collaboration
                     </h2>
@@ -76,48 +93,21 @@ export default function AboutPage() {
             </div>
         </section>
 
-        {/* Anchor Links */}
-        <div className="flex items-center justify-center w-full mb-24">
-            <nav className="flex gap-4 p-2 px-6 bg-gray-50/50 backdrop-blur-sm border border-gray-200 rounded-full shadow-sm">
-                <NavLink href="#education" text="Education" />
-                <div className="w-[1px] h-4 bg-gray-300 self-center" /> {/* Nav anchor divider */}
+        {/* Anchor Links. Sticky under the navbar on mobile, where this page is about ten
+            screens tall and this was the only way to jump between sections. z-40 keeps it below
+            the navbar's z-[100]. Order = how a tech recruiter reads: what he built, then what he
+            studied. */}
+        <div className="sticky top-[76px] z-40 flex items-center justify-center w-full mb-16 lg:static lg:mb-24">
+            <nav className="flex gap-4 p-2 px-6 bg-gray-50/90 backdrop-blur-sm border border-gray-200 rounded-full shadow-sm">
                 <NavLink href="#experience" text="Experience" />
+                <div className="w-[1px] h-4 bg-gray-300 self-center" /> {/* Nav anchor divider */}
+                <NavLink href="#education" text="Education" />
                 <div className="w-[1px] h-4 bg-gray-300 self-center" /> {/* Nav anchor divider */}
                 <NavLink href="#activities" text="Activities" />
             </nav>
         </div>
 
-        {/* 2. Education Section */}
-        <section id="education" className="w-full mb-24 scroll-mt-32">
-            <h2 className="font-bold text-4xl mb-16 w-full text-center">Education</h2>
-            <div className="max-w-[85%] mx-auto">
-                <EducationItem 
-                    title="Master of Information Technology"
-                    school="The University of Queensland"
-                    location="Brisbane, Australia"
-                    time="Feb 2025 - Nov 2026"
-                    info="Cumulative GPA: 6.0/7.0 (Distinction Average). Coursework spans Relational Database Systems, Human-Computer Interaction, Cloud Computing, Algorithms & Data Structures, and Information Retrieval & Web Search. My major project, EventNow (INFS7202), is a solo-built full-stack platform integrating LLM APIs for smart content generation, Google OAuth 2.0, and RESTful architectures. My two-part Capstone covers BrisPulse (DECO7380, team of five), an event-day crowd-pressure navigation concept, and Formosa Bauhaus (DECO7381, team of six), a photo-to-3D web storefront where I work across the full stack and the AI asset pipeline."
-                />
-
-                <EducationItem 
-                    title="Master of Economics and Finance"
-                    school="Tamkang University"
-                    location="New Taipei City, Taiwan"
-                    time="Sep 2018 - Jun 2019"
-                    info="Achieved a perfect GPA of 4.0/4.0 (High Distinction). Developed advanced skills in Business Analytics and Economic Data Analysis, providing a strong logical foundation for my transition into Information Technology."
-                />
-
-                <EducationItem 
-                    title="Bachelor of Economics"
-                    school="Tamkang University"
-                    location="New Taipei City, Taiwan"
-                    time="Sep 2014 - Jun 2018"
-                    info="GPA: 3.935/4.0 (High Distinction). Beyond academics, I demonstrated strong leadership and commitment as the President of the Tennis Club and as a dedicated member of the Track and Field school team."
-                />
-            </div>
-        </section>
-
-        {/* 3. Professional Experience */}
+        {/* 2. Professional Experience — first: it's what a tech recruiter is looking for */}
         <section id="experience" className="w-full mb-24 scroll-mt-32">
             <h2 className="font-bold text-4xl mb-16 w-full text-center">Work Experience</h2>
             <div className="max-w-[85%] mx-auto">
@@ -170,9 +160,44 @@ export default function AboutPage() {
             </div>
         </section>
 
-        {/* 4. Extracurricular Activities */}
-        <section id="activities" className="w-full mb-24 scroll-mt-32">
-            <h2 className="font-bold text-4xl mb-16 w-full text-center">Extracurricular Activities</h2>
+        {/* 3. Education */}
+        <section id="education" className="w-full mb-24 scroll-mt-32">
+            <h2 className="font-bold text-4xl mb-16 w-full text-center">Education</h2>
+            <div className="max-w-[85%] mx-auto">
+                <EducationItem 
+                    title="Master of Information Technology"
+                    school="The University of Queensland"
+                    location="Brisbane, Australia"
+                    time="Feb 2025 - Nov 2026"
+                    info="Cumulative GPA: 6.0/7.0 (Distinction Average). Coursework spans Relational Database Systems, Human-Computer Interaction, Cloud Computing, Algorithms & Data Structures, and Information Retrieval & Web Search. My major project, EventNow (INFS7202), is a solo-built full-stack platform integrating LLM APIs for smart content generation, Google OAuth 2.0, and RESTful architectures. My two-part Capstone covers BrisPulse (DECO7380, team of five), an event-day crowd-pressure navigation concept, and Formosa Bauhaus (DECO7381, team of six), a photo-to-3D web storefront where I work across the full stack and the AI asset pipeline."
+                />
+
+                <EducationItem 
+                    title="Master of Economics and Finance"
+                    school="Tamkang University"
+                    location="New Taipei City, Taiwan"
+                    time="Sep 2018 - Jun 2019"
+                    info="Achieved a perfect GPA of 4.0/4.0 (High Distinction). Developed advanced skills in Business Analytics and Economic Data Analysis, providing a strong logical foundation for my transition into Information Technology."
+                />
+
+                <EducationItem 
+                    title="Bachelor of Economics"
+                    school="Tamkang University"
+                    location="New Taipei City, Taiwan"
+                    time="Sep 2014 - Jun 2018"
+                    info="GPA: 3.935/4.0 (High Distinction). Beyond academics, I demonstrated strong leadership and commitment as the President of the Tennis Club and as a dedicated member of the Track and Field school team."
+                />
+            </div>
+        </section>
+
+        {/* 4. Extracurricular Activities — one step smaller than Experience and Education on
+            purpose. All true, but supporting evidence rather than the main case; at the same
+            text-4xl a student-union role read as loud as the Django work. */}
+        <section id="activities" className="w-full mb-16 scroll-mt-32">
+            <h2 className="font-bold text-2xl mb-3 w-full text-center">Beyond the code</h2>
+            <p className="mx-auto mb-10 max-w-xl text-center text-sm text-gray-500">
+                Leadership and community work alongside the degree.
+            </p>
             <div className="max-w-[85%] mx-auto">                
                 <ActivityItem
                     company="UQ Graduate Union of Taiwanese Students (GUTS)"
@@ -218,7 +243,10 @@ export default function AboutPage() {
                 />
             </div>
         </section>
-        </main>
+
+        {/* The end of the page is where a reader decides to get in touch. */}
+        <HireCta className="max-w-4xl" />
+        </div>
     );
 }
 
