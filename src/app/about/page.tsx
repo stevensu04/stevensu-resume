@@ -5,6 +5,7 @@ import { FaArrowUp } from 'react-icons/fa';
 import { site } from '@/lib/site';
 import { professionalSkills, techRings } from '@/lib/stack';
 import HireCta from '@/components/HireCta';
+import CvNote from '@/components/CvNote';
 
 export default function AboutPage() {
     return (
@@ -67,6 +68,7 @@ export default function AboutPage() {
                     Download CV
                     </a>
                 </div>
+                <CvNote className="mt-3" />
             </div>
             
             {/* Tech terminal showcasing AI Search & RAG specialization */}

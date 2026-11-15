@@ -1,6 +1,7 @@
 "use client";
 import AnimatedText from "@/components/AnimatedText";
 import TechOrbit from "@/components/TechOrbit";
+import CvNote from "@/components/CvNote";
 import Link from 'next/link';
 import { site } from "@/lib/site";
 
@@ -31,7 +32,7 @@ export default function Home() {
           {/* 數字先講話：Proof above the fold, before any adjective */}
           {/* 手機直排、桌機三欄：three columns only once they can hold a readable line —
               at 375px they were 90px wide and every label wrapped to four lines. */}
-          <dl className="mt-8 grid w-full max-w-xl grid-cols-1 gap-y-3 text-left sm:grid-cols-3 sm:gap-x-5 sm:gap-y-0">
+          <dl className="mt-6 grid w-full max-w-xl grid-cols-1 gap-y-3 text-left sm:grid-cols-3 sm:gap-x-5 sm:gap-y-0">
             {site.proof.map((p) => (
               <div key={p.value} className="flex flex-row items-baseline gap-3 sm:flex-col sm:gap-0">
                 <dt className="w-20 shrink-0 text-2xl md:text-3xl font-extrabold text-black leading-none sm:w-auto">
@@ -86,7 +87,7 @@ export default function Home() {
             {site.workRights ? ` · ${site.workRights}` : ""}
           </p>
 
-          <div className="flex flex-wrap items-center justify-center lg:justify-start self-center lg:self-start mt-8 z-10 gap-4">
+          <div className="flex flex-wrap items-center justify-center lg:justify-start self-center lg:self-start mt-6 z-10 gap-4">
             <Link
               href="/projects"
               className="group relative flex items-center bg-black text-white px-8 py-3 rounded-lg font-bold shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 overflow-hidden"
@@ -104,6 +105,7 @@ export default function Home() {
               Download CV
             </a>
           </div>
+          <CvNote className="mt-3 self-center lg:self-start" />
         </div>
 
         {/* 右側：核心技能視覺區 — two counter-rotating rings, grouped by layer.

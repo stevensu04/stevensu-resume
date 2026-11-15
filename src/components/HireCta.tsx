@@ -1,4 +1,5 @@
 import { site } from "@/lib/site";
+import CvNote from "@/components/CvNote";
 
 /**
  * End-of-page call to action for /about and /projects: the moment a recruiter has finished
@@ -32,6 +33,7 @@ export default function HireCta({ className = "" }: { className?: string }) {
                     Download CV
                 </a>
             </div>
+            <CvNote className="mt-4" />
         </section>
     );
 }
