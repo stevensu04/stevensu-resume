@@ -87,8 +87,8 @@ function parseCallouts(file: string, value: unknown): ProjectCallout[] | undefin
 
     return value.map((row, i) => {
         const r = row as Raw;
-        if (r?.section !== "problem" && r?.section !== "solution") {
-            throw new ContentError(file, `callouts[${i}].section must be "problem" or "solution"`);
+        if (r?.section !== "problem" && r?.section !== "solution" && r?.section !== "result") {
+            throw new ContentError(file, `callouts[${i}].section must be "problem", "solution" or "result"`);
         }
         if (typeof r?.body !== "string" || !r.body.trim()) {
             throw new ContentError(file, `callouts[${i}].body is required`);
@@ -163,6 +163,7 @@ function parseProject(file: string, data: Raw): Project {
         problem: requireString(file, data, "problem"),
         solution: requireString(file, data, "solution"),
         solutionHeading: optionalString(file, data, "solutionHeading"),
+        result: optionalString(file, data, "result"),
         callouts: parseCallouts(file, data.callouts),
         world: parseWorld(file, data.world, data),
     };

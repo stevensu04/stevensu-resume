@@ -1,4 +1,4 @@
-import { FaExternalLinkAlt, FaGithub, FaCode, FaLightbulb } from "react-icons/fa";
+import { FaExternalLinkAlt, FaGithub, FaCode, FaLightbulb, FaChartLine } from "react-icons/fa";
 import { toneClasses, type Project, type ProjectCallout } from "@/lib/project-schema";
 
 /**
@@ -122,7 +122,7 @@ function Callout({ callout }: { callout: ProjectCallout }) {
     );
 }
 
-/** 01 Problem / 02 Solution, each followed by its callouts. */
+/** 01 Problem / 02 Solution / 03 Result (when there is one), each followed by its callouts. */
 export function CaseStudyNarrative({ project }: { project: Project }) {
     const calloutsFor = (section: ProjectCallout["section"]) =>
         (project.callouts ?? []).filter((c) => c.section === section);
@@ -149,6 +149,21 @@ export function CaseStudyNarrative({ project }: { project: Project }) {
                     <Callout key={i} callout={c} />
                 ))}
             </section>
+
+            {/* Recruiters read problem → what you did → what happened. The outcome used to live
+                only in the meta grid, under a different label on every project. Optional, so
+                projects without a real result stay without one. */}
+            {project.result && (
+                <section>
+                    <h2 className="flex items-center gap-2 text-black font-extrabold text-lg mb-3">
+                        <FaChartLine className="text-green-600" aria-hidden="true" /> 03 - Result
+                    </h2>
+                    <p className="text-gray-600 leading-relaxed">{project.result}</p>
+                    {calloutsFor("result").map((c, i) => (
+                        <Callout key={i} callout={c} />
+                    ))}
+                </section>
+            )}
         </div>
     );
 }

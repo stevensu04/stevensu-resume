@@ -20,7 +20,7 @@ export interface ProjectMeta {
 }
 
 export interface ProjectCallout {
-    section: "problem" | "solution";
+    section: "problem" | "solution" | "result";
     tone: Tone;
     /** Emoji or short glyph shown beside the callout. */
     icon?: string;
@@ -81,6 +81,11 @@ export interface Project {
     problem: string;
     solution: string;
     solutionHeading?: string;
+    /**
+     * 03 - Result. Optional on purpose: concept- and design-stage projects have no outcome yet,
+     * and an empty section is more honest than an invented one (CONTENT.md → honesty).
+     */
+    result?: string;
     callouts?: ProjectCallout[];
     /** Optional: the project's card in /world. */
     world?: ProjectWorldCard;

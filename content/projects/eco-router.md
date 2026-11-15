@@ -56,6 +56,13 @@ solution: |
   published annual averages, and upgrades to hourly grid-level data when given an Electricity
   Maps token — falling back per zone, and saying why, when live data isn't available.
 
+# 03 - Result. Only facts already in this file (meta, solution).
+result: |
+  Released as an open-source package anyone can run with `npx -y eco-router-mcp`, and listed in
+  the MCP Registry. It covers all 134 public AWS, Google Cloud and Azure regions, works with zero
+  setup on published annual averages, and upgrades to hourly grid-level data when given an
+  Electricity Maps token.
+
 callouts:
   - section: solution
     tone: green

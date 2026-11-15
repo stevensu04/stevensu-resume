@@ -35,6 +35,11 @@ solution: |
   Automated digital workflows built on Power Apps, Power Automate and SharePoint, projected to
   reduce processing time by 30%.
 
+# 03 - Result. Stated as projected, matching the meta above and the resume.
+result: |
+  Projected to cut processing time by 30% for the department, by replacing manual data
+  validation with automated Power Apps and Power Automate workflows on SharePoint.
+
 # The project's card in /world (WORLD.md §7, §8). Title, status and URLs come from the fields above.
 world:
   zone: gov

@@ -56,6 +56,13 @@ solution: |
   through a Django and HTMX interface built for real-time interactivity without a heavy
   client-side framework.
 
+# 03 - Result. Only facts already in this file (meta, solution) and the resume.
+result: |
+  Page latency fell from 4s to under 2s once the raw sources were reconciled nightly into indexed
+  MongoDB collections, with no mock data anywhere in the pipeline. Client-ready market briefs
+  that used to be assembled by hand became audit-ready B2B pitches and executive summaries
+  generated from live figures.
+
 callouts:
   - section: solution
     tone: green
