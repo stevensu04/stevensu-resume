@@ -1,4 +1,5 @@
 import type { Metadata, ResolvingMetadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import ProjectImage from "@/components/project/ProjectImage";
@@ -9,7 +10,7 @@ import {
     StatusBadge,
     TechTags,
 } from "@/components/project/CaseStudy";
-import { caseStudyHref } from "@/lib/project-schema";
+import { caseStudyHref, type Project, type ProjectGalleryItem, type ProjectVideo } from "@/lib/project-schema";
 import { getProject, getProjects } from "@/lib/projects";
 
 /**
@@ -88,6 +89,9 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
 
             <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
                 <div>
+                    {project.video ? (
+                        <ProjectFilm project={project} video={project.video} />
+                    ) : (
                     <div className="relative aspect-video overflow-hidden rounded-2xl border border-gray-100 bg-gray-50 shadow-lg">
                         {project.img ? (
                             // The page replaces the modal's lightbox: the full image is one click away.
@@ -108,6 +112,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
                             <ProjectImage project={project} />
                         )}
                     </div>
+                    )}
 
                     <ProjectMetaGrid meta={project.meta} className="mt-6" />
                     <ProjectLinks project={project} variant="buttons" className="mt-6" />
@@ -115,6 +120,10 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
 
                 <CaseStudyNarrative project={project} />
             </div>
+
+            {(project.gallery?.length || project.mediaCredit) && (
+                <ProjectGallery gallery={project.gallery ?? []} credit={project.mediaCredit} />
+            )}
 
             {next.slug !== project.slug && (
                 <nav aria-label="More projects" className="mt-20 flex flex-wrap items-center justify-between gap-4 border-t border-gray-100 pt-8">
@@ -133,5 +142,82 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
                 </nav>
             )}
         </article>
+    );
+}
+
+/**
+ * The project's film, in the cover image's slot. The stand-in for a live demo when there can't be
+ * one. preload="none" with a poster: nothing downloads until someone presses play, so the page
+ * costs the same as an image. Plain <video> controls are keyboard- and screen-reader-accessible.
+ */
+function ProjectFilm({ project, video }: { project: Project; video: ProjectVideo }) {
+    const poster = video.poster ?? project.img ?? undefined;
+    return (
+        <figure id="film" className="scroll-mt-24">
+            <div className="relative aspect-video overflow-hidden rounded-2xl border border-gray-100 bg-black shadow-lg">
+                <video
+                    src={video.src}
+                    poster={poster}
+                    controls
+                    preload="none"
+                    playsInline
+                    className="h-full w-full object-contain"
+                    aria-label={`${project.title} — film`}
+                >
+                    <a href={video.src}>Download the film</a>
+                </video>
+            </div>
+            {video.caption && (
+                <figcaption className="mt-3 text-xs leading-relaxed text-gray-500">{video.caption}</figcaption>
+            )}
+        </figure>
+    );
+}
+
+/**
+ * Screenshots under the narrative, each a link to the full-size file. object-contain on a grey
+ * ground, not object-cover: a diagram or a console screen cropped to 16:9 loses the part that
+ * mattered.
+ */
+function ProjectGallery({ gallery, credit }: { gallery: ProjectGalleryItem[]; credit?: string }) {
+    return (
+        <section aria-labelledby="gallery-heading" className="mt-16">
+            <h2 id="gallery-heading" className="mb-6 text-lg font-extrabold text-black">
+                In pictures
+            </h2>
+            {gallery.length > 0 && (
+                <ul className="grid grid-cols-1 gap-8 md:grid-cols-2">
+                    {gallery.map((item) => (
+                        <li key={item.src}>
+                            <figure>
+                                <a
+                                    href={item.src}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="group/img relative block aspect-[16/10] cursor-zoom-in overflow-hidden rounded-2xl border border-gray-100 bg-gray-50"
+                                >
+                                    <Image
+                                        src={item.src}
+                                        alt={item.alt}
+                                        fill
+                                        sizes="(min-width: 768px) 45vw, 92vw"
+                                        className="object-contain p-2"
+                                    />
+                                    <span className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 transition-opacity group-hover/img:opacity-100 group-focus-visible/img:opacity-100">
+                                        <span className="rounded-full bg-white/95 px-3 py-1.5 text-xs font-bold text-black shadow-md">
+                                            View full image
+                                        </span>
+                                    </span>
+                                </a>
+                                {item.caption && (
+                                    <figcaption className="mt-3 text-sm leading-relaxed text-gray-600">{item.caption}</figcaption>
+                                )}
+                            </figure>
+                        </li>
+                    ))}
+                </ul>
+            )}
+            {credit && <p className="mt-8 text-xs leading-relaxed text-gray-500">{credit}</p>}
+        </section>
     );
 }

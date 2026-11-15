@@ -5,7 +5,7 @@ title: StarLens
 # number from anyone who pressed the Full-Stack filter. Categories are for filtering by skill.
 category: Full-Stack
 order: 1
-# Flagship moved to Eco Router (eco-router.md). Only one project should carry `featured: true`.
+# Flagship moved to Eco Router, then to Formosa Bauhaus (formosa-bauhaus.md). Only one project should carry `featured: true`.
 img: null
 
 # Proprietary enterprise software built for HDRE (HD Renewable Energy) / Star Trade — internal

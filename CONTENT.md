@@ -63,6 +63,9 @@ solution: |
 | `callouts` | list | Highlighted panels under Problem or Solution |
 | `solutionHeading` | text | Overrides "Solution & Architecture" |
 | `world` | block | The project's card in `/world` — see [The /world card](#the-world-card) |
+| `video` | block | A film in the cover image's slot on the case study — see [`video` and `gallery`](#video-and-gallery) |
+| `gallery` | list | Screenshots under the case study, each with `src`, `alt` and an optional `caption` |
+| `mediaCredit` | text | Attribution line under the gallery |
 
 ### Multi-line text
 
@@ -126,6 +129,34 @@ callouts:
     title: "Technical Highlight: Token Economy"
     body: |
       Users earn tokens via daily check-ins, which meters AI query cost.
+```
+
+### `video` and `gallery`
+
+For a project that can't have a live demo or a public repo (team-owned infrastructure, a paid API,
+a private course repo), a short film and a few screenshots are the proof instead. The film takes
+the cover image's slot on the case study page, and the flagship banner gets a "Watch the film"
+link. `img` stays the card thumbnail and the film's default poster.
+
+```yaml
+video:
+  src: /projects/my-project/film.mp4     # under public/
+  # poster: /projects/my-project/poster.jpg   # defaults to `img`
+  caption: What the film shows, and whose work it is.
+
+gallery:
+  - src: /projects/my-project/screen.jpg
+    alt: What is on the screen, for someone who can't see it.
+    caption: What it shows, and which part was yours.
+
+mediaCredit: Third-party assets and their licences; who made the screens.
+```
+
+Every path must exist under `public/` or the build stops. Keep the film small: 720p H.264 with
+`+faststart` is plenty for a ~45%-wide player (the Formosa Bauhaus film went from 28 MB to 4.6 MB):
+
+```bash
+ffmpeg -i film.mp4 -vf scale=1280:-2 -c:v libx264 -preset slow -crf 26 -pix_fmt yuv420p -c:a aac -b:a 128k -movflags +faststart public/projects/my-project/film.mp4
 ```
 
 ---

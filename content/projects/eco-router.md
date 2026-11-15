@@ -1,11 +1,11 @@
 ---
 title: Eco Router
 category: Full-Stack
-order: 0
-# Flagship — a public, installable open-source release (npm + MCP Registry) with source anyone
-# can read, which is the most verifiable project here. Only one project should carry
-# `featured: true` at a time; StarLens moved back into the grid.
-featured: true
+order: 1
+# Flagship moved to Formosa Bauhaus (formosa-bauhaus.md), 16 Nov 2026 — the biggest and most
+# complete build, with a film standing in for a live demo. Eco Router stays the most verifiable
+# project (public source, on npm), so it sits first in the grid. Only one project should carry
+# `featured: true` at a time.
 img: /projects/EcoRouter.svg
 summary: An open-source MCP server that lets AI agents pick the lowest-carbon AWS, Google Cloud or Azure region for a workload — and the lowest-carbon time to run it.
 

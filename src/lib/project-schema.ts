@@ -53,6 +53,27 @@ export interface ProjectWorldCard {
     card: string;
 }
 
+/**
+ * A short film shown in place of the cover image on the case study page. The stand-in for a live
+ * demo when the project can't have one (team-owned infrastructure, paid APIs, private repo).
+ */
+export interface ProjectVideo {
+    /** Path under public/. Encode H.264 + AAC with +faststart so it starts before it finishes downloading. */
+    src: string;
+    /** Path under public/. Defaults to the project's `img`. */
+    poster?: string;
+    /** One line under the player: what it shows, and whose work it is. */
+    caption?: string;
+}
+
+/** One screenshot in the case study's gallery. */
+export interface ProjectGalleryItem {
+    /** Path under public/. */
+    src: string;
+    alt: string;
+    caption?: string;
+}
+
 export interface Project {
     slug: string;
     title: string;
@@ -87,6 +108,10 @@ export interface Project {
      */
     result?: string;
     callouts?: ProjectCallout[];
+    video?: ProjectVideo;
+    gallery?: ProjectGalleryItem[];
+    /** Attribution for the video and gallery — third-party assets, team-made screens. */
+    mediaCredit?: string;
     /** Optional: the project's card in /world. */
     world?: ProjectWorldCard;
 }

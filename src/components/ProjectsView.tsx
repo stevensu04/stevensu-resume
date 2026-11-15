@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { FaPlay } from 'react-icons/fa';
 import AnimatedText from '@/components/AnimatedText';
 import ProjectImage from '@/components/project/ProjectImage';
 import HireCta from '@/components/HireCta';
@@ -112,6 +113,15 @@ function ProjectHero({ project }: { project: Project }) {
                     >
                         View Full Case Study
                     </Link>
+                    {/* No live demo for some flagships; the film is the next best proof. */}
+                    {project.video && (
+                        <Link
+                            href={`${caseStudyHref(project.slug)}#film`}
+                            className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-700 transition-colors hover:text-blue-600"
+                        >
+                            <FaPlay className="text-[10px]" aria-hidden="true" /> Watch the film
+                        </Link>
+                    )}
                     <ProjectLinks project={project} variant="inline" />
                 </div>
             </div>

@@ -21,7 +21,9 @@ import {
     type WorldLinkKind,
     type WorldZone,
     type ProjectCallout,
+    type ProjectGalleryItem,
     type ProjectMeta,
+    type ProjectVideo,
     type Tone,
 } from "./project-schema";
 
@@ -104,6 +106,41 @@ function parseCallouts(file: string, value: unknown): ProjectCallout[] | undefin
     });
 }
 
+/** A media path must point at a real file under public/, or the page would ship a broken player. */
+function requirePublicFile(file: string, value: unknown, where: string): string {
+    if (typeof value !== "string" || !value.startsWith("/")) {
+        throw new ContentError(file, `${where} must be a path under public/ starting with "/"`);
+    }
+    if (!fs.existsSync(path.join(process.cwd(), "public", value))) {
+        throw new ContentError(file, `${where} points at ${value}, which is not in public/`);
+    }
+    return value;
+}
+
+function parseVideo(file: string, value: unknown): ProjectVideo | undefined {
+    if (value === undefined) return undefined;
+    const v = value as Raw;
+    return {
+        src: requirePublicFile(file, v?.src, "video.src"),
+        poster: v.poster === undefined ? undefined : requirePublicFile(file, v.poster, "video.poster"),
+        caption: typeof v.caption === "string" ? v.caption.trim() : undefined,
+    };
+}
+
+function parseGallery(file: string, value: unknown): ProjectGalleryItem[] | undefined {
+    if (value === undefined) return undefined;
+    if (!Array.isArray(value)) throw new ContentError(file, `"gallery" must be a list`);
+    return value.map((row, i) => {
+        const r = row as Raw;
+        if (typeof r?.alt !== "string" || !r.alt.trim()) throw new ContentError(file, `gallery[${i}].alt is required`);
+        return {
+            src: requirePublicFile(file, r.src, `gallery[${i}].src`),
+            alt: r.alt.trim(),
+            caption: typeof r.caption === "string" ? r.caption.trim() : undefined,
+        };
+    });
+}
+
 function parseWorld(file: string, value: unknown, data: Raw): ProjectWorldCard | undefined {
     if (value === undefined) return undefined;
     const w = value as Raw;
@@ -165,6 +202,9 @@ function parseProject(file: string, data: Raw): Project {
         solutionHeading: optionalString(file, data, "solutionHeading"),
         result: optionalString(file, data, "result"),
         callouts: parseCallouts(file, data.callouts),
+        video: parseVideo(file, data.video),
+        gallery: parseGallery(file, data.gallery),
+        mediaCredit: optionalString(file, data, "mediaCredit"),
         world: parseWorld(file, data.world, data),
     };
 }
