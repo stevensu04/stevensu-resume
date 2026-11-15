@@ -141,3 +141,28 @@ html {
     transform: scale(calc(0.82 + 0.18 * var(--depth)));
   }
 }
+/* ─────────────────────────────────────────────────────────────────────────
+   Headline entrance (AnimatedText).
+
+   CSS rather than framer-motion because the stylesheet is render-blocking: it
+   always arrives before first paint, so "animated" and "readable" never
+   conflict. No JS means no animation, but the words are still there.
+
+   The keyframes deliberately contain no `opacity`. With fill-mode `backwards`
+   the `from` state applies during each word's delay, so an opacity of 0 there
+   would make later words transparent for hundreds of milliseconds — the same
+   blank headline this replaced. Only transform moves: every word is fully
+   opaque from first paint and just lifts into place.
+   ───────────────────────────────────────────────────────────────────────── */
+@keyframes word-rise {
+  from { transform: translateY(0.35em); }
+  to   { transform: none; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .anim-word {
+    animation: word-rise 520ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    animation-delay: calc(var(--word-index, 0) * 65ms);
+  }
+}
+
