@@ -16,6 +16,24 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+/**
+ * schema.org Person, so search engines can tie this site to the name a recruiter types in.
+ * Everything comes from site.ts. Locality only, no street address — the same reason the CV
+ * leaves it off.
+ */
+const personJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: site.name,
+    jobTitle: site.role,
+    url: SITE_URL,
+    email: `mailto:${site.email}`,
+    sameAs: [site.github, site.linkedin],
+    address: { "@type": "PostalAddress", addressLocality: "Brisbane", addressRegion: "QLD", addressCountry: "AU" },
+    affiliation: { "@type": "CollegeOrUniversity", name: "The University of Queensland" },
+    knowsAbout: ["Full-Stack Development", "Next.js", "TypeScript", "Python", "Django"],
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
@@ -63,6 +81,11 @@ export default function RootLayout({
           were declared but no element consumed them. Applying it also makes typography
           consistent across platforms instead of falling back to each OS's default sans. */}
       <body className={`${geistSans.variable} ${geistMono.variable} font-sans flex flex-col min-h-screen bg-white`}>
+        <script
+          type="application/ld+json"
+          // Escaping "<" per the Next.js JSON-LD guide, so no string can close the script tag.
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd).replace(/</g, "\\u003c") }}
+        />
         <Navbar />
         
         {/* 💡 main 標籤使用 flex-grow，這會把 Footer 推到最底部 */}
