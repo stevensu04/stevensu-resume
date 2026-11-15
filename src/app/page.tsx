@@ -45,6 +45,24 @@ export default function Home() {
             ))}
           </dl>
 
+          {/* 可驗證性：verifiability next to the numbers, not three clicks away in /projects.
+              Eco Router's npm proof lives here rather than in a proof slot so it doesn't push
+              out the Queensland Government number. */}
+          <p className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs font-semibold text-gray-500 lg:justify-start">
+            <a href={site.github} target="_blank" rel="noopener noreferrer" className="hover:text-blue-600">
+              Code on GitHub
+            </a>
+            <span aria-hidden="true">·</span>
+            <a
+              href="https://www.npmjs.com/package/eco-router-mcp"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-blue-600"
+            >
+              eco-router-mcp on npm
+            </a>
+          </p>
+
           {/* 可用性：the objection recruiters filter on, answered before they ask */}
           <p className="mt-6 inline-flex items-center gap-2 rounded-full bg-green-50 px-4 py-1.5 text-xs font-semibold text-green-800">
             <span className="h-1.5 w-1.5 rounded-full bg-green-600" aria-hidden="true" />

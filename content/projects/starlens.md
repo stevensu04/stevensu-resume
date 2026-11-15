@@ -1,6 +1,9 @@
 ---
 title: StarLens
-category: Business
+# Django + HTMX + Airflow + MongoDB, built end to end, so it files under Full-Stack. It used to
+# be Business (its domain is a trading desk), which hid the project behind the hero's first
+# number from anyone who pressed the Full-Stack filter. Categories are for filtering by skill.
+category: Full-Stack
 order: 1
 # Flagship moved to Eco Router (eco-router.md). Only one project should carry `featured: true`.
 img: null

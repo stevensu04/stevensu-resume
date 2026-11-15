@@ -40,11 +40,41 @@ export const site = {
     summary:
         "Full-stack developer who came from banking. I ask why the workflow exists before I write the code that replaces it.",
 
-    /** Numbers, above the fold. Proof beats adjectives. */
+    /**
+     * Numbers, above the fold. Proof beats adjectives.
+     *
+     * One job per slot: 1 = engineering evidence (measured, not projected), 2 = Australian
+     * employer, 3 = academic bar. The E.SUN "10% wait times" slot was dropped: it is bank service
+     * work, and the intro's first sentence already tells the banking story. Queensland Government
+     * stays — shipping inside a state government is the strongest local signal for a 485
+     * applicant, and it is spelled out because overseas recruiters may not read "QLD".
+     *
+     * The StarLens context names both the project (as on /projects) and the employer (as on the
+     * CV), so the number can be found again in either place.
+     *
+     * `short` is only for src/app/opengraph-image.tsx: that card draws these three in a row at
+     * 18px with no auto-shrink, so a long label wraps and breaks the layout. Re-check
+     * /opengraph-image whenever this array changes.
+     */
     proof: [
-        { value: "30%", label: "projected efficiency gain", context: "QLD Government automation" },
-        { value: "10%", label: "reduction in client wait times", context: "E.SUN Bank" },
-        { value: "6.0/7.0", label: "Master of IT GPA", context: "UQ, Distinction average" },
+        {
+            value: "−50%",
+            short: "page latency",
+            label: "page latency, 4s → under 2s",
+            context: "StarLens · Star Trade · Django + Airflow",
+        },
+        {
+            value: "30%",
+            short: "efficiency gain",
+            label: "projected efficiency gain",
+            context: "Queensland Government automation",
+        },
+        {
+            value: "6.0/7.0",
+            short: "Master of IT GPA",
+            label: "Master of IT GPA",
+            context: "UQ, Distinction average",
+        },
     ],
 
     availability: "Graduating Nov 2026 · Available for 2027 graduate programs",

@@ -99,8 +99,11 @@ export default function OpengraphImage() {
                             <div style={{ fontSize: 40, fontWeight: 800, color: "#ffffff" }}>
                                 {p.value}
                             </div>
-                            <div style={{ fontSize: 18, color: "#71717a", marginTop: 4 }}>
-                                {p.label}
+                            {/* `short`, not `label`: this card has no auto-shrink. maxWidth keeps
+                                any wrap inside its own column instead of pushing the next one
+                                off the canvas. */}
+                            <div style={{ display: "flex", fontSize: 18, color: "#71717a", marginTop: 4, maxWidth: 280 }}>
+                                {p.short}
                             </div>
                         </div>
                     ))}
