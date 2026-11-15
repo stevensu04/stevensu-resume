@@ -1,7 +1,6 @@
 "use client";
 import Link from 'next/link';
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import { site } from "@/lib/site";
@@ -19,9 +18,24 @@ const CustomLink = ({ href, title, className = "" }: { href: string; title: stri
     );
 };
 
+const MOBILE_LINKS = [
+    ["/", "Home"],
+    ["/about", "About"],
+    ["/projects", "Projects"],
+    ["/world", "World"],
+] as const;
+
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const handleClick = () => setIsOpen(!isOpen);
+
+    // Escape closes the drawer, as it would any menu.
+    useEffect(() => {
+        if (!isOpen) return;
+        const onKey = (e: KeyboardEvent) => e.key === "Escape" && setIsOpen(false);
+        window.addEventListener("keydown", onKey);
+        return () => window.removeEventListener("keydown", onKey);
+    }, [isOpen]);
 
     return (
         <header className='w-full px-8 md:px-16 lg:px-32 py-4 font-medium flex items-center justify-between sticky top-0 z-[100] bg-gray-50 border-b border-blue-600/10 shadow-sm'>
@@ -40,13 +54,14 @@ const Navbar = () => {
             {/* 漢堡按鈕 (僅手機顯示) */}
             {/* The three visible lines measure 24 × 10px — this is the only navigation on a phone.
                 px-3 / py-5 grow the tap target to 48 × 50 and the matching negative margins cancel
-                it out, so the layout doesn't move. No aria-controls yet: the drawer is only in the
-                DOM while open, so it would point at a missing id whenever aria-expanded="false". */}
+                it out, so the layout doesn't move. aria-controls is safe because the drawer
+                below is always in the DOM. */}
             <button
                 type="button"
                 onClick={handleClick}
                 aria-label={isOpen ? "Close menu" : "Open menu"}
                 aria-expanded={isOpen}
+                aria-controls="mobile-menu"
                 className='-mx-3 -my-5 flex flex-col items-center justify-center px-3 py-5 lg:hidden'
             >
                 <span className={`bg-gray-800 block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm ${isOpen ? 'rotate-45 translate-y-1' : '-translate-y-0.5'}`}></span>
@@ -85,61 +100,73 @@ const Navbar = () => {
                 </nav>
             </div>
 
-            {/* 手機版側邊欄 */}
-            <AnimatePresence>
-                {isOpen && (
-                    <>
-                        <motion.div 
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
+            {/* 手機版側邊欄 — mobile drawer, CSS only (framer-motion was here for this one effect).
+                Always in the DOM: CSS has no AnimatePresence, and a removed element can't play an
+                exit animation. That means three things have to happen together:
+                  1. When closed: inert + aria-hidden + tabIndex={-1} (tabIndex covers browsers
+                     without inert), so Tab never lands in an invisible menu.
+                  2. visibility is part of the transition, so the slide-out finishes before the
+                     drawer is hidden instead of vanishing in one frame. The slide transitions
+                     `translate`, not `transform`: Tailwind v4's translate-x-* set the CSS
+                     translate property, so a transform transition would never fire.
+                  3. The old spring (damping 25, stiffness 200) becomes cubic-bezier(0.32, 0.72, 0, 1)
+                     over 280ms: a close ease-out without the overshoot. */}
+            <div
+                onClick={handleClick}
+                aria-hidden="true"
+                className={`fixed inset-0 z-40 bg-black/20 backdrop-blur-sm transition-[opacity,visibility] duration-300 lg:hidden ${
+                    isOpen ? "visible opacity-100" : "invisible opacity-0"
+                }`}
+            />
+
+            <div
+                id="mobile-menu"
+                inert={!isOpen}
+                aria-hidden={!isOpen}
+                className={`fixed top-0 right-0 z-50 flex h-full w-[50vw] flex-col bg-white p-8 shadow-2xl transition-[translate,visibility] duration-[280ms] ease-[cubic-bezier(0.32,0.72,0,1)] lg:hidden ${
+                    isOpen ? "visible translate-x-0" : "invisible translate-x-full"
+                }`}
+            >
+                <button type="button" onClick={handleClick} aria-label="Close menu" tabIndex={isOpen ? 0 : -1} className="self-end text-3xl text-gray-800 mb-8">&times;</button>
+                <h2 className="text-lg font-bold mb-6 text-blue-600 border-b border-gray-100 pb-2">Menu</h2>
+
+                <nav className='flex flex-col items-start gap-6'>
+                    {MOBILE_LINKS.map(([href, label]) => (
+                        <Link
+                            key={href}
+                            href={href}
                             onClick={handleClick}
-                            className='fixed inset-0 z-40 bg-black/20 backdrop-blur-sm lg:hidden'
-                        />
-
-                        <motion.div 
-                            initial={{ x: "100%" }}
-                            animate={{ x: 0 }}
-                            exit={{ x: "100%" }}
-                            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                            className='fixed top-0 right-0 w-[50vw] h-full z-50 bg-white shadow-2xl flex flex-col p-8 lg:hidden'
+                            tabIndex={isOpen ? 0 : -1}
+                            className="text-xl font-medium text-gray-800 hover:text-blue-600 transition-colors"
                         >
-                            <button type="button" onClick={handleClick} aria-label="Close menu" className="self-end text-3xl text-gray-800 mb-8">&times;</button>
-                            <h2 className="text-lg font-bold mb-6 text-blue-600 border-b border-gray-100 pb-2">Menu</h2>
+                            {label}
+                        </Link>
+                    ))}
+                </nav>
 
-                            <nav className='flex flex-col items-start gap-6'>
-                                <Link href="/" onClick={handleClick} className="text-xl font-medium text-gray-800 hover:text-blue-600 transition-colors">Home</Link>
-                                <Link href="/about" onClick={handleClick} className="text-xl font-medium text-gray-800 hover:text-blue-600 transition-colors">About</Link>
-                                <Link href="/projects" onClick={handleClick} className="text-xl font-medium text-gray-800 hover:text-blue-600 transition-colors">Projects</Link>
-                                <Link href="/world" onClick={handleClick} className="text-xl font-medium text-gray-800 hover:text-blue-600 transition-colors">World</Link>
-                            </nav>
-
-                            <div className='flex items-center gap-8 mt-auto mb-8'>
-                                <a 
-                                    href={site.github}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    aria-label={`${site.name} on GitHub`}
-                                    className='text-gray-800 hover:text-blue-600 transition-all duration-300'
-                                >
-                                    {/* 💡 這裡同樣使用 FaGithub，大小可以用 text-3xl 讓它在手機上更好點擊 */}
-                                    <FaGithub className="text-3xl" />
-                                </a>
-                                <a 
-                                    href={site.linkedin}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    aria-label={`${site.name} on LinkedIn`}
-                                    className='text-gray-800 hover:text-blue-600 transition-all duration-300'
-                                >
-                                    {/* 💡 同樣使用 FaLinkedin */}
-                                    <FaLinkedin className="text-3xl" />
-                                </a>
-                            </div>
-                        </motion.div>
-                    </>
-                )}
-            </AnimatePresence>
+                <div className='flex items-center gap-8 mt-auto mb-8'>
+                    <a
+                        href={site.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`${site.name} on GitHub`}
+                        tabIndex={isOpen ? 0 : -1}
+                        className='text-gray-800 hover:text-blue-600 transition-all duration-300'
+                    >
+                        <FaGithub className="text-3xl" />
+                    </a>
+                    <a
+                        href={site.linkedin}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`${site.name} on LinkedIn`}
+                        tabIndex={isOpen ? 0 : -1}
+                        className='text-gray-800 hover:text-blue-600 transition-all duration-300'
+                    >
+                        <FaLinkedin className="text-3xl" />
+                    </a>
+                </div>
+            </div>
         </header>
     );
 };
