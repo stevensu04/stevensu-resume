@@ -96,9 +96,9 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
                                 href={project.img}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="group/img block h-full w-full cursor-zoom-in"
+                                className="group/img relative block h-full w-full cursor-zoom-in"
                             >
-                                <ProjectImage project={project} />
+                                <ProjectImage project={project} sizes="(min-width: 1024px) 45vw, 92vw" loading="eager" />
                                 <span className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 transition-opacity group-hover/img:opacity-100 group-focus-visible/img:opacity-100">
                                     <span className="rounded-full bg-white/95 px-3 py-1.5 text-xs font-bold text-black shadow-md">
                                         View full image

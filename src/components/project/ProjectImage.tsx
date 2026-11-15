@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import { useState } from "react";
 import { FaLock } from "react-icons/fa";
 import type { Project } from "@/lib/project-schema";
@@ -12,7 +13,24 @@ import type { Project } from "@/lib/project-schema";
  * A client component only for the `onError` fallback. Shared by the /projects grid and the
  * /projects/[slug] case study pages.
  */
-export default function ProjectImage({ project, className = "" }: { project: Project; className?: string }) {
+export default function ProjectImage({
+    project,
+    className = "",
+    sizes = "100vw",
+    loading = "lazy",
+}: {
+    project: Project;
+    className?: string;
+    /**
+     * How wide this slot really is. The caller must say: the same component fills slots of very
+     * different widths (grid card ≈ 28vw, flagship banner ≈ 40vw, case study image ≈ 45vw), and
+     * one shared value would make the big slots fetch too small a file and blur it. The 100vw
+     * default errs toward downloading more rather than blurring.
+     */
+    sizes?: string;
+    /** next/image is lazy by default; first-screen images should pass "eager" for LCP. */
+    loading?: "lazy" | "eager";
+}) {
     const [failed, setFailed] = useState(false);
 
     if (!project.img || failed) {
@@ -41,12 +59,18 @@ export default function ProjectImage({ project, className = "" }: { project: Pro
         );
     }
 
+    // next/image serves each screen a resized WebP instead of the original file (ParkEase.png
+    // alone is 2938px / 434 KB for a ~311px slot on a phone). `fill` needs a positioned parent;
+    // all three call sites have one. SVG sources skip optimization automatically in Next 16.
     return (
-        <img
+        <Image
             src={project.img}
             alt={project.title}
+            fill
+            sizes={sizes}
+            loading={loading}
             onError={() => setFailed(true)}
-            className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 ${className}`}
+            className={`object-cover transition-transform duration-500 group-hover:scale-110 ${className}`}
         />
     );
 }

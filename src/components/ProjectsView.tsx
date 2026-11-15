@@ -88,7 +88,8 @@ function ProjectHero({ project }: { project: Project }) {
     return (
         <div className="mb-16 grid grid-cols-1 items-center gap-8 rounded-3xl border border-gray-100 bg-white p-6 shadow-sm lg:grid-cols-2 lg:gap-12 lg:p-10">
             <div className="relative aspect-video w-full overflow-hidden rounded-2xl">
-                <ProjectImage project={project} />
+                {/* First screen of /projects on desktop, so eager (next/image defaults to lazy). */}
+                <ProjectImage project={project} sizes="(min-width: 1024px) 40vw, 92vw" loading="eager" />
                 {project.status && <StatusBadge status={project.status} className="absolute left-4 top-4" />}
             </div>
 
@@ -123,7 +124,7 @@ function ProjectCard({ project }: { project: Project }) {
     return (
         <div className="relative group overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-xl transition-all duration-500">
             <div className="aspect-video w-full bg-gray-100 overflow-hidden relative">
-                <ProjectImage project={project} />
+                <ProjectImage project={project} sizes="(min-width: 1024px) 28vw, (min-width: 768px) 44vw, 92vw" />
 
                 {/* 誠實標籤：maturity stated on the card, not buried in the case study. Faded out on
                     hover — its own vertically-centered content block can grow tall enough (long
