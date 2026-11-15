@@ -70,8 +70,8 @@ reward.
    └───────────────┘     └───────────────┘     └───────┬───────┘
                                                        ▼
    ┌───────────────┐     ┌───────────────┐     ┌───────────────┐
-   │ 6 Open-source │ ◄── │ 5 Skyveil     │ ◄── │ 4 Building    │
-   │   shed        │     │   garage      │     │   site        │
+   │ 6 Open-source │ ◄── │ 5 Skyveil     │ ◄── │ 4 Shopfront   │
+   │   shed        │     │   garage      │     │               │
    └───────┬───────┘     └───────────────┘     └───────────────┘
            ▼
    ┌───────────────┐     ┌───────────────┐     ┌───────────────┐
@@ -95,7 +95,7 @@ reward.
 | 1 | Ferry landing | E.SUN teller counter · StarLens shuttered door · the crossing | `/about`, `starlens.md`, **new** |
 | 2 | UQ corner | Degree · volunteer noticeboard · EventNow stall | `/about`, **mostly new**, `eventnow.md` |
 | 3 | Government tower | Finance Forms (frosted, padlocked) | `finance-forms.md` |
-| 4 | Building site | Formosa Bauhaus · "one more thing" | `formosa-bauhaus.md`, **new** |
+| 4 | Shopfront | Formosa Bauhaus · "one more thing" (on a fitting mirror) | `formosa-bauhaus.md`, **new** |
 | 5 | Skyveil garage | Veilcore arcade cabinet | `/about` (no project file yet; see §8) |
 | 6 | Open-source shed | Eco Router | `eco-router.md` |
 | 7 | Prototype park | BrisPulse blueprint table · ParkEase plinth · JourneyMate plinth | the three `.md` files |
@@ -114,9 +114,9 @@ geometry has to say the same thing the status badge says.
 
 | What exists | Geometry | Used for |
 | --- | --- | --- |
-| Shipped or live | Full building or stall, lit, door open | Eco Router, EventNow |
+| Shipped or live | Full building or stall, lit, door open | Eco Router, EventNow, Formosa Bauhaus |
 | Shipped but confidential | Real building, **deliberately opaque**: shuttered, frosted, padlocked | StarLens, Finance Forms |
-| In progress | Scaffolding and a crane | Formosa Bauhaus |
+| In progress | Scaffolding and a crane | Nothing at present (Formosa Bauhaus until 16 Nov 2026) |
 | Interactive prototype | **Scale model on a plinth**, not a building | ParkEase, JourneyMate |
 | Concept | Blueprint table with a translucent wireframe and no walls | BrisPulse |
 
@@ -164,7 +164,7 @@ model, the avatar included.
 - **Kit first: Kenney.** City Kit Commercial (2.1), Suburban (2.0) and Roads, plus the Watercraft Kit,
   all CC0. Nothing from any other kit family, Kenney's own Nature Kit included (see the comparison
   below). Hand-make only what the kits don't have: noticeboard, blueprint table, three plinths, exit
-  sign, shuttered door, scaffolding, crane, river surface, pier, palm trees and the ferry. All of it
+  sign, shuttered door, the Formosa Bauhaus shopfront, river surface, pier, palm trees and the ferry. All of it
   is box-level work in Blender, coloured from the kits' colormaps.
 - **Palette:** six colours plus one accent, picked from the kits' colormaps. The accent is the site's
   `blue-600`.
@@ -184,7 +184,7 @@ model, the avatar included.
 - **Occlusion:** when a building hides Steven, fade it. A visitor notices this immediately if it's
   missing.
 - **Idle motion is what makes it alive,** more than polygon count: water swell (vertex shader), trees
-  swaying, the crane turning slowly, the arcade screen flickering, a ferry crossing every ~30 s. All
+  swaying (the banyan's crown included), the arcade screen flickering, a ferry crossing every ~30 s. All
   of it is cheap. All of it stops under `prefers-reduced-motion`.
 
 ### Kit comparison (11 Nov 2026)
@@ -295,13 +295,13 @@ approved. At four sentences and ~73 words it's over the card limits, which this 
 > projected to cut processing time by 30%. It's a government interface, so the glass stays frosted.
 > → Read the case study
 
-### 4 · Building site
+### 4 · Shopfront
 
-> **Formosa Bauhaus** · In Progress · Capstone
+> **Formosa Bauhaus** · Selected · UQ Illuminate 2026
 > Single-image 3D generators turn one product photo into a whole mesh, so most of what a shopper
 > rotates was never photographed — it was inferred. Our storefront labels which surfaces came from
-> evidence and which the AI invented. Team of six; I built the merchant console and joined it to the
-> live backend.
+> evidence and which the AI invented. Team of six; I built the merchant console and the store's
+> shopping flow, and joined them to the live backend.
 > → Read the case study
 
 > **One more thing**
@@ -1039,6 +1039,42 @@ head, which move. Both stop moving under reduced motion. That adds four draw cal
   ended at x = 0, and the bus jumped to the start of the other lane. Each pass now runs the whole
   street (−52 to 52), so the bus changes lanes only off the table. A simulation of two loops
   confirms both stops and no jumps.
+
+### The building site becomes the shopfront (16 Nov 2026)
+
+Formosa Bauhaus was finished, then nominated by its supervisor and selected for UQ Illuminate 2026.
+Scaffolding and a crane said "in progress", so by §4 the geometry was now wrong. Zone 4 is a
+finished building, `scene/Formosa.tsx`, and the zone's name is **Shopfront** (its id stays `site`,
+because the content files point at it).
+
+- **Modelled on the team's real storefront**, as it opens the showcase film. Two shops side by side,
+  colours sampled from the film's frame:
+  - **BAUHAUS:** white, black fascia, a blue circle, red square and yellow triangle in the window,
+    and a white "opening soon" card (that half was a placeholder in the real build too).
+  - **FORMOSA:** the brand's dark green fascia with a gold edge and the three marks, glass in green
+    frames, an open arched doorway onto a green garden wall, and two potted trees by the door.
+  - **The banyan** from the FORMOSA garden grows in a courtyard behind the shop. Its crown clears
+    the roof, so the building can be picked out from across the block, and it sways like the
+    jacarandas.
+- **The project's idea, built in.** The default camera, from the south-east, is the photograph.
+  The faces it sees (south, east) keep their colour. The faces it never sees (north, west) are
+  hatched grey clay, the way the store shows surfaces no photo covered. A sign on the north wall
+  says it in words: "This side was never photographed, so it stays grey." Turning the camera
+  is how a visitor finds it.
+- **"One more thing"** moved from the cones to a fitting mirror outside the door: the avatar came
+  out of this project, and the fitting room is where it was used.
+- **Removed:** the crane (its turning jib was one of the idle motions), the scaffolding, the
+  construction fence, cones and barrier. Those three Kenney models are still in `kit.glb`. Dropping
+  them needs the kit rebuilt from the Kenney zips, which aren't in the repo.
+- **Illuminate isn't in the geometry.** The card prints `status.label` ("Selected · UQ Illuminate
+  2026"), and §4 rule 4 keeps marks to the ones Steven chose.
+- **Draw calls:** +6 (one merged static mesh, the crown, the hatching, two fascias and the sign),
+  −1 for the crane's jib.
+- **Poster re-rendered**, and its copy `public/projects/World.webp` with it: 2560 × 1600, WebP
+  quality 80, 92.8 kB. Done headlessly, which matches the manual steps above: Playwright drives the
+  installed Chrome (`channel: "chrome"`) to `/world?poster` on the dev server at 1280 × 880, presses
+  *Walk it yourself*, waits for the block, composites the canvas onto `#eef1f5` and saves a PNG,
+  which Pillow encodes to WebP.
 
 ### To launch (all content or devices, no code)
 

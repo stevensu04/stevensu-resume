@@ -71,7 +71,7 @@ export default async function Image() {
                         Walk around my career
                     </div>
                     <div style={{ display: "flex", fontSize: 22, color: "#4b5563", marginTop: 14, lineHeight: 1.35 }}>
-                        Seven stops, from a bank in Taipei to a building site in Brisbane — a 3D city you can walk through.
+                        Seven stops, from a bank in Taipei to a 3D storefront in Brisbane — a 3D city you can walk through.
                     </div>
                 </div>
             </div>

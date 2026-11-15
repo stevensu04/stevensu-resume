@@ -10,11 +10,12 @@ import { mergeBoxes, mergeParts, paint, shadedBox, type BoxSpec } from "./shadin
 
 /**
  * Everything the kits don't have (WORLD.md §6): the river, pier, ferry, shutter, frosted glass,
- * scaffolding, crane, arcade cabinet, noticeboards, plinths and blueprint table. All box-level,
+ * arcade cabinet, noticeboards, plinths and blueprint table. The Formosa Bauhaus shopfront, which
+ * replaced the building site, has its own file (Formosa.tsx). All box-level,
  * coloured from the palette below, shaded through vertex colours, and unlit.
  *
  * Draw calls (§9: < 80): every static box is merged into one mesh. Only what moves (ferry, crane
- * jib, arcade screen) or is see-through (frosted glass, the blueprint wireframe) stands alone.
+ * screen) or is see-through (frosted glass, the blueprint wireframe) stands alone.
  *
  * Idle motion (§6) lives here too. All of it stops under prefers-reduced-motion (`still`).
  */
@@ -28,8 +29,6 @@ export const PALETTE = {
     accent: "#2563eb",
 } as const;
 
-const CRANE_YELLOW = "#e2b33c";
-
 export default function Props({ still }: { still: boolean }) {
     const statics = useMemo(() => mergeBoxes(STATIC_BOXES), []);
     const staticsMaterial = useMemo(() => withWorldShader(new MeshBasicMaterial({ vertexColors: true })), []);
@@ -38,7 +37,6 @@ export default function Props({ still }: { still: boolean }) {
             <mesh geometry={statics} material={staticsMaterial} raycast={() => null} />
             <River still={still} />
             <Ferry still={still} />
-            <CraneJib still={still} />
             <Arcade still={still} />
             <Racquet />
             {/* Finance Forms: frosted glass over the entrance (§4: confidential stays closed). */}
@@ -78,18 +76,6 @@ function noticeboard(x: number, z: number, wide = false): BoxSpec[] {
     ];
 }
 
-/** 4 · The building site: a two-storey concrete core, scaffolding round it, the crane's mast. */
-const SITE = { x: 25, z: 8 };
-const CRANE = { x: SITE.x + 6, z: SITE.z - 2, height: 14 };
-
-function siteBoxes(): BoxSpec[] {
-    const out = [box([SITE.x, 3, SITE.z], [8, 6, 6], PALETTE.concrete)];
-    for (const x of [-4.5, -1.5, 1.5, 4.5]) for (const z of [-3.5, 3.5]) out.push(box([SITE.x + x, 4.5, SITE.z + z], [0.15, 9, 0.15], PALETTE.wood));
-    for (const y of [3, 6]) for (const z of [-3.5, 3.5]) out.push(box([SITE.x, y, SITE.z + z], [9.2, 0.15, 0.9], PALETTE.wood));
-    out.push(box([CRANE.x, CRANE.height / 2, CRANE.z], [0.8, CRANE.height, 0.8], CRANE_YELLOW));
-    return out;
-}
-
 const ARCADE = { x: 3.5, z: 13.2 };
 
 const STATIC_BOXES: BoxSpec[] = [
@@ -100,7 +86,6 @@ const STATIC_BOXES: BoxSpec[] = [
     box([27, 1.4, -11.65], [0.5, 0.6, 0.2], PALETTE.accent),
     // 2 · The volunteer noticeboard at the UQ corner.
     ...noticeboard(4.5, -10.6),
-    ...siteBoxes(),
     // 5 · The arcade cabinet's body (the screen flickers, below).
     box([ARCADE.x, 0.9, ARCADE.z], [0.9, 1.8, 0.8], PALETTE.slate),
     // 7 · The park: grass, the blueprint table, two plinths (their models are in Landmarks.tsx).
@@ -233,29 +218,7 @@ function ferryX(t: number): number {
 const lerp = (a: number, b: number, k: number) => a + (b - a) * k;
 const smooth = (k: number) => k * k * (3 - 2 * k);
 
-/* ---------------------------------------------------------------- crane, arcade, glass */
-
-const JIB_BOXES: BoxSpec[] = [
-    box([3.5, 0, 0], [13, 0.6, 0.6], CRANE_YELLOW),
-    box([-3.5, -0.4, 0], [1.6, 1, 1], PALETTE.slate),
-    box([0, 0.6, 0], [1.2, 1, 1.2], PALETTE.white),
-    box([8.5, -2.5, 0], [0.06, 5, 0.06], PALETTE.slate),
-];
-
-function CraneJib({ still }: { still: boolean }) {
-    const ref = useRef<Group>(null);
-    const geo = useMemo(() => mergeBoxes(JIB_BOXES), []);
-    useFrame((_, dt) => {
-        if (ref.current && !still) ref.current.rotation.y += dt * 0.12;
-    });
-    return (
-        <group ref={ref} position={[CRANE.x, CRANE.height + 0.3, CRANE.z]}>
-            <mesh geometry={geo} raycast={() => null}>
-                <meshBasicMaterial vertexColors />
-            </mesh>
-        </group>
-    );
-}
+/* ---------------------------------------------------------------- arcade, glass */
 
 function Arcade({ still }: { still: boolean }) {
     const screen = useRef<MeshBasicMaterial>(null);

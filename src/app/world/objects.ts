@@ -30,9 +30,9 @@ const ALL_OBJECTS: WorldObject[] = [
     { id: "eventnow", x: -7.25, z: -11.5, w: 7, d: 3.6, h: 4 },
     // 3 · Government tower
     { id: "finance-forms", x: 27, z: -17.5, w: 10.4, d: 11.3, h: 33 },
-    // 4 · Building site: the site itself, and the crane's cab for "one more thing"
-    { id: "formosa-bauhaus", x: 25, z: 8, w: 15, d: 10.4, h: 10 },
-    { id: "one-more-thing", x: 26, z: 14.4, w: 4.4, d: 1.4, h: 1.4 },
+    // 4 · Shopfront: Formosa Bauhaus itself, and the fitting mirror out front for "one more thing"
+    { id: "formosa-bauhaus", x: 26.25, z: 7.5, w: 13.6, d: 7.2, h: 7 },
+    { id: "one-more-thing", x: 33.75, z: 12, w: 1.3, d: 0.9, h: 2.4 },
     // 5 · Skyveil garage: the garage, and the arcade cabinet in front of it
     { id: "skyveil", x: 0, z: 7.5, w: 11.8, d: 12.4, h: 6.4 },
     // 6 · Open-source shed

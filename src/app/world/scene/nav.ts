@@ -24,7 +24,7 @@ export type Nav = {
 };
 
 const CELL = 0.5;
-/** Triangles entirely above this (roofs, canopies, the crane's jib) don't block walking. */
+/** Triangles entirely above this (roofs, canopies, the banyan's crown) don't block walking. */
 const HEAD_HEIGHT = 1.9;
 
 export type NavSolid = { geometry: BufferGeometry; matrix: Matrix4 };

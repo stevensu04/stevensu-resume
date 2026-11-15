@@ -58,7 +58,7 @@ function Poster({ loading = false, onTour, onWalk, onList }: { loading?: boolean
         <div className="relative h-[calc(100svh-5rem)] min-h-[480px] w-full overflow-hidden bg-[#eef1f5]">
             <Image
                 src={poster}
-                alt="A small riverside block in Brisbane, seen from above: a ferry pier, a university building, a government tower, a building site with a crane, a garage, a shed and a park."
+                alt="A small riverside block in Brisbane, seen from above: a ferry pier, a university building, a government tower, a two-shop storefront with a banyan tree, a garage, a shed and a park."
                 fill
                 preload
                 sizes="100vw"
@@ -67,7 +67,7 @@ function Poster({ loading = false, onTour, onWalk, onList }: { loading?: boolean
             <div className="absolute inset-x-3 bottom-6 mx-auto max-w-sm rounded-2xl bg-white/95 p-6 shadow-lg ring-1 ring-black/5 sm:inset-x-auto sm:bottom-auto sm:left-10 sm:top-10">
                 <h1 className="text-lg font-bold text-gray-900">Walk around my career</h1>
                 <p className="mt-2 text-sm leading-relaxed text-gray-600">
-                    Seven stops, from a bank in Taipei to a building site in Brisbane. Everything you&apos;ll find here is also on my CV.
+                    Seven stops, from a bank in Taipei to a 3D storefront in Brisbane. Everything you&apos;ll find here is also on my CV.
                 </p>
                 {loading ? (
                     <p role="status" className="mt-5 text-sm font-medium text-gray-500">

@@ -23,7 +23,8 @@ export const ZONES: Zone[] = [
     { id: "ferry", number: 1, name: "Ferry landing", x: -26, z: -19, w: 20, d: 14, h: 10 },
     { id: "uq", number: 2, name: "UQ corner", x: 0, z: -16, w: 24, d: 13, h: 12 },
     { id: "gov", number: 3, name: "Government tower", x: 27, z: -16, w: 13, d: 13, h: 33 },
-    { id: "site", number: 4, name: "Building site", x: 26, z: 8, w: 16, d: 12, h: 14 },
+    // Still id "site" (content files point at it); the building site became a finished shopfront.
+    { id: "site", number: 4, name: "Shopfront", x: 26, z: 8, w: 17, d: 12, h: 9 },
     { id: "garage", number: 5, name: "Skyveil garage", x: 0, z: 8.5, w: 15, d: 11, h: 9 },
     { id: "shed", number: 6, name: "Open-source shed", x: -26, z: 8, w: 11, d: 11, h: 9 },
     { id: "park", number: 7, name: "Prototype park", x: -26, z: 24, w: 18, d: 10, h: 4 },

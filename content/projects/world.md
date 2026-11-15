@@ -39,13 +39,13 @@ meta:
 problem: |
   A portfolio is a list, and a list makes every project look equally finished. I wanted a way to
   walk someone through the order things actually happened — a bank in Taipei, a degree in Brisbane,
-  a government contract, a capstone still under construction — without the format overselling any
+  a government contract, a capstone that shipped — without the format overselling any
   of it, and without costing the visitor who only has a phone and forty-five seconds.
 
 solution: |
   One riverside block, seen from above. Each project is a building, and the geometry carries the
   same honesty as the status badge: shipped work is a whole building, confidential work stays
-  shuttered, the capstone is scaffolding, prototypes are scale models on plinths, and the concept is
+  shuttered, the finished capstone is its own storefront, prototypes are scale models on plinths, and the concept is
   a wireframe on a blueprint table. Every card is read from the same markdown as /projects, and the
   build fails if a card has nowhere to stand.
 

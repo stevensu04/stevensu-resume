@@ -5,6 +5,7 @@ import type { ThreeEvent } from "@react-three/fiber";
 import { PLACEMENTS, PROP_SOLIDS, SKYLINE, TAIPEI_101 } from "../placements";
 import Taipei101 from "./Taipei101";
 import Landmarks from "./Landmarks";
+import Formosa from "./Formosa";
 import { FAR_BANK, RIVER, SLAB } from "../zones";
 import { OBJECTS, type WorldObject } from "../objects";
 import { InstancedMesh, Matrix4, MeshBasicMaterial, PlaneGeometry } from "three";
@@ -90,6 +91,7 @@ export default function Stage({
             {skyline && <Taipei101 x={TAIPEI_101.x} z={TAIPEI_101.z} />}
             <Props still={still} />
             <Landmarks still={still} />
+            <Formosa still={still} />
 
             {OBJECTS.map((object) => (
                 <ObjectHit key={object.id} object={object} onObject={onObject} onHover={onHover} />

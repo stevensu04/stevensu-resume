@@ -30,17 +30,6 @@ const street: Placement[] = [-36, -28, -20, -12, -4, 4, 12, 20, 28, 36].map((x) 
     solid: false,
 }));
 
-const siteFence: Placement[] = [
-    // West and east sides run along z.
-    ...[4.5, 7.5, 10.5].flatMap((z) => [
-        { model: "construction-fence", x: 18.5, z },
-        { model: "construction-fence", x: 33.5, z },
-    ]),
-    // North side runs along x; the south side leaves a gate at x 24–28.
-    ...[20, 23, 26, 29, 32].map((x) => ({ model: "construction-fence", x, z: 2.8, rot: 1 as const })),
-    ...[20, 23, 29, 32].map((x) => ({ model: "construction-fence", x, z: 13.2, rot: 1 as const })),
-].map((p) => ({ ...p, solid: false }));
-
 export const PLACEMENTS: Placement[] = [
     ...street,
 
@@ -70,11 +59,7 @@ export const PLACEMENTS: Placement[] = [
     { model: "light-square", x: -18, z: -9.2 },
     { model: "light-square", x: 18, z: -9.2 },
 
-    // 4 · Building site: fenced, coned, scaffolded (§4: in progress).
-    ...siteFence,
-    { model: "construction-cone", x: 24.5, z: 14.4, solid: false },
-    { model: "construction-cone", x: 27.5, z: 14.4, solid: false },
-    { model: "construction-barrier", x: 35.5, z: 15, rot: 1, solid: false },
+    // 4 · The Formosa Bauhaus shopfront is hand-made (Formosa.tsx): finished, so no fence (§4).
 
     // 5 · Skyveil garage.
     { model: "building-type-g", x: 0, z: 7, solid: true },
@@ -129,7 +114,10 @@ export const PIER = { x: -26, minZ: -28.5, maxZ: -23.2, w: 3 };
 
 /** Hand-made solids (metres, XZ footprint), so Steven walks round them. Built in Props.tsx. */
 export const PROP_SOLIDS: { x: number; z: number; w: number; d: number }[] = [
-    { x: 26, z: 8, w: 15, d: 10.4 }, // the whole fenced building site
+    { x: 26.25, z: 7.5, w: 13.6, d: 7.2 }, // the Formosa Bauhaus shopfront (Formosa.tsx)
+    { x: 27.9, z: 11.6, w: 0.7, d: 0.7 }, // its two planters
+    { x: 30.6, z: 11.6, w: 0.7, d: 0.7 },
+    { x: 33.75, z: 12, w: 1.1, d: 0.5 }, // and the fitting mirror out front
     { x: 4.5, z: -10.6, w: 2.6, d: 0.6 }, // volunteer noticeboard
     { x: 3.5, z: 13.2, w: 1, d: 1 }, // arcade cabinet
     { x: -31, z: 24.5, w: 3.2, d: 2.2 }, // blueprint table
