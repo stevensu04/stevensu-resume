@@ -1,0 +1,34 @@
+# Re-checks the public CV whenever it, its generator, or the site data it must match changes.
+# The PDF is a binary, so a review never shows its text; this job reads it instead.
+# Runs on PRs (fails the check, not the deploy) and on pushes to main.
+name: check-cv
+
+on:
+  pull_request:
+    paths:
+      - public/StevenSu_Resume.pdf
+      - scripts/build-cv.py
+      - scripts/check-cv.mjs
+      - src/lib/site.ts
+      - src/lib/stack.ts
+      - .github/workflows/check-cv.yml
+  push:
+    branches: [main]
+    paths:
+      - public/StevenSu_Resume.pdf
+      - scripts/build-cv.py
+      - scripts/check-cv.mjs
+      - src/lib/site.ts
+      - src/lib/stack.ts
+      - .github/workflows/check-cv.yml
+
+jobs:
+  check-cv:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # Node built-ins only, so no npm install.
+      - run: node scripts/check-cv.mjs

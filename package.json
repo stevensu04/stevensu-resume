@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "check:links": "node scripts/check-links.mjs",
+    "check:cv": "node scripts/check-cv.mjs",
     "world:kit": "node scripts/build-world-kit.mjs",
     "world:avatar": "node scripts/build-world-avatar.mjs"
   },

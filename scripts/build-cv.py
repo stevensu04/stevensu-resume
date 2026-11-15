@@ -40,6 +40,9 @@ Also deliberate, and different from the per-application versions:
 
 Usage:  python3 scripts/build-cv.py            # writes public/StevenSu_Resume.pdf
         python3 scripts/build-cv.py out.pdf    # writes somewhere else (for diffing)
+
+After rebuilding: set site.cvUpdated (src/lib/site.ts) to the new month, then run
+`npm run check:cv`. The same check runs in CI (.github/workflows/check-cv.yml).
 """
 
 import sys
