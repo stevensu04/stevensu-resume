@@ -19,7 +19,8 @@ status:
   label: Course Project · Solo Build
   tone: blue
 
-demo: https://event-now-eight.vercel.app
+# demo removed: https://event-now-eight.vercel.app returns 404 (checked 16 Nov 2026). Put it back
+# after redeploying — a dead link is worse than no link (see project-schema.ts).
 repo: https://github.com/stevensu04/EventNow
 
 meta:
@@ -60,8 +61,9 @@ callouts:
 # The project's card in /world (WORLD.md §7, §8). Title, status and URLs come from the fields above.
 world:
   zone: uq
-  link: demo
-  linkLabel: Try the demo
+  # Was `demo`; switch back once the live demo is redeployed.
+  link: repo
+  linkLabel: Read the source on GitHub
   card: |
     Small Brisbane organisers juggle listings, registrations and attendee lists across separate tools.
     EventNow does the lot — type "tech meetup at Fortitude Valley next Friday for 80 people" and an
