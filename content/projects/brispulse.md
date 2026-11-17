@@ -3,9 +3,9 @@ title: BrisPulse
 category: Product & Research
 order: 5
 # Concept first (2026 capstone, team of 5); rebuilt and deployed as a live product in November 2026.
-# The old prototype screenshot showed invented data, so the image is a placeholder until a real
-# screenshot of the live app is added.
-img: null
+# The image is a real capture of the live overview (17 Nov 2026). The old prototype mock-up showed
+# invented data, so it was retired.
+img: /projects/brispulse-live-overview.png
 summary: A live dashboard of South East Queensland public transport, built on TransLink's open real-time feeds. It shows what is running now, how late it is predicted to be, and how fresh the data is.
 
 tech:
