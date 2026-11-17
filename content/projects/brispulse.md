@@ -2,61 +2,82 @@
 title: BrisPulse
 category: Product & Research
 order: 5
-# Flagship moved to StarLens (starlens.md) — a shipped, full-stack platform with a quantified
-# performance result outranks a concept-stage prototype for that slot. BrisPulse now renders as
-# a normal uniform-grid card. Only one project should carry `featured: true` at a time.
-img: /projects/BrisPulse.jpeg
-summary: An event-day spatial pressure-awareness system that translates crowded urban conditions into human-centred movement choices.
+# Concept first (2026 capstone, team of 5); rebuilt and deployed as a live product in November 2026.
+# The old prototype screenshot showed invented data, so the image is a placeholder until a real
+# screenshot of the live app is added.
+img: null
+summary: A live dashboard of South East Queensland public transport, built on TransLink's open real-time feeds. It shows what is running now, how late it is predicted to be, and how fresh the data is.
 
-# Concept-stage: research and systems design are what exist. The Django/GTFS stack is
-# proposed, and lives in `meta` labelled as such. See PLAN.md §3.
 tech:
-  - Systems Design
-  - UX Research
-  - Responsive Prototype
+  - Python
+  - FastAPI
+  - PostgreSQL
+  - GTFS-Realtime (Protobuf)
+  - React
+  - TypeScript
+  - MapLibre GL
+  - Docker
+  - GitHub Actions
 
 status:
-  label: Capstone · Concept & Design
-  tone: purple
+  label: Live · Deployed
+  tone: green
 
-# TODO(steven): add `repo` and `demo` once the walking skeleton is public. See PLAN.md §5.
+# Live URL and public source. Both work today.
+demo: https://brispulse.onrender.com
+repo: https://github.com/stevensu04/brispulse
 
 meta:
   - label: My Role
-    value: Systems Architect (Proposal)
-  - label: Context
-    value: UQ DECO7380 Capstone (Part 1) · team of 5 · Semester 1, 2026
-  - label: Stage
-    value: Feasibility & Design
-    badge: purple
-  - label: Proposed Data Architecture
-    value: TransLink GTFS-Realtime API • BCC Wi-Fi Probe Density • Venue Gate Egress • Anonymized User-Experience Signals
-    mono: true
+    value: Designer and developer. The concept was a team project; the build is my own, with AI coding assistants used for implementation and review.
     wide: true
-  - label: Proposed Stack (not yet built)
-    value: Django · Python · GTFS-Realtime
-    mono: true
+  - label: Origin
+    value: UQ DECO7380 capstone concept · team of 5 · Semester 1, 2026
+  - label: Built
+    value: Live overview, vehicle map, routes, trips and alerts, with a data-freshness indicator on every view
     wide: true
+  - label: Not built
+    value: Stored history, trends, route statistics, and the crowd-aware routing from the concept
+    wide: true
+  - label: Hosting
+    value: Free tier. The service sleeps when idle, so the first visit can take one to two minutes.
+    wide: true
+    mono: false
 
 problem: |
-  Existing mapping tools focus strictly on travel time, failing to capture experienced spatial
-  pressure (uncertainty and reduced control) at major Brisbane bottlenecks like station exits and
-  narrow pedestrian corridors.
+  Timetables say when a service should run, not whether it is running now or how late it is likely
+  to be. Existing mapping tools mostly optimise travel time. The capstone started from a related
+  question: how crowded and uncertain a station exit or a narrow pedestrian corridor feels.
 
 solution: |
-  A complementary decision-support layer empowering flexible users with transparent choices between
-  Fastest, Balanced, and Calmer routes, strictly constrained by spatial-equity guardrails to protect
-  residential streets.
+  BrisPulse collects TransLink's three real-time feeds (vehicle positions, trip updates and service
+  alerts), checks each record against the published timetable, and shows the result as a live
+  dashboard and map. Every figure carries how fresh its data is. A value that cannot be given is
+  shown as unavailable, never as zero.
 
 callouts:
   - section: problem
     tone: blue
-    icon: "⚖️"
-    title: "Architectural Decision: Spatial-Equity Guardrails"
+    title: "Concept dropped: crowd and routing features"
     body: |
-      Custom cost penalties designed directly into the routing engine nodes. This mathematical
-      firewall constrains alternative calmer routes to high-capacity corridors, preventing the
-      harmful redistribution of crowds into residential or commuter paths.
+      The capstone's crowding score and calmer-route guardrails needed data that TransLink's public
+      feeds do not contain: no occupancy, and no gate or Wi-Fi counts. They are not in the built product.
+  - section: solution
+    tone: amber
+    title: "Predictions, not measurements"
+    body: |
+      Delays are TransLink's predictions for each trip's next stop, not measured arrival times. The
+      dashboard says so, and it makes no on-time performance claim.
+
+result: |
+  The three live feeds decode and match the published timetable: in a Monday-morning snapshot, 99.8% of the
+  85,008 stop predictions checked agreed with the schedule. The app runs as one container on a free
+  host, and live data appeared 46 seconds after a cold start under that host's CPU and memory limits
+  (measured locally). The test suite has 385 backend tests and 29 frontend tests, including checks
+  against a sample of real feed data.
+
+  Not yet: there is no stored history, so no trends, and the delay figures have not been checked
+  against measured arrivals.
 
 # The project's card in /world (WORLD.md §7, §8). Title, status and URLs come from the fields above.
 world:
@@ -64,8 +85,7 @@ world:
   link: projects
   linkLabel: Read the case study
   card: |
-    Mapping tools optimise travel time and ignore how crowded a station exit feels. I scoped the system,
-    designed the data architecture and prototyped the interface — including spatial-equity guardrails,
-    so a "calmer" route never redistributes crowds onto residential streets. The Django and
-    GTFS-Realtime stack is proposed, not built.
+    Transit apps show the timetable, not whether the bus is actually late. I built a live dashboard on
+    TransLink's real-time feeds: where vehicles are, how late they are predicted to be, and how old the
+    data is. It keeps no history yet, and the crowd-aware routing from my capstone is not built.
 ---
