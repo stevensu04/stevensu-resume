@@ -20,7 +20,7 @@ import FocusAnchor from "./scene/FocusAnchor";
 import PlayerAnchor from "./scene/PlayerAnchor";
 import poster from "./poster.webp";
 
-/** During the tour Steven moves at 1.4× his normal pace: nine stops in about 65 s. */
+/** During the tour Steven moves at 1.4× his normal pace: ten stops in about 75 s. */
 const TOUR_PACE = 1.4;
 /** Seconds a tour stop holds after he arrives, before moving on. Pause is always there. */
 const TOUR_DWELL = 3;

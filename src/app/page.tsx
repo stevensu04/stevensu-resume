@@ -73,7 +73,7 @@ export default function Home() {
               href="/world"
               className="group underline decoration-gray-300 decoration-2 underline-offset-4 transition-colors hover:text-blue-600 hover:decoration-blue-600"
             >
-              Or walk around my career as a 3D city — one minute, same seven stops as my CV
+              Or walk around my career as a 3D city — one minute, eight stops
               <span aria-hidden="true" className="ml-1.5 inline-block transition-transform group-hover:translate-x-0.5">
                 →
               </span>

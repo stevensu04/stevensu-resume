@@ -6,6 +6,10 @@ import { PLACEMENTS, PROP_SOLIDS, SKYLINE, TAIPEI_101 } from "../placements";
 import Taipei101 from "./Taipei101";
 import Landmarks from "./Landmarks";
 import Formosa from "./Formosa";
+import ClubVelvet from "./ClubVelvet";
+import DataCentre from "./DataCentre";
+import GovTower from "./GovTower";
+import GreatCourt from "./GreatCourt";
 import { FAR_BANK, RIVER, SLAB } from "../zones";
 import { OBJECTS, type WorldObject } from "../objects";
 import { InstancedMesh, Matrix4, MeshBasicMaterial, PlaneGeometry } from "three";
@@ -92,6 +96,10 @@ export default function Stage({
             <Props still={still} />
             <Landmarks still={still} />
             <Formosa still={still} />
+            <ClubVelvet still={still} />
+            <GreatCourt />
+            <GovTower />
+            <DataCentre still={still} />
 
             {OBJECTS.map((object) => (
                 <ObjectHit key={object.id} object={object} onObject={onObject} onHover={onHover} />

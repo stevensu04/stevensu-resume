@@ -50,7 +50,7 @@ import { PALETTE } from "./Props";
  */
 
 const STARLENS = { x: -22, z: -18, roof: 9.62 };
-const UQ = { x: 2, front: -12.08, crestY: 11 };
+const UQ = { x: 2, front: -12.08, crestY: 9.4 };
 const ESUN = { x: -31, front: -13.64, y: 5.3 };
 /** The Australian flag on the viewer's left, as protocol puts it; the Aboriginal flag beside it. */
 export const FLAGPOLES = { australian: { x: 7.4, z: -10.7 }, aboriginal: { x: 10.4, z: -10.7 } };
@@ -328,7 +328,7 @@ export default function Landmarks({ still }: { still: boolean }) {
             <mesh geometry={statics} material={material} raycast={() => null} />
             <mesh geometry={crowns} material={swaying} raycast={() => null} />
             <TennisMesh />
-            <Emblem url="/world/brand/uq-crest.webp" width={2.6} height={3} position={[UQ.x, UQ.crestY, UQ.front + 1.05]} />
+            <Emblem url="/world/brand/uq-crest.webp" width={2.6} height={3} position={[UQ.x, UQ.crestY, UQ.front + 0.12]} />
             <EsunSign />
             <Flag still={still} pole={FLAGPOLES.australian} kind="australian" />
             <Flag still={still} pole={FLAGPOLES.aboriginal} kind="aboriginal" />

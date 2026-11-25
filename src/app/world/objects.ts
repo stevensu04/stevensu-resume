@@ -25,22 +25,24 @@ const ALL_OBJECTS: WorldObject[] = [
     { id: "starlens", x: -22, z: -18, w: 7.2, d: 7.8, h: 10.5 },
     { id: "crossing", x: -26, z: -25.8, w: 3.4, d: 5.6, h: 2 },
     // 2 · UQ corner
-    { id: "degree", x: 2, z: -17.5, w: 16.8, d: 10.9, h: 13.6 },
+    { id: "degree", x: 2, z: -17.5, w: 16.8, d: 10.9, h: 15.4 },
     { id: "timetable", x: 4.5, z: -10.6, w: 2.8, d: 1, h: 2.6 },
     { id: "eventnow", x: -7.25, z: -11.5, w: 7, d: 3.6, h: 4 },
     // 3 · Government tower
-    { id: "finance-forms", x: 27, z: -17.5, w: 10.4, d: 11.3, h: 33 },
+    { id: "finance-forms", x: 27, z: -17.5, w: 10.4, d: 11.3, h: 42 },
     // 4 · Shopfront: Formosa Bauhaus itself, and the fitting mirror out front for "one more thing"
     { id: "formosa-bauhaus", x: 26.25, z: 7.5, w: 13.6, d: 7.2, h: 7 },
     { id: "one-more-thing", x: 33.75, z: 12, w: 1.3, d: 0.9, h: 2.4 },
     // 5 · Skyveil garage: the garage, and the arcade cabinet in front of it
     { id: "skyveil", x: 0, z: 7.5, w: 11.8, d: 12.4, h: 6.4 },
     // 6 · Open-source shed
-    { id: "eco-router", x: -26, z: 7, w: 7.6, d: 8.4, h: 9.4 },
+    { id: "eco-router", x: -26, z: 7.2, w: 9.8, d: 8.4, h: 5 },
     // 7 · Prototype park
     { id: "brispulse", x: -31, z: 24.5, w: 3.4, d: 2.4, h: 2.6 },
     { id: "parkease", x: -25, z: 24.5, w: 2.2, d: 2.2, h: 2.6 },
     { id: "journeymate", x: -20, z: 24.5, w: 2.2, d: 2.2, h: 2.6 },
+    // 8 · Club Velvet: the club, with its queue and bouncer out front (the hit area covers the plaza)
+    { id: "club-velvet", x: -16, z: 42.3, w: 14, d: 11.2, h: 6 },
     // Facilities
     { id: "gallery", x: 0, z: 23.5, w: 12.4, d: 8, h: 7.4 },
     { id: "exit", x: 26, z: 22, w: 4.6, d: 1, h: 3.2 },
@@ -62,6 +64,7 @@ export const TOUR: string[] = [
     "skyveil",
     "eco-router",
     "brispulse",
+    "club-velvet",
     "gallery",
     "exit",
 ].filter((id) => id !== "gallery" || GALLERY_READY);

@@ -30,8 +30,17 @@ const street: Placement[] = [-36, -28, -20, -12, -4, 4, 12, 20, 28, 36].map((x) 
     solid: false,
 }));
 
+// The night street along the south edge (zone 8). The zebra crossing is by the club.
+const nightStreet: Placement[] = [-36, -28, -20, -12, -4, 4, 12, 20, 28, 36].map((x) => ({
+    model: x === -4 ? "road-crossing" : "road-straight",
+    x,
+    z: 52,
+    solid: false,
+}));
+
 export const PLACEMENTS: Placement[] = [
     ...street,
+    ...nightStreet,
 
     // 1 · Ferry landing: E.SUN (its sign is in Landmarks) and StarLens (shuttered, see Props).
     { model: "building-c", x: -31, z: -18, solid: true },
@@ -41,13 +50,13 @@ export const PLACEMENTS: Placement[] = [
     { model: "buoy", x: 14, z: -29.5, scale: WATER_SCALE, solid: false },
 
     // 2 · UQ corner, with the EventNow stall out front (live, so open and lit, §4).
-    { model: "building-j", x: 2, z: -17.5, solid: true },
+    // The sandstone building is hand-made (GreatCourt.tsx), in place of Kenney's building-j.
     { model: "detail-parasol-a", x: -9, z: -11.5, scale: 9, solid: true },
     { model: "detail-parasol-b", x: -5.5, z: -11.5, scale: 9, solid: true },
     // The jacarandas either side and the easter-egg tennis fence (§3) are hand-made: Landmarks.tsx.
 
     // 3 · Government tower (frosted and padlocked: see Props).
-    { model: "building-skyscraper-c", x: 27, z: -17.5, solid: true },
+    // The tower is hand-made (GovTower.tsx), in place of Kenney's building-skyscraper-c.
     { model: "planter", x: 21, z: -10.5, solid: true },
     { model: "planter", x: 33, z: -10.5, solid: true },
 
@@ -66,7 +75,7 @@ export const PLACEMENTS: Placement[] = [
     { model: "dumpster", x: -9, z: 4.5, rot: 1, solid: true },
 
     // 6 · Open-source shed (shipped: a whole building, door open).
-    { model: "building-type-k", x: -26, z: 7, solid: true },
+    // The data centre is hand-made (DataCentre.tsx), in place of Kenney's building-type-k.
     { model: "tree-small", x: -33.5, z: 5, solid: true },
     { model: "tree-large", x: -18.5, z: 4.5, solid: true },
 
@@ -80,6 +89,24 @@ export const PLACEMENTS: Placement[] = [
     { model: "tree-small", x: -9, z: 20, solid: true },
     { model: "tree-small", x: 9, z: 20, solid: true },
     { model: "light-curved", x: 31, z: 22.5, rot: 3, solid: false },
+
+    // 8 · Club Velvet is hand-made (ClubVelvet.tsx). Its neighbours on the night street are plain
+    // Kenney buildings: scenery, with no card and no zone, so they stay in full colour (§4: only
+    // what Steven built is a stop). Kept low so they don't hide the block behind them (the
+    // camera looks north from the south, and a wall hides about 1.4 m of ground per metre of height).
+    { model: "building-a", x: -3, z: 41.5, solid: true },
+    { model: "building-c", x: 5.4, z: 41.5, solid: true },
+    { model: "building-e", x: 13.8, z: 41.5, solid: true },
+    { model: "tree-large", x: 19.6, z: 44, solid: true },
+    { model: "building-j", x: 29.5, z: 41.5, solid: true },
+    { model: "tree-large", x: -34, z: 39.5, solid: true },
+    { model: "tree-small", x: -31, z: 45, solid: true },
+    { model: "tree-small", x: -4.5, z: 46.2, solid: true },
+    // Street furniture along the night street's north footpath.
+    { model: "light-square", x: -32, z: 46.8 },
+    { model: "light-square", x: -4, z: 46.8 },
+    { model: "light-square", x: 12, z: 46.8 },
+    { model: "light-square", x: 34, z: 46.8 },
 ];
 
 /**
@@ -118,6 +145,16 @@ export const PROP_SOLIDS: { x: number; z: number; w: number; d: number }[] = [
     { x: 27.9, z: 11.6, w: 0.7, d: 0.7 }, // its two planters
     { x: 30.6, z: 11.6, w: 0.7, d: 0.7 },
     { x: 33.75, z: 12, w: 1.1, d: 0.5 }, // and the fitting mirror out front
+    { x: 2, z: -17.5, w: 16.8, d: 10.9 }, // the UQ sandstone building (GreatCourt.tsx)
+    { x: 27, z: -17.5, w: 10.4, d: 11.3 }, // the government tower's podium (GovTower.tsx)
+    { x: -26, z: 7, w: 9.2, d: 7.6 }, // the data centre (DataCentre.tsx)
+    { x: -20.1, z: 11.4, w: 0.8, d: 0.8 }, // and its wind turbine
+    { x: -16, z: 41.75, w: 14, d: 9.5 }, // Club Velvet (ClubVelvet.tsx)
+    { x: -16, z: 47, w: 1.1, d: 0.9 }, // Gus, at the rope
+    { x: -17.1, z: 47.8, w: 0.3, d: 0.3 }, // the rope's two posts
+    { x: -14.9, z: 47.8, w: 0.3, d: 0.3 },
+    { x: -24.1, z: 43.5, w: 1.2, d: 2 }, // the dumpster, and the cat on it
+    ...[-24.2, -22.9, -21.6, -20.3, -19].map((x) => ({ x, z: 48.8, w: 0.7, d: 0.6 })), // the queue, at its start
     { x: 4.5, z: -10.6, w: 2.6, d: 0.6 }, // volunteer noticeboard
     { x: 3.5, z: 13.2, w: 1, d: 1 }, // arcade cabinet
     { x: -31, z: 24.5, w: 3.2, d: 2.2 }, // blueprint table

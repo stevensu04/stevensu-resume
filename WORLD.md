@@ -15,7 +15,7 @@ in full).
 | Where does it live? | **`/world`, its own route.** `/` is untouched. | `PLAN.md` §9 rejected Three.js on the hero for bundle, LCP and accessibility reasons. A lazy-loaded separate route doesn't contradict that. The recruiter with 45 seconds still gets the fast page. |
 | How do you move? | **Steer the avatar**, plus a 60-second guided tour. | Steering is the game feel. The tour is for people who won't steer. Same scene, two drivers. |
 | Mobile? | **Full interaction.** Tap-to-move is the primary touch input; a d-pad is secondary. | Tap-to-move behaves the same with a mouse and a finger and doesn't cover the screen. |
-| How big? | **One riverside block**, about 80 × 60 m. Not two cities. | One finished block beats three rough districts. Taipei is a backdrop, not a destination. |
+| How big? | **One riverside block**, about 80 × 60 m. Not two cities. **Grown to 80 × 88 m on 26 Nov 2026** by one street to the south (§3, zone 8). | One finished block beats three rough districts. Taipei is a backdrop, not a destination. The growth is one street, not a second district: +37.5% of slab, and its only stop is Club Velvet. |
 | Where do the models come from? | **Kenney, CC0:** City Kit Commercial, Suburban and Roads, plus the Watercraft Kit. A few hand-made blocks fill the gaps. Chosen 11 Nov 2026 after a side-by-side test (§6). | No Meshy subscription. Each kit is shaded through one small palette texture, which is the cheapest route to a consistent art direction for a non-artist. |
 | Which avatar? | **The DECO7381 Steven rig**, reused with Team 41's permission. | Rigged, animated and already meshopt-compressed. See §9. |
 | Real photos? | **In the Gallery**, unlocked by exploring. | Photos are the reward, never the gate. |
@@ -80,7 +80,7 @@ reward.
    └───────────────┘     └───────────────┘     └───────────────┘
 ```
 
-- **Seven content zones** count towards the explorer counter. The Gallery and the exit are
+- **Eight content zones** count towards the explorer counter (seven until 26 Nov 2026, when zone 8 was added on the night street below the back row). The Gallery and the exit are
   facilities, not zones. The Gallery can't count towards its own unlock.
 - **Scale:** Steven is rigged at 1.72 m. At about 2.2 m/s, the whole route takes 70–90 seconds at
   an easy pace.
@@ -99,6 +99,7 @@ reward.
 | 5 | Skyveil garage | Veilcore arcade cabinet | `/about` (no project file yet; see §8) |
 | 6 | Open-source shed | Eco Router | `eco-router.md` |
 | 7 | Prototype park | BrisPulse blueprint table · ParkEase plinth · JourneyMate plinth | the three `.md` files |
+| 8 | Club Velvet | The club, with its bouncer and queue out front | `club-velvet.md` |
 | — | Gallery | 7 photos | **new** |
 | — | Exit noticeboard | Positioning, availability, work rights, links | `src/lib/site.ts` |
 
@@ -117,6 +118,7 @@ geometry has to say the same thing the status badge says.
 | Shipped or live | Full building or stall, lit, door open | Eco Router, EventNow, Formosa Bauhaus |
 | Shipped but confidential | Real building, **deliberately opaque**: shuttered, frosted, padlocked | StarLens, Finance Forms |
 | In progress | Scaffolding and a crane | Nothing at present (Formosa Bauhaus until 16 Nov 2026) |
+| Shipped and live, but a one-weekend build | Full building, lit, with the door held only by a rope; the people outside play the game's own rule (see §3, zone 8) | Club Velvet |
 | Interactive prototype | **Scale model on a plinth**, not a building | ParkEase, JourneyMate |
 | Concept | Blueprint table with a translucent wireframe and no walls | BrisPulse |
 
@@ -1075,6 +1077,56 @@ because the content files point at it).
   installed Chrome (`channel: "chrome"`) to `/world?poster` on the dev server at 1280 × 880, presses
   *Walk it yourself*, waits for the block, composites the canvas onto `#eef1f5` and saves a PNG,
   which Pillow encodes to WebP.
+
+### Zone 8: Club Velvet and the night street (26 Nov 2026)
+
+Club Velvet is the game Steven's hackathon team built at the Tanda AI Hackathon 2026 (200+
+participants, about 24 hours, did not place). It is project #10, with the card in `club-velvet.md`
+(`world:` block, `zone: club`). Credited as a three-way co-creation, as Steven asked.
+
+- **The slab grew from 80 × 64 m to 80 × 88 m (+37.5%).** `SLAB.maxZ` went 32 → 56, `WALKABLE.maxZ`
+  30.5 → 54.5, and the whole-block zoom level and camera centre were re-fitted (`Player.tsx`). A
+  second street, `STREET_SOUTH` (z = 52), carries Kenney road tiles with a zebra crossing by the club.
+  The Taipei bank and river are untouched, so nothing north of the old edge changed.
+- **Why a street and not a district:** one more content stop doesn't need 35% more ground, but the
+  block had no room for a tenth project that wasn't squeezed beside another. The strip's other
+  buildings (Kenney `building-a`, `c`, `e`, `j`, kept low) and trees are **scenery with no card and
+  no zone**, so they stay in full colour and nobody reads them as work.
+- **The club (`scene/ClubVelvet.tsx`)** is hand-made, in the game's own look: red brick, a pink
+  CLUB VELVET sign over MEMBERS ONLY, two lit windows, a gold crown on the parapet, a dumpster with
+  a stray cat, and Gus the bouncer behind a rope. A queue of five stands on the footpath. No screen
+  from the game is modelled (§4 rule 3).
+- **Idle motion is the game's rule:** while Gus has his back turned the queue creeps towards the
+  rope, he flashes "!" and turns round, everyone freezes, then he turns away and the queue is sent
+  back. Seven-second loop. Under reduced motion Gus faces the queue and nobody moves.
+- **Tour:** one stop added after BrisPulse, so the route is now ten stops (about 75 s).
+- **Copy:** "Eight stops" on `/world`, its link preview and the homepage link.
+- **Draw calls:** +11 (one merged static mesh, Gus, the "!", five queuers, the sign glow, two
+  textured planes), counted against §9's < 80 budget.
+
+### Three buildings re-modelled from Steven's photographs (26 Nov 2026)
+
+Steven supplied a reference photograph for each, and the Kenney block each one stood in is gone
+(its `placements.ts` entry is removed and its footprint is a `PROP_SOLIDS` rect instead):
+
+- **UQ corner, the degree: `scene/GreatCourt.tsx`.** The sandstone Forgan Smith Building on the
+  Great Court: a tall central tower with a stepped crown, two lower wings, tan courses, tall narrow
+  windows between pilasters, steps to the door. The crest hangs on the tower's front. The roof flags in
+  the photograph are left off; the two out front already fly on the ground.
+- **Open-source shed, Eco Router: `scene/DataCentre.tsx`.** A data centre, because Eco Router is
+  about where a datacentre's power comes from: three dark halls stepping down towards the street,
+  pale metal roofs, a glazed office with an open lit door, a white path across a lawn, and one wind
+  turbine (turning; still under reduced motion) standing for the wind farm in the photograph. Still
+  shipped, so still a whole building with its door open (§4).
+- **Government tower, Finance Forms: `scene/GovTower.tsx`.** A Brisbane government tower, in dark
+  blue glass with rounded corners, a thin white seam up the front, two darker plant floors, and a pale
+  rim round a roof cut on a slant (36 m on the west edge falling to 30.4 m on the east, so the default
+  camera sees the slope), covered in solar panels, with a mast on the high side. It sits on a podium whose front is
+  the frosted door's plane, so the frosted glass and the padlock (`Props.tsx`) are unchanged and the
+  door still stays shut (§4). No crest, and nothing says which department (§4 rule 4). A city
+  landmark isn't a brand.
+- Their hit areas in `objects.ts` were re-fitted to the new heights (UQ 15.4 m, tower 42 m with its
+  mast, data centre 5 m).
 
 ### To launch (all content or devices, no code)
 
