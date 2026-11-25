@@ -310,12 +310,13 @@ approved. At four sentences and ~73 words it's over the card limits, which this 
 > **One more thing**
 > The version of me you're walking around came out of this project.
 
-### 5 · Skyveil garage
+### 5 · Skyveil museum and theatre
 
 > **Skyveil Studio** · Co-founder · Aug 2026 – Present
 > An independent studio making hand-tracked browser games — webcam in, no controller, no download.
-> For our first title, Veilcore, I built the shrinking-target practice mode, the Cradle mini-game and
-> the Gauntlet leaderboard. Built with MediaPipe and Three.js — the second of which you're standing in.
+> Our first title, Veilcore, is built as a museum and a theatre. The team made it together, and I
+> worked mostly on its Cradle and Archery rooms. Built with MediaPipe and Three.js — the second of which
+> you're standing in.
 > → See the experience
 
 ### 6 · Open-source shed
@@ -1251,3 +1252,6 @@ all of them before ever reaching `/world`.
   The arcade cabinet stays out front.
 - **Taipei 101 moved 13 m west** (`TAIPEI_101.x` 0 to -13) so the government tower no longer stands
   in front of it from the default camera; the skyline buildings and trees around it were nudged to match.
+- **Skyveil's wording (26 Nov 2026):** the card, `/about` and the CV now say Veilcore is a team build and
+  that Steven worked mostly on Cradle and Archery. No per-mode credit and no line counts; nothing is said
+  about the parts he didn't work on.

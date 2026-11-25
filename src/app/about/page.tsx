@@ -117,15 +117,15 @@ export default function AboutPage() {
                     company-description sentence that said nothing about what Steven actually
                     built. Flagged as a to-do in PLAN.md §12; done alongside the StarLens project
                     entry since both draw on the same internship. */}
-                {/* Start date = first commit in the veilcore repo (2026-08-28). The feature list
-                    only names parts Steven committed himself (practice-shrinking, cradle, gauntlet
-                    leaderboard); the spell duel and archery range are teammates' work. */}
+                {/* Start date = first commit in the veilcore repo (2026-08-28). Veilcore is a team build;
+                    Steven said on 26 Nov 2026 that he worked mostly on Cradle and Archery and took little
+                    part in the rest, so the line says that and no more (no per-mode credit, no line counts). */}
                 <ExperienceItem
                     title="Co-founder & Web Developer"
                     company="Skyveil Studio"
                     location="Brisbane, QLD (Australia)"
                     time="Aug 2026 - Present"
-                    work="Co-founded an independent studio building hand-tracked games that run in the browser from a webcam, with no controller or download (MediaPipe, Three.js). For our first title, Veilcore, I build gameplay features in JavaScript, including a shrinking-target practice mode, the Cradle mini-game, and a tested leaderboard for the Gauntlet challenge."
+                    work="Co-founded an independent studio building hand-tracked games that run in the browser from a webcam, with no controller or download (MediaPipe, Three.js). Our first title, Veilcore, is built as a museum and a theatre. The team made it together, and I worked mostly on its Cradle and Archery rooms."
                 />
 
                 <ExperienceItem

@@ -136,8 +136,8 @@ EDUCATION = [
 ]
 
 # Skyveil Studio is first, and it is required to be here — rule 2. The wording is the
-# same set of facts /about (ExperienceItem) and /world station 6 already publish; the
-# line counts and test count come from the Veilcore repo.
+# same set of facts /about (ExperienceItem) and /world station 6 already publish. Veilcore
+# is a team build: the line credits Cradle and Archery as Steven's main share and nothing finer.
 EXPERIENCE = [
     (
         "Co-founder &amp; Web Developer",
@@ -146,10 +146,8 @@ EXPERIENCE = [
         [
             "Co-founded an independent studio building hand-tracked browser games — webcam in, "
             "no controller, no download (MediaPipe, Three.js).",
-            "For our first title, Veilcore, built gameplay features in JavaScript (~1,600 lines): "
-            "the Gauntlet archery mode with arrow ballistics and a mouse fallback, a "
-            "shrinking-target practice mode, the Cradle mini-game and a tested leaderboard — "
-            "43 automated tests.",
+            "Our first title, Veilcore, is built as a museum and a theatre. The team made it "
+            "together, and I worked mostly on its Cradle and Archery rooms.",
         ],
     ),
     (

@@ -76,7 +76,7 @@ const ALL_WORLD_CARDS: WorldCard[] = [
         zone: "garage",
         title: "Skyveil Studio",
         subtitle: "Co-founder · Aug 2026 – Present",
-        body: "An independent studio making hand-tracked browser games — webcam in, no controller, no download. For our first title, Veilcore, I built the shrinking-target practice mode, the Cradle mini-game and the Gauntlet leaderboard. Built with MediaPipe and Three.js — the second of which you're standing in.",
+        body: "An independent studio making hand-tracked browser games — webcam in, no controller, no download. Our first title, Veilcore, is built as a museum and a theatre. The team made it together, and I worked mostly on its Cradle and Archery rooms. Built with MediaPipe and Three.js — the second of which you're standing in.",
         links: [{ label: "See the experience", href: "/about#experience" }],
     },
     {
