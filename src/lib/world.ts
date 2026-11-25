@@ -92,7 +92,7 @@ const ALL_WORLD_CARDS: WorldCard[] = [
         id: "dw-steakhouse",
         zone: "dw",
         title: "D.W. Steakhouse",
-        subtitle: "Supervisor · Part-time",
+        subtitle: "Supervisor · Part-time · Aug 2026 – Present",
         body: "Supervisor at a steakhouse in Brisbane, part-time. I served tables, ran the till and dealt with whatever unexpected came up on the floor. It isn't on my CV, so it lives here.",
         links: [],
     },

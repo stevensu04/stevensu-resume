@@ -1292,7 +1292,7 @@ Steven supplied, with the name in plain lettering and no logos or photographs (�
   entry says: front of house, part-time, Jul 2025 to Aug 2026, floor supervisor, bartender, cashier and host.
 - **D.W. Steakhouse (zone 11):** a black-framed glass front under a timber fascia with gold lettering and
   orange vinyl panels. The card says what Steven told us: supervisor, part-time, serving, the till and
-  dealing with the unexpected. It has no dates, because he hasn't given any.
+  dealing with the unexpected. Started 7 Aug 2026 and still working there, so the subtitle reads "Aug 2026 – Present".
 - Both are finished jobs, so whole buildings with the door open and lit (§4), with nothing modelled inside.
 - **Copy:** the intro now says "Eleven stops ... plus two part-time jobs. Everything here is on my CV
   except those two", because "also on my CV" stopped being true. The tour button says "quick tour"
