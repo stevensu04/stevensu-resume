@@ -8,7 +8,7 @@
  *
  * Rules checked (see the docstring at the top of scripts/build-cv.py):
  *   1. No named employer, programme or location target; no street address or phone number.
- *   2. Skyveil Studio and the E.SUN 10% number are on it (both are /world stops, and the site
+ *   2. Skyveil Studio, the E.SUN 10% number and Club Velvet are on it (both are /world stops, and the site
  *      says everything there is also on the CV).
  *   3. /Title and /Author are set.
  *   Plus the contracts the docstring calls out:
@@ -138,6 +138,7 @@ const REQUIRED = [
     [/Skyveil Studio/, "Skyveil Studio is missing (a current role on /about and /world stop 6)"],
     [/E\.SUN/, "E.SUN is missing (/world stop 1)"],
     [/\b10%/, "the E.SUN 10% wait-time number is missing (/world stop 1)"],
+    [/Club Velvet/, "Club Velvet is missing (/world stop 8, added 26 Nov 2026)"],
 ];
 for (const [re, why] of REQUIRED) if (!re.test(text)) fail(why);
 

@@ -19,8 +19,8 @@ THE THREE RULES THIS FILE EXISTS TO ENFORCE (scripts/check-cv.mjs re-checks them
      be copied over public/StevenSu_Resume.pdf.
 
   2. Every /world stop is on it. WorldShell tells visitors "Everything you'll find
-     here is also on my CV", so Skyveil Studio (station 6) and the E.SUN 10% wait-time
-     number (station 1) must both stay. Skyveil Studio appears. /world station 6 (src/lib/world.ts) and /about both
+     here is also on my CV", so Skyveil Studio (station 6), the E.SUN 10% wait-time
+     number (station 1) and Club Velvet (station 8, added 26 Nov 2026) must all stay. Skyveil Studio appears. /world station 6 (src/lib/world.ts) and /about both
      present it as a current role, so a CV without it contradicts the site.
 
   3. /Title and /Author are set. The old PDF had both as "(anonymous)", which is
@@ -186,6 +186,18 @@ PROJECTS = [
         ],
     ),
     (
+        "Club Velvet — Party Game with a Claude Bouncer",
+        "Tanda AI Hackathon · team of 3",
+        "Nov 2026",
+        [
+            "Co-built in 24 hours with two teammates among 200+ participants: a Red Light, Green "
+            "Light game for a projector and a room of phones (TypeScript, Node, WebSockets, one "
+            "20 Hz authoritative server); dozens of players joined at once in the demo.",
+            "Claude writes the bouncer's roasts via structured outputs, with a 4 s timeout and "
+            "scripted fallbacks so play never waits on it; 100 unit tests plus an eval of its lines.",
+        ],
+    ),
+    (
         "Eco Router — Carbon-Aware Compute Routing API",
         "UQCS Hackathon · team of 5",
         "Aug 2026",
@@ -233,8 +245,8 @@ LEADERSHIP = (
 # Layout
 # ---------------------------------------------------------------------------
 
-BODY_SIZE = 9.0
-LEADING = 11.2
+BODY_SIZE = 8.8
+LEADING = 10.5
 
 styles = {
     "name": ParagraphStyle(
@@ -316,7 +328,7 @@ def entry(title, org, date, bullets):
     flow = [head]
     for b in bullets:
         flow.append(Paragraph(b, styles["bullet"], bulletText="•"))
-    flow.append(Spacer(1, 4.5))
+    flow.append(Spacer(1, 3.2))
     # KeepTogether stops a heading from being orphaned if the content ever grows
     # past one page — it fails loudly as a second page instead of silently splitting.
     return [KeepTogether(flow)]
@@ -328,8 +340,8 @@ def build(out_path):
         pagesize=A4,
         leftMargin=14 * mm,
         rightMargin=14 * mm,
-        topMargin=10 * mm,
-        bottomMargin=10 * mm,
+        topMargin=8 * mm,
+        bottomMargin=8 * mm,
         title=f"Po-Chun (Steven) Su — {ROLE}",
         author="Po-Chun (Steven) Su",
         subject="Resume",
