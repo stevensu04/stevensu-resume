@@ -80,6 +80,23 @@ const ALL_WORLD_CARDS: WorldCard[] = [
         links: [{ label: "See the experience", href: "/about#experience" }],
     },
     {
+        // Part-time, and not on the CV, which is why it has a stop here. Facts: Steven's LinkedIn entry.
+        id: "seoul-garden",
+        zone: "seoul",
+        title: "Seoul Garden",
+        subtitle: "Front of house · Part-time · Jul 2025 – Aug 2026",
+        body: "Front of house at a Korean buffet restaurant in Brisbane, part-time alongside my degree. My role grew to cover floor supervisor, bartender, cashier and host, and I worked with the team to keep service steady through peak hours. It isn't on my CV, so it lives here.",
+        links: [],
+    },
+    {
+        id: "dw-steakhouse",
+        zone: "dw",
+        title: "D.W. Steakhouse",
+        subtitle: "Supervisor · Part-time",
+        body: "Supervisor at a steakhouse in Brisbane, part-time. I served tables, ran the till and dealt with whatever unexpected came up on the floor. It isn't on my CV, so it lives here.",
+        links: [],
+    },
+    {
         id: "gallery",
         zone: "gallery",
         title: "The gallery",

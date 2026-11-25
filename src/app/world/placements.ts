@@ -96,9 +96,8 @@ export const PLACEMENTS: Placement[] = [
     // Kenney buildings: scenery, with no card and no zone, so they stay in full colour (§4: only
     // what Steven built is a stop). Kept low so they don't hide the block behind them (the
     // camera looks north from the south, and a wall hides about 1.4 m of ground per metre of height).
-    { model: "building-a", x: -3, z: 41.5, solid: true },
-    { model: "building-c", x: 5.4, z: 41.5, solid: true },
-    { model: "building-e", x: 13.8, z: 41.5, solid: true },
+    // (Kenney's building-a, c and e stood here until Steven's two part-time restaurants replaced
+    // them: Restaurants.tsx. Those have cards and zones of their own.)
     { model: "tree-large", x: 19.6, z: 44, solid: true },
     // (A building-j stood at x 29.5 until BrisPulse got its control centre behind it: the camera looks
     // from the south-west, so it hid the new building. The end of the strip is trees now.)
@@ -174,6 +173,10 @@ export const PROP_SOLIDS: { x: number; z: number; w: number; d: number }[] = [
     { x: -26, z: 7, w: 9.2, d: 7.6 }, // the data centre (DataCentre.tsx)
     { x: -20.1, z: 11.4, w: 0.8, d: 0.8 }, // and its wind turbine
     { x: -16, z: 41.75, w: 14, d: 9.5 }, // Club Velvet (ClubVelvet.tsx)
+    { x: 2.5, z: 41.75, w: 11, d: 6.5 }, // Seoul Garden (Restaurants.tsx)
+    { x: 4.8, z: 45.6, w: 4.3, d: 0.55 }, // its bench
+    { x: -0.3, z: 45.9, w: 1.1, d: 0.8 }, // and its popcorn cart
+    { x: 13.5, z: 41.75, w: 7.8, d: 6.5 }, // D.W. Steakhouse (Restaurants.tsx)
     { x: -16, z: 47, w: 1.1, d: 0.9 }, // Gus, at the rope
     { x: -17.1, z: 47.8, w: 0.3, d: 0.3 }, // the rope's two posts
     { x: -14.9, z: 47.8, w: 0.3, d: 0.3 },

@@ -1279,3 +1279,23 @@ all of them before ever reaching `/world`.
 - **The rowing boat and the two buoys are gone** (Steven's call): the dinghy and the orange pillars on the
   river weren't wanted. The Watercraft Kit is no longer used by any placement.
 
+### Two part-time jobs: zones 10 and 11 (26 Nov 2026)
+
+Steven has worked two part-time jobs in Brisbane that are not on his CV (it has no room for them), so they
+get a stop each here. The three plain Kenney buildings on the night street (`building-a`, `c`, `e`) are
+gone; `scene/Restaurants.tsx` has the two shopfronts in their place, each modelled on an exterior photograph
+Steven supplied, with the name in plain lettering and no logos or photographs (§4 rule 4):
+
+- **Seoul Garden (zone 10):** a Korean BBQ buffet. Timber-framed front, white breeze-block walls at the
+  ends, a glazed run with a long bench, a pink name sign, a row of clay jars along the top, hanging plants,
+  a red popcorn cart by the door, and a red "ALL YOU CAN EAT" on the glass. The card says what his LinkedIn
+  entry says: front of house, part-time, Jul 2025 to Aug 2026, floor supervisor, bartender, cashier and host.
+- **D.W. Steakhouse (zone 11):** a black-framed glass front under a timber fascia with gold lettering and
+  orange vinyl panels. The card says what Steven told us: supervisor, part-time, serving, the till and
+  dealing with the unexpected. It has no dates, because he hasn't given any.
+- Both are finished jobs, so whole buildings with the door open and lit (§4), with nothing modelled inside.
+- **Copy:** the intro now says "Eleven stops ... plus two part-time jobs. Everything here is on my CV
+  except those two", because "also on my CV" stopped being true. The tour button says "quick tour"
+  (twelve stops now run about 75 s, not a minute). The tour visits both after Club Velvet.
+- Zone ids `seoul` and `dw` (`WORLD_ZONES`, `zones.ts`); cards in `src/lib/world.ts`.
+

@@ -58,7 +58,7 @@ function Poster({ loading = false, onTour, onWalk, onList }: { loading?: boolean
         <div className="relative h-[calc(100svh-5rem)] min-h-[480px] w-full overflow-hidden bg-[#eef1f5]">
             <Image
                 src={poster}
-                alt="A small riverside block in Brisbane, seen from above: a ferry pier, a university building, a government tower, a two-shop storefront with a banyan tree, a museum with a theatre behind it, a data centre, a small park, a transit control centre with a dish on its roof, and a nightclub with a queue outside on a street of its own."
+                alt="A small riverside block in Brisbane, seen from above: a ferry pier, a university building, a government tower, a two-shop storefront with a banyan tree, a museum with a theatre behind it, a data centre, a small park, a transit control centre with a dish on its roof, and a nightclub with a queue outside on a street of its own beside two restaurants."
                 fill
                 preload
                 sizes="100vw"
@@ -67,7 +67,7 @@ function Poster({ loading = false, onTour, onWalk, onList }: { loading?: boolean
             <div className="absolute inset-x-3 bottom-6 mx-auto max-w-sm rounded-2xl bg-white/95 p-6 shadow-lg ring-1 ring-black/5 sm:inset-x-auto sm:bottom-auto sm:left-10 sm:top-10">
                 <h1 className="text-lg font-bold text-gray-900">Walk around my career</h1>
                 <p className="mt-2 text-sm leading-relaxed text-gray-600">
-                    Nine stops, from a bank in Taipei to a 3D storefront, a live transit dashboard and a nightclub queue in Brisbane. Everything you&apos;ll find here is also on my CV.
+                    Eleven stops, from a bank in Taipei to a 3D storefront, a live transit dashboard and a nightclub queue in Brisbane, plus two part-time jobs. Everything here is on my CV except those two.
                 </p>
                 {loading ? (
                     <p role="status" className="mt-5 text-sm font-medium text-gray-500">
@@ -77,7 +77,7 @@ function Poster({ loading = false, onTour, onWalk, onList }: { loading?: boolean
                     <>
                         <div className="mt-5 flex flex-wrap gap-2">
                             <button type="button" onClick={onTour} className={`${btn} bg-blue-600 text-white hover:bg-blue-700`}>
-                                Take the one-minute tour
+                                Take the quick tour
                             </button>
                             <button type="button" onClick={onWalk} className={`${btn} bg-gray-100 text-gray-800 hover:bg-gray-200`}>
                                 Walk it yourself

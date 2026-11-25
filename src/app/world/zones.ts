@@ -32,6 +32,9 @@ export const ZONES: Zone[] = [
     { id: "park", number: 7, name: "Prototype park", x: -22.5, z: 24, w: 13, d: 10, h: 4 },
     // Zone 8 stands on its own street south of the back row, so the first seven keep their order.
     { id: "club", number: 8, name: "Club Velvet", x: -16, z: 42, w: 22, d: 14, h: 6 },
+    // Zones 10 and 11 are two part-time restaurant jobs, in the night street's row beside Club Velvet.
+    { id: "seoul", number: 10, name: "Seoul Garden", x: 2.5, z: 41.9, w: 12, d: 8.8, h: 5 },
+    { id: "dw", number: 11, name: "D.W. Steakhouse", x: 13.5, z: 41.9, w: 9, d: 8.8, h: 5 },
     // Zone 9 is BrisPulse's own building, east of the gallery and exit, once it was live rather than a concept.
     { id: "transit", number: 9, name: "Transit control centre", x: 34, z: 31.2, w: 11.4, d: 9.6, h: 10.5 },
     { id: "gallery", number: null, name: "Gallery", x: 0, z: 24, w: 14, d: 9, h: 9 },

@@ -42,6 +42,9 @@ const ALL_OBJECTS: WorldObject[] = [
     { id: "journeymate", x: -20, z: 24.5, w: 2.2, d: 2.2, h: 2.6 },
     // 8 · Club Velvet: the club, with its queue and bouncer out front (the hit area covers the plaza)
     { id: "club-velvet", x: -16, z: 42.3, w: 14, d: 11.2, h: 6 },
+    // 10, 11 · Two part-time jobs: the restaurants' fronts, with the cart and bench out front
+    { id: "seoul-garden", x: 2.5, z: 41.9, w: 11.6, d: 8, h: 4.8 },
+    { id: "dw-steakhouse", x: 13.5, z: 41.9, w: 8.2, d: 8, h: 4.8 },
     // 9 · BrisPulse: the transit control centre (live, so a whole building, door open)
     { id: "brispulse", x: 34, z: 31.2, w: 9.8, d: 8.8, h: 7.6 },
     // Facilities
@@ -66,6 +69,8 @@ export const TOUR: string[] = [
     "eco-router",
     "parkease",
     "club-velvet",
+    "seoul-garden",
+    "dw-steakhouse",
     "brispulse",
     "gallery",
     "exit",

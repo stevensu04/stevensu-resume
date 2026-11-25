@@ -10,6 +10,7 @@ import ClubVelvet from "./ClubVelvet";
 import ControlCentre from "./ControlCentre";
 import SkyveilMuseum from "./SkyveilMuseum";
 import FerryTerminal from "./FerryTerminal";
+import { DwSteakhouse, SeoulGarden } from "./Restaurants";
 import DataCentre from "./DataCentre";
 import GovTower from "./GovTower";
 import GreatCourt from "./GreatCourt";
@@ -108,6 +109,8 @@ export default function Stage({
             <ControlCentre still={still} />
             <SkyveilMuseum still={still} />
             <FerryTerminal />
+            <SeoulGarden />
+            <DwSteakhouse />
 
             {OBJECTS.map((object) => (
                 <ObjectHit key={object.id} object={object} onObject={onObject} onHover={onHover} />
