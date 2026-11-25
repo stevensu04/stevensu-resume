@@ -74,6 +74,16 @@ callouts:
       from each grid's generation mix using Ember's lifecycle factors, and the update script
       refuses to write new data if the US total drifts more than 5% from Ember's published figure.
 
+video:
+  src: /projects/eco-router/film.mp4
+  poster: /projects/eco-router/film-poster.jpg
+  caption: A 60-second film. The one setting nobody thinks twice about, the same training job in three regions, and an agent finding the cleanest window to start. Figures use live grid data from Electricity Maps.
+
+gallery:
+  - src: /projects/EcoRouter.svg
+    alt: An agent asks rank_regions to run a training job in the EU, lowest carbon first. eu-west-3 and francecentral rank first at 21 gCO2e per kWh, and eu-central-1 comes last at 285.
+    caption: What rank_regions returns, from a live snapshot taken on 22 Sep 2026 (Electricity Maps).
+
 # The project's card in /world (WORLD.md §7, §8). Title, status and URLs come from the fields above.
 world:
   zone: shed
