@@ -139,7 +139,7 @@ function River({ still }: { still: boolean }) {
 /* ---------------------------------------------------------------- ferry */
 
 /** One crossing every 30 s (§6): in from the west, 8 s at the pier, out to the east. */
-const FERRY_LANE_Z = -29.2;
+const FERRY_LANE_Z = -31.5;
 const CYCLE = 30;
 const DOCKED = 10;
 

@@ -10,6 +10,7 @@ import ClubVelvet from "./ClubVelvet";
 import DataCentre from "./DataCentre";
 import GovTower from "./GovTower";
 import GreatCourt from "./GreatCourt";
+import Roads from "./Roads";
 import { FAR_BANK, RIVER, SLAB } from "../zones";
 import { OBJECTS, type WorldObject } from "../objects";
 import { InstancedMesh, Matrix4, MeshBasicMaterial, PlaneGeometry } from "three";
@@ -97,6 +98,7 @@ export default function Stage({
             <Landmarks still={still} />
             <Formosa still={still} />
             <ClubVelvet still={still} />
+            <Roads />
             <GreatCourt />
             <GovTower />
             <DataCentre still={still} />

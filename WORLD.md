@@ -1128,6 +1128,28 @@ Steven supplied a reference photograph for each, and the Kenney block each one s
 - Their hit areas in `objects.ts` were re-fitted to the new heights (UQ 15.4 m, tower 42 m with its
   mast, data centre 5 m).
 
+### Ring road, wider river, Eco Router door (26 Nov 2026)
+
+- **Eco Router's blue door flickered when zooming out.** The data centre's blue glass band and its
+  yellow door overlapped by 0.4 m with their fronts in the same plane, so the depth buffer couldn't
+  choose between them. The glass now stops 0.4 m short of the door, which stands 0.1 m proud of it. The
+  gaps between Club Velvet's sign layers were widened for the same reason (0.01 m to 0.05 m or more).
+- **The river is 20 m wide, not 8** (`RIVER.minZ` -32 to -44), so Taipei stands 12 m further back and is
+  less hidden by the near bank's buildings: a sight line over a building rises 0.7 m per metre it
+  travels, so each extra metre of river shows 0.7 m more of what's behind. The skyline buildings were
+  also scaled up a fifth, the pier and the CityCat's lane moved out to match (`PIER.minZ`,
+  `FERRY_LANE_Z`) and the buoys moved to the middle of the water.
+- **The two streets are one ring road.** A connector at each margin (x = -44 and x = 44) joins the
+  north street to the night street, so the slab is 96 m wide, from 80. The kit has no bend, so the
+  four corners are hand-made in `scene/Roads.tsx`, in the kit's measured dimensions and colours
+  (asphalt ±2.4 m, gutter to 3.2 m, footpath to 4 m and 0.08 m up, read from `kit.glb`).
+- **Two buses run it** (`scene/Transit.tsx`), one each way, driving on the left: bus A clockwise in the
+  outer lane, bus B anticlockwise in the inner lane. The route is a rectangle with rounded corners
+  (radius 6.5 m outer, 3.5 m inner), and each of the three cars follows it on its own so the bus bends
+  round the corners. Each bus stops at one shelter on each street: the two on the north street
+  existed, the two on the night street are new (the south one stands past the old slab edge, so the slab
+  now runs to z = 60). Steven still holds a bus up if he stands in its lane.
+
 ### To launch (all content or devices, no code)
 
 *Kept for the record. What's still open, all non-blocking:*

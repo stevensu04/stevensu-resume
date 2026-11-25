@@ -2,7 +2,8 @@
  * The block's layout (WORLD.md §3) as data. Metres, on the XZ plane: +x is east along the river,
  * +z is south, away from it. The snake route runs row by row: 1 → 3 along the river, 4 → 6 across
  * the street, then 7 → exit at the back, and 8 on the night street beyond them (added 26 Nov 2026,
- * which took the slab from 80 × 64 m to 80 × 88 m, +37.5%).
+ * which took the slab from 80 × 64 m to 80 × 88 m, +37.5%). The slab later grew again, to 96 m wide
+ * for the ring road's connectors and 104 m deep for a wider river and the south shelters.
  *
  * A zone is a footprint: walking into it explores it (§5), and it greys out until then. What stands
  * in it lives in `placements.ts`; what you can tap lives in `objects.ts`; the copy lives in content.
@@ -36,15 +37,20 @@ export const ZONES: Zone[] = [
 ];
 
 /** The slab is the whole block, river strip included (§0: about 80 × 60 m). */
-export const SLAB = { minX: -40, maxX: 40, minZ: -32, maxZ: 56 };
+export const SLAB = { minX: -48, maxX: 48, minZ: -44, maxZ: 60 };
 /** Taipei's bank, across the river: scenery only, never walkable (placements.ts SKYLINE). */
-export const FAR_BANK = { minZ: -39.5, maxZ: -32 };
+export const FAR_BANK = { minZ: -51.5, maxZ: -44 };
 /** The Brisbane River runs along the north edge of the slab. */
-export const RIVER = { minZ: -32, maxZ: -24 };
+export const RIVER = { minZ: -44, maxZ: -24 };
 /** The street between the river row and the middle row. */
 export const STREET = { z: -4 };
 /** The night street along the south edge, in front of Club Velvet (zone 8). */
 export const STREET_SOUTH = { z: 52 };
+/**
+ * The ring road (added 26 Nov 2026): the two streets, joined at the slab's east and west margins by
+ * a connector each, so traffic can go round. These are the road centrelines, metres.
+ */
+export const RING = { west: -44, east: 44, north: STREET.z, south: STREET_SOUTH.z };
 /** Where Steven may stand: the slab minus the river and a margin. Buildings are cut out in placements.ts. */
-export const WALKABLE = { minX: -38.5, maxX: 38.5, minZ: RIVER.maxZ + 1.2, maxZ: 54.5 };
+export const WALKABLE = { minX: -46.5, maxX: 46.5, minZ: RIVER.maxZ + 1.2, maxZ: 58.5 };
 

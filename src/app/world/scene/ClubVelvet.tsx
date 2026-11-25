@@ -265,11 +265,11 @@ export default function ClubVelvet({ still }: { still: boolean }) {
     return (
         <>
             <mesh geometry={statics} material={material} raycast={() => null} />
-            <mesh ref={glowRef} position={[GUS.x, 4.55, FRONT + 0.15]} material={glow} raycast={() => null}>
+            <mesh ref={glowRef} position={[GUS.x, 4.55, FRONT + 0.22]} material={glow} raycast={() => null}>
                 <planeGeometry args={[10, 1.9]} />
             </mesh>
-            <Textured make={neonSign} width={9} height={1.3} position={[GUS.x, 4.55, FRONT + 0.17]} />
-            <Textured make={subtitle} width={3.6} height={0.45} position={[GUS.x, 3.55, FRONT + 0.07]} />
+            <Textured make={neonSign} width={9} height={1.3} position={[GUS.x, 4.55, FRONT + 0.3]} />
+            <Textured make={subtitle} width={3.6} height={0.45} position={[GUS.x, 3.55, FRONT + 0.12]} />
 
             <group ref={gusRef} position={[GUS.x, 0, GUS.z]}>
                 <mesh geometry={gusGeo} material={material} raycast={() => null} />

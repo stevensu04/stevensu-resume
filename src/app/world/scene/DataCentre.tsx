@@ -70,11 +70,17 @@ function parts(): BufferGeometry[] {
     ];
     // The glazed office along the front hall: a dark glass band in a pale frame, and an open lit door.
     const fx1 = x1 - 2;
-    out.push(box(fx1 - x0 - 1.4, 1.7, 0.1, (x0 + fx1) / 2 - 0.3, 1.5, z1 + 0.05, C.glass));
-    for (let x = x0 + 1.2; x < fx1 - 1.9; x += 1.3) out.push(box(0.07, 1.7, 0.14, x, 1.5, z1 + 0.07, C.roofLine));
-    out.push(box(fx1 - x0 - 1.3, 0.1, 0.16, (x0 + fx1) / 2 - 0.3, 2.4, z1 + 0.08, C.roof));
-    out.push(box(1.1, 2.3, 0.1, fx1 - 0.85, 1.15, z1 + 0.05, C.door));
-    out.push(box(1.4, 0.12, 0.18, fx1 - 0.85, 2.35, z1 + 0.08, C.roof));
+    // The glass, its mullions and its canopy end 0.4 m short of the door, and the door stands 0.1 m
+    // proud of the glass: coplanar fronts that overlapped here flickered when the camera zoomed out.
+    const doorX = fx1 - 0.85;
+    const glassEnd = doorX - 0.55 - 0.4;
+    const glassW = glassEnd - (x0 + 0.5);
+    const glassC = (x0 + 0.5 + glassEnd) / 2;
+    out.push(box(glassW, 1.7, 0.1, glassC, 1.5, z1 + 0.05, C.glass));
+    for (let x = x0 + 1.2; x < glassEnd - 0.3; x += 1.3) out.push(box(0.07, 1.7, 0.14, x, 1.5, z1 + 0.07, C.roofLine));
+    out.push(box(glassW + 0.1, 0.1, 0.24, glassC, 2.4, z1 + 0.12, C.roof));
+    out.push(box(1.1, 2.3, 0.2, doorX, 1.15, z1 + 0.1, C.door));
+    out.push(box(1.5, 0.12, 0.34, doorX, 2.4, z1 + 0.17, C.roof));
     // Cooling units on the middle roof.
     for (const x of [-28.6, -27, -25.4]) out.push(box(1.0, 0.6, 1.0, x, 3.9 + 0.65, 6.95, C.unit));
     // The lawn and the white path from the door out to the street.

@@ -18,7 +18,7 @@ const HEIGHT = 1.72;
 const ISO_PITCH = Math.atan(1 / Math.SQRT2); // 35.264°, true isometric
 const CAMERA_DISTANCE = 120;
 
-const BLOCK_CENTRE = new Vector3(0, 0, 2);
+const BLOCK_CENTRE = new Vector3(0, 0, 4);
 /** The closest the visitor can zoom in, as a multiple of the follow zoom. */
 export const MAX_ZOOM = 1.6;
 const aim = new Vector3();
@@ -212,7 +212,7 @@ export default function Player({
         // zoom is a multiple of follow, between whole block and 1.6×, eased; as it nears whole block
         // the camera drifts from Steven to the middle of the block.
         const follow = Math.min(Math.max(Math.min(state.size.width / 34, state.size.height / 22), 16), 34);
-        const whole = Math.min(state.size.width / 118, state.size.height / 112);
+        const whole = Math.min(state.size.width / 142, state.size.height / 131);
         const minK = Math.min(1, whole / follow);
         if (zoomRef) {
             zoomRef.current.min = minK;

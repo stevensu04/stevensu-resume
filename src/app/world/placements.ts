@@ -38,16 +38,23 @@ const nightStreet: Placement[] = [-36, -28, -20, -12, -4, 4, 12, 20, 28, 36].map
     solid: false,
 }));
 
+// The ring road's two connectors, at the slab's east and west margins, joining the streets' ends. Their
+// four corners are hand-made (scene/Roads.tsx): the kit has no bend.
+const connectors: Placement[] = [-44, 44].flatMap((x) =>
+    [4, 12, 20, 28, 36, 44].map((z) => ({ model: "road-straight", x, z, rot: 1 as const, solid: false })),
+);
+
 export const PLACEMENTS: Placement[] = [
     ...street,
     ...nightStreet,
+    ...connectors,
 
     // 1 · Ferry landing: E.SUN (its sign is in Landmarks) and StarLens (shuttered, see Props).
     { model: "building-c", x: -31, z: -18, solid: true },
     { model: "building-a", x: -22, z: -18, solid: true },
     { model: "boat-row-small", x: -23.4, z: -26.5, rot: 1, scale: WATER_SCALE, solid: false },
-    { model: "buoy", x: -8, z: -29, scale: WATER_SCALE, solid: false },
-    { model: "buoy", x: 14, z: -29.5, scale: WATER_SCALE, solid: false },
+    { model: "buoy", x: -8, z: -33.5, scale: WATER_SCALE, solid: false },
+    { model: "buoy", x: 14, z: -35, scale: WATER_SCALE, solid: false },
 
     // 2 · UQ corner, with the EventNow stall out front (live, so open and lit, §4).
     // The sandstone building is hand-made (GreatCourt.tsx), in place of Kenney's building-j.
@@ -102,6 +109,11 @@ export const PLACEMENTS: Placement[] = [
     { model: "tree-large", x: -34, z: 39.5, solid: true },
     { model: "tree-small", x: -31, z: 45, solid: true },
     { model: "tree-small", x: -4.5, z: 46.2, solid: true },
+    // The margins the ring road runs through, north of the streets: a few trees so they aren't bare.
+    { model: "tree-large", x: 43, z: -15, solid: true },
+    { model: "tree-small", x: 45.5, z: -20, solid: true },
+    { model: "tree-large", x: -43, z: -15, solid: true },
+    { model: "tree-small", x: -45.5, z: -20, solid: true },
     // Street furniture along the night street's north footpath.
     { model: "light-square", x: -32, z: 46.8 },
     { model: "light-square", x: -4, z: 46.8 },
@@ -116,19 +128,21 @@ export const PLACEMENTS: Placement[] = [
  * place, with Taipei 101 (hand-made, scene/Taipei101.tsx) standing over them at TAIPEI_101.
  * Past tense only: nothing over there can be walked to or opened.
  */
-export const TAIPEI_101 = { x: 0, z: -36.6 };
+export const TAIPEI_101 = { x: 0, z: -48.6 };
 
 export const SKYLINE: Placement[] = [
-    { model: "low-detail-building-a", x: -35, z: -36.5, scale: 5 },
-    { model: "low-detail-building-e", x: -27, z: -37.5, scale: 5.5 },
-    { model: "low-detail-building-c", x: -19, z: -36, scale: 5 },
-    { model: "low-detail-building-wide-a", x: -10, z: -37, scale: 5 },
-    { model: "low-detail-building-g", x: 10, z: -36.5, scale: 5.5 },
-    { model: "low-detail-building-i", x: 20, z: -37.5, scale: 5.5 },
-    { model: "low-detail-building-k", x: 30, z: -36, scale: 5 },
-    { model: "low-detail-building-c", x: 37, z: -37.5, scale: 4.5 },
+    { model: "low-detail-building-m", x: -44, z: -48.4, scale: 6 },
+    { model: "low-detail-building-a", x: -35, z: -48.5, scale: 6 },
+    { model: "low-detail-building-e", x: -27, z: -49.5, scale: 6.6 },
+    { model: "low-detail-building-c", x: -19, z: -48, scale: 6 },
+    { model: "low-detail-building-wide-a", x: -10, z: -49, scale: 6 },
+    { model: "low-detail-building-g", x: 10, z: -48.5, scale: 6.6 },
+    { model: "low-detail-building-i", x: 20, z: -49.5, scale: 6.6 },
+    { model: "low-detail-building-k", x: 30, z: -48, scale: 6 },
+    { model: "low-detail-building-c", x: 38, z: -49.5, scale: 5.4 },
+    { model: "low-detail-building-a", x: 45, z: -48.5, scale: 5.6 },
     // A line of trees along the water's edge.
-    ...[-38, -31, -23, -14.5, -5, 5, 14.5, 25, 34].map((x, i) => ({ model: i % 2 ? "tree-small" : "tree-large", x, z: -33.4, scale: 7 })),
+    ...[-46, -38, -31, -23, -14.5, -5, 5, 14.5, 25, 34, 42].map((x, i) => ({ model: i % 2 ? "tree-small" : "tree-large", x, z: -45.4, scale: 7 })),
 ];
 /**
  * The easter egg (WORLD.md §3): a tennis racquet leaning on the fence by the UQ corner, for the
@@ -137,7 +151,7 @@ export const SKYLINE: Placement[] = [
 export const RACQUET = { x: 16.5, z: -12.6 };
 
 /** Areas Steven can stand on, beyond the main walkable rectangle: the pier. */
-export const PIER = { x: -26, minZ: -28.5, maxZ: -23.2, w: 3 };
+export const PIER = { x: -26, minZ: -30.8, maxZ: -23.2, w: 3 };
 
 /** Hand-made solids (metres, XZ footprint), so Steven walks round them. Built in Props.tsx. */
 export const PROP_SOLIDS: { x: number; z: number; w: number; d: number }[] = [
@@ -173,4 +187,6 @@ export const PROP_SOLIDS: { x: number; z: number; w: number; d: number }[] = [
     { x: -31, z: 26.9, w: 2.6, d: 1 }, // and its podium
     { x: -14, z: -9.3, w: 3.2, d: 1.2 }, // bus stop, eastbound (Transit.tsx)
     { x: -20, z: 1.3, w: 3.2, d: 1.2 }, // bus stop, westbound
+    { x: 6, z: 46.7, w: 3.2, d: 1.2 }, // bus stop on the night street, eastbound
+    { x: 16, z: 57.3, w: 3.2, d: 1.2 }, // and westbound
 ];
