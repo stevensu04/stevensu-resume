@@ -52,9 +52,9 @@ export const PLACEMENTS: Placement[] = [
     // 1 · Ferry landing: E.SUN (its sign is in Landmarks) and StarLens (shuttered, see Props).
     { model: "building-c", x: -31, z: -18, solid: true },
     { model: "building-a", x: -22, z: -18, solid: true },
-    { model: "boat-row-small", x: -23.4, z: -26.5, rot: 1, scale: WATER_SCALE, solid: false },
-    { model: "buoy", x: -8, z: -33.5, scale: WATER_SCALE, solid: false },
-    { model: "buoy", x: 14, z: -35, scale: WATER_SCALE, solid: false },
+    { model: "boat-row-small", x: -9, z: -27, rot: 1, scale: WATER_SCALE, solid: false },
+    { model: "buoy", x: -8, z: -41.5, scale: WATER_SCALE, solid: false },
+    { model: "buoy", x: 14, z: -41, scale: WATER_SCALE, solid: false },
 
     // 2 · UQ corner, with the EventNow stall out front (live, so open and lit, §4).
     // The sandstone building is hand-made (GreatCourt.tsx), in place of Kenney's building-j.
@@ -152,8 +152,21 @@ export const SKYLINE: Placement[] = [
  */
 export const RACQUET = { x: 16.5, z: -12.6 };
 
-/** Areas Steven can stand on, beyond the main walkable rectangle: the pier. */
-export const PIER = { x: -26, minZ: -30.8, maxZ: -23.2, w: 3 };
+/**
+ * The ferry terminal (scene/FerryTerminal.tsx), where the plain pier was until 26 Nov 2026: a gangway
+ * from the bank out to a floating pontoon, with a wing roof and a fin at the pontoon's west end.
+ * Steven can walk on the gangway and the pontoon (walk.ts). The ferry docks on the pontoon's river
+ * side: `lane` is its centreline, clear of the pontoon whose edge is at minZ, and `dockX` is where its
+ * middle stops. Metres.
+ */
+export const TERMINAL = {
+    gangway: { x: -26, w: 2.6, minZ: -29.4, maxZ: -24 },
+    pontoon: { minX: -34, maxX: -19, minZ: -33.4, maxZ: -29.4 },
+    pylon: { x: -33, z: -31.4 },
+    roofX: -27,
+    lane: -36.8,
+    dockX: -18,
+};
 
 /** Hand-made solids (metres, XZ footprint), so Steven walks round them. Built in Props.tsx. */
 export const PROP_SOLIDS: { x: number; z: number; w: number; d: number }[] = [
@@ -172,6 +185,9 @@ export const PROP_SOLIDS: { x: number; z: number; w: number; d: number }[] = [
     { x: -24.1, z: 43.5, w: 1.2, d: 2 }, // the dumpster, and the cat on it
     ...[-24.2, -22.9, -21.6, -20.3, -19].map((x) => ({ x, z: 48.8, w: 0.7, d: 0.6 })), // the queue, at its start
     { x: 4.5, z: -10.6, w: 2.6, d: 0.6 }, // volunteer noticeboard
+    { x: -33, z: -31.4, w: 1.9, d: 1.1 }, // the ferry terminal's fin (FerryTerminal.tsx)
+    ...[-30.3, -23.7].flatMap((x) => [-30.2, -32.6].map((z) => ({ x, z, w: 0.3, d: 0.3 }))), // its roof posts
+    { x: -27, z: -31.8, w: 2.5, d: 0.6 }, // and the bench
     { x: 3.5, z: 13.2, w: 1, d: 1 }, // arcade cabinet
     { x: 0, z: 7, w: 11.8, d: 8.4 }, // Skyveil's museum and theatre (SkyveilMuseum.tsx)
     { x: -4.1, z: 12.6, w: 1.2, d: 1 }, // its two archery targets

@@ -1255,3 +1255,21 @@ all of them before ever reaching `/world`.
 - **Skyveil's wording (26 Nov 2026):** the card, `/about` and the CV now say Veilcore is a team build and
   that Steven worked mostly on Cradle and Archery. No per-mode credit and no line counts; nothing is said
   about the parts he didn't work on.
+
+### The ferry terminal (26 Nov 2026)
+
+- **A bug: the ferry sailed through the pier.** The widened river left the pier's tip (z -30.8) inside the
+  ferry's lane (z -31.5, beam ±2.9 m), so on arrival from the west the hull passed through the pier's
+  timber deck, and the Kenney rowing boat (orange) sat in the way beside it. The buoys at z -33.5 and
+  -35 were in the lane too.
+- **The pier is a ferry terminal now (`scene/FerryTerminal.tsx`), modelled on Steven's photograph of the
+  UQ St Lucia terminal:** a gangway from the bank (orange steel trusses under a thin dark roof), a
+  floating pontoon with a dark hull and timber deck, a dark wing roof tilted up towards the east with a
+  second plate over it, on posts, with a bench under it, and a tall tapered fin at the west end, dark on
+  one side and white on the other, orange edges, "UQ ST LUCIA" in vertical letters on both faces.
+  Steven chose to show the name (§4 rule 4).
+- **Layout (`TERMINAL` in `placements.ts`, replacing `PIER`):** the pontoon lies along the bank at
+  z -33.4 to -29.4; the ferry's lane is z -36.8, so it docks along the pontoon's river side
+  (`dockX` -18) with 0.46 m to spare and never crosses anything. The buoys moved to z -41.5 and -41 and the
+  rowing boat to (-9, -27). Steven can walk the gangway and the pontoon (`walk.ts`); the fin, the roof
+  posts and the bench are walk-grid solids. The crossing card's hit area covers the whole terminal.

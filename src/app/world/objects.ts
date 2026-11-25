@@ -23,7 +23,7 @@ const ALL_OBJECTS: WorldObject[] = [
     // 1 · Ferry landing
     { id: "esun", x: -31, z: -18, w: 7.2, d: 7.4, h: 9 },
     { id: "starlens", x: -22, z: -18, w: 7.2, d: 7.8, h: 10.5 },
-    { id: "crossing", x: -26, z: -25.8, w: 3.4, d: 5.6, h: 2 },
+    { id: "crossing", x: -26.5, z: -28.5, w: 16, d: 10.4, h: 8 },
     // 2 · UQ corner
     { id: "degree", x: 2, z: -17.5, w: 16.8, d: 10.9, h: 15.4 },
     { id: "timetable", x: 4.5, z: -10.6, w: 2.8, d: 1, h: 2.6 },

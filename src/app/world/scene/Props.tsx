@@ -4,12 +4,12 @@ import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { BoxGeometry, Color, ExtrudeGeometry, MeshBasicMaterial, PlaneGeometry, Shape, Vector2, type BufferGeometry, type Group, type ShaderMaterial } from "three";
 import { withWorldShader } from "./worldShader";
-import { PIER, RACQUET } from "../placements";
+import { RACQUET, TERMINAL } from "../placements";
 import { RIVER, SLAB } from "../zones";
 import { mergeBoxes, mergeParts, paint, shadedBox, type BoxSpec } from "./shading";
 
 /**
- * Everything the kits don't have (WORLD.md §6): the river, pier, ferry, shutter, frosted glass,
+ * Everything the kits don't have (WORLD.md §6): the river, ferry, shutter, frosted glass,
  * arcade cabinet, noticeboards and plinths. The Formosa Bauhaus shopfront, which
  * replaced the building site, has its own file (Formosa.tsx). All box-level,
  * coloured from the palette below, shaded through vertex colours, and unlit.
@@ -49,17 +49,6 @@ export default function Props({ still }: { still: boolean }) {
 
 const box = (at: BoxSpec["at"], size: BoxSpec["size"], color: string, rotY?: number): BoxSpec => ({ at, size, color, rotY });
 
-function pierBoxes(): BoxSpec[] {
-    const len = PIER.maxZ - PIER.minZ;
-    const cz = (PIER.minZ + PIER.maxZ) / 2;
-    const out = [box([PIER.x, -0.05, cz], [PIER.w, 0.3, len], PALETTE.wood)];
-    for (const z of [PIER.minZ + 0.3, cz, PIER.maxZ - 0.6]) {
-        out.push(box([PIER.x - PIER.w / 2 + 0.2, -0.6, z], [0.3, 1.2, 0.3], PALETTE.slate));
-        out.push(box([PIER.x + PIER.w / 2 - 0.2, -0.6, z], [0.3, 1.2, 0.3], PALETTE.slate));
-    }
-    return out;
-}
-
 function noticeboard(x: number, z: number, wide = false): BoxSpec[] {
     const w = wide ? 4.2 : 2.4;
     return [
@@ -74,7 +63,6 @@ function noticeboard(x: number, z: number, wide = false): BoxSpec[] {
 const ARCADE = { x: 3.5, z: 13.2 };
 
 const STATIC_BOXES: BoxSpec[] = [
-    ...pierBoxes(),
     // 1 · StarLens: a shutter pulled down over the front (§4: confidential stays closed).
     box([-22, 1.6, -14.15], [4.2, 3.2, 0.25], PALETTE.slate),
     // 3 · Finance Forms: the padlock on the frosted door (the glass itself is translucent, below).
@@ -131,8 +119,8 @@ function River({ still }: { still: boolean }) {
 
 /* ---------------------------------------------------------------- ferry */
 
-/** One crossing every 30 s (§6): in from the west, 8 s at the pier, out to the east. */
-const FERRY_LANE_Z = -31.5;
+/** One crossing every 30 s (§6): in from the west, 8 s at the terminal, out to the east. */
+const FERRY_LANE_Z = TERMINAL.lane;
 const CYCLE = 30;
 const DOCKED = 10;
 
@@ -184,7 +172,7 @@ function cityCat(): BufferGeometry {
 
 function Ferry({ still }: { still: boolean }) {
     const ref = useRef<Group>(null);
-    const t = useRef(DOCKED); // start at the pier, so the first frame shows a docked ferry
+    const t = useRef(DOCKED); // start at the terminal, so the first frame shows a docked ferry
     const geo = useMemo(() => cityCat(), []);
     useFrame((_, dt) => {
         if (!ref.current) return;
@@ -201,9 +189,9 @@ function Ferry({ still }: { still: boolean }) {
 }
 
 function ferryX(t: number): number {
-    const dock = PIER.x + PIER.w / 2 + 12.4; // stern alongside the pier's east side
+    const dock = TERMINAL.dockX; // alongside the terminal's pontoon, on its river side
     if (t < 8) return lerp(-60, dock, smooth(t / 8)); // arriving
-    if (t < 16) return dock; // at the pier
+    if (t < 16) return dock; // at the terminal
     if (t < 26) return lerp(dock, 60, smooth((t - 16) / 10)); // leaving
     return 60; // off-stage until the next crossing
 }

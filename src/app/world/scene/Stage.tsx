@@ -9,6 +9,7 @@ import Formosa from "./Formosa";
 import ClubVelvet from "./ClubVelvet";
 import ControlCentre from "./ControlCentre";
 import SkyveilMuseum from "./SkyveilMuseum";
+import FerryTerminal from "./FerryTerminal";
 import DataCentre from "./DataCentre";
 import GovTower from "./GovTower";
 import GreatCourt from "./GreatCourt";
@@ -106,6 +107,7 @@ export default function Stage({
             <DataCentre still={still} />
             <ControlCentre still={still} />
             <SkyveilMuseum still={still} />
+            <FerryTerminal />
 
             {OBJECTS.map((object) => (
                 <ObjectHit key={object.id} object={object} onObject={onObject} onHover={onHover} />
