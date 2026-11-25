@@ -31,7 +31,7 @@ export interface ProjectCallout {
 }
 
 /** The /world zones a project card can stand in (WORLD.md §3). */
-export const WORLD_ZONES = ["ferry", "uq", "gov", "site", "garage", "shed", "park", "club"] as const;
+export const WORLD_ZONES = ["ferry", "uq", "gov", "site", "garage", "shed", "park", "club", "transit"] as const;
 export type WorldZone = (typeof WORLD_ZONES)[number];
 
 /**

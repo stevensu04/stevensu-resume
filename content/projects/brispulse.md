@@ -81,7 +81,7 @@ result: |
 
 # The project's card in /world (WORLD.md §7, §8). Title, status and URLs come from the fields above.
 world:
-  zone: park
+  zone: transit
   link: projects
   linkLabel: Read the case study
   card: |

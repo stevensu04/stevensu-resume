@@ -96,9 +96,9 @@ reward.
 | 2 | UQ corner | Degree · volunteer noticeboard · EventNow stall | `/about`, **mostly new**, `eventnow.md` |
 | 3 | Government tower | Finance Forms (frosted, padlocked) | `finance-forms.md` |
 | 4 | Shopfront | Formosa Bauhaus · "one more thing" (on a fitting mirror) | `formosa-bauhaus.md`, **new** |
-| 5 | Skyveil garage | Veilcore arcade cabinet | `/about` (no project file yet; see §8) |
+| 5 | Skyveil museum and theatre | Veilcore arcade cabinet | `/about` (no project file yet; see §8) |
 | 6 | Open-source shed | Eco Router | `eco-router.md` |
-| 7 | Prototype park | BrisPulse blueprint table · ParkEase plinth · JourneyMate plinth | the three `.md` files |
+| 7 | Prototype park | ParkEase plinth · JourneyMate plinth | the three `.md` files |
 | 8 | Club Velvet | The club, with its bouncer and queue out front | `club-velvet.md` |
 | — | Gallery | 7 photos | **new** |
 | — | Exit noticeboard | Positioning, availability, work rights, links | `src/lib/site.ts` |
@@ -115,12 +115,12 @@ geometry has to say the same thing the status badge says.
 
 | What exists | Geometry | Used for |
 | --- | --- | --- |
-| Shipped or live | Full building or stall, lit, door open | Eco Router, EventNow, Formosa Bauhaus |
+| Shipped or live | Full building or stall, lit, door open | Eco Router, EventNow, Formosa Bauhaus, BrisPulse |
 | Shipped but confidential | Real building, **deliberately opaque**: shuttered, frosted, padlocked | StarLens, Finance Forms |
 | In progress | Scaffolding and a crane | Nothing at present (Formosa Bauhaus until 16 Nov 2026) |
 | Shipped and live, but a one-weekend build | Full building, lit, with the door held only by a rope; the people outside play the game's own rule (see §3, zone 8) | Club Velvet |
 | Interactive prototype | **Scale model on a plinth**, not a building | ParkEase, JourneyMate |
-| Concept | Blueprint table with a translucent wireframe and no walls | BrisPulse |
+| Concept | Blueprint table with a translucent wireframe and no walls | Nothing at present (BrisPulse until 26 Nov 2026) |
 
 Rules:
 
@@ -138,7 +138,8 @@ Rules:
    landmark is not a brand: Taipei 101 on the far bank implies nobody's endorsement, so it is
    modelled as itself.
 5. **If BrisPulse's walking skeleton ships** (`PLAN.md` §5), it moves from the blueprint table to a
-   building. That move is the reward for doing the real work.
+   building. That move is the reward for doing the real work. **Done 26 Nov 2026:** BrisPulse is live,
+   so it has a building (zone 9).
 
 ---
 
@@ -1223,3 +1224,30 @@ all of them before ever reaching `/world`.
 4. ~~Which kit family?~~ **Resolved 11 Nov 2026: Kenney** City Kit ×3 + Watercraft (§6).
 5. **Test devices.** Which phone, and is there a mid-range Android in the set? That device decides
    whether the fallbacks matter.
+
+### BrisPulse's building, a museum for Skyveil, Taipei 101 moved (26 Nov 2026)
+
+- **BrisPulse is a building now, zone 9 (`scene/ControlCentre.tsx`).** Its status is "Live · Deployed",
+  so §4 rule 5 applies: it moves off the blueprint table. It is a transit control centre east of the
+  gallery and the exit, beside the ring road's east connector: a pale ground floor with a glazed front
+  and a lit open door, a navy upper floor under a teal roof edge, a satellite dish and a mast for the
+  feeds coming in. The screen over the door shows a stylised route map with dots moving along it, a
+  LIVE pill and a "data age" bar that fills and restarts (every figure in the product carries its
+  freshness). It draws no numbers and no timetable (§4 rule 3), and there is no archive or trends wing,
+  because the product keeps no history yet. Zone id `transit`, number 9; Club Velvet stays 8.
+- **The park is smaller** (13 × 10 m, zone 7): the blueprint table, wireframe, traffic signal and 2032
+  podium came down with the concept. ParkEase and JourneyMate stay as models on plinths.
+- **Tour:** the park's stop is now ParkEase (BrisPulse had been its card); BrisPulse is the stop after
+  Club Velvet, still ten stops, about 70 s. `/world` copy says "Nine stops".
+- **A kit building went:** Kenney `building-j` on the night street hid the new building from the
+  south-west camera. The strip ends in a tree now.
+- **Skyveil's building is a museum with a theatre behind it (`scene/SkyveilMuseum.tsx`)**, in place of
+  the Kenney garage, because the studio's Veilcore is built as a museum and a theatre. The front is
+  two arched bays showing the games Steven made, as the game's own rooms look: **Archery** (a sunset,
+  a white sun, acacias, a target) and **Cradle** (a pale room, wires, round little birds), with a
+  lit open door and red curtains between them. Cradle's birds also sit on the cornice with music notes
+  drifting over (they stop under reduced motion), and two archery targets stand on easels in the
+  forecourt. Olie, the studio's owl, perches over the door. The red fly tower behind is the theatre.
+  The arcade cabinet stays out front.
+- **Taipei 101 moved 13 m west** (`TAIPEI_101.x` 0 to -13) so the government tower no longer stands
+  in front of it from the default camera; the skyline buildings and trees around it were nudged to match.

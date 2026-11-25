@@ -25,6 +25,7 @@ import {
 import { mergeParts, paint } from "./shading";
 import { withWorldShader } from "./worldShader";
 import { PALETTE } from "./Props";
+import { OLIE_PERCH } from "./SkyveilMuseum";
 
 /**
  * The things that say whose building it is (WORLD.md §3, §4), added at Steven's request:
@@ -36,12 +37,13 @@ import { PALETTE } from "./Props";
  *   flower either side, and two flags out front as they fly on campus: the Australian flag in the
  *   place of honour (the viewer's left) and the Aboriginal flag beside it, free to reproduce since
  *   2022. Both flags keep their full colours in an unexplored zone.
- * - **The prototype park (§4: models on plinths):** BrisPulse, a traffic-and-Olympics concept, gets
- *   a traffic signal and a winners' podium beside its blueprint table; ParkEase's plinth is a model
- *   car park with free-bay sensors; JourneyMate's is a model bus stop under a map pin.
+ * - **The prototype park (§4: models on plinths):** ParkEase's plinth is a model car park with
+ *   free-bay sensors; JourneyMate's is a model bus stop under a map pin. (BrisPulse's blueprint
+ *   table, traffic signal and podium stood here while it was a concept; it has a building now, see
+ *   ControlCentre.tsx.)
  * - **The tennis fence:** dark green chain-link where the racquet leans (the easter egg), so it
  *   reads as a court, not a building site.
- * - **Skyveil:** Olie the owl on the garage roof, turning her head now and then.
+ * - **Skyveil:** Olie the owl on the cornice over the museum's door, turning her head now and then.
  * - **The Gallery:** a white gallery with a glass front, sawtooth skylights, banners and a sculpture,
  *   in place of the Kenney office block it was.
  *
@@ -58,13 +60,11 @@ export const JACARANDAS = [
     { x: -11.5, z: -17, s: 1 },
     { x: 13.6, z: -19.5, s: 0.9 },
 ];
-export const SIGNAL = { x: -33.2, z: 23 };
-export const PODIUM = { x: -31, z: 26.9 };
 const PLINTH_TOP = 1.1;
 const PARKEASE = { x: -25, z: 24.5 };
 const JOURNEYMATE = { x: -20, z: 24.5 };
 export const TENNIS_FENCE = { x: 15.6, minZ: -17, maxZ: -7, returnTo: 19, h: 2.6 };
-const SKYVEIL_ROOF = { x: 0.6, y: 6.05, z: 7 };
+const SKYVEIL_ROOF = OLIE_PERCH;
 export const GALLERY = { x: 0, z: 23.5, w: 12, d: 7.6, h: 6.2 };
 export const SCULPTURE = { x: -4.6, z: 29.1 };
 
@@ -108,28 +108,6 @@ function solarPanels(): BufferGeometry[] {
             }
         }
     return parts;
-}
-
-/** BrisPulse: a full-size traffic signal by the table, and a podium for 2032. */
-function brisPulse(): BufferGeometry[] {
-    const { x, z } = SIGNAL;
-    const lamp = (dy: number, color: string) => flat(new CircleGeometry(0.11, 14).translate(x, 2.9 + dy, z + 0.21), color);
-    const p = PODIUM;
-    return [
-        box(0.14, 3.4, 0.14, x, 1.7, z, PALETTE.slate),
-        box(0.4, 1.05, 0.36, x, 2.9, z, "#2b2f38"),
-        lamp(0.32, "#e5484d"),
-        lamp(0, "#3a3f4a"),
-        lamp(-0.32, "#3a3f4a"),
-        box(0.18, 0.26, 0.14, x, 1.15, z + 0.12, "#e2b33c"), // the pedestrian button
-        // Gold in the middle, silver to its right, bronze to its left, as podiums stand.
-        box(0.8, 0.6, 0.8, p.x, 0.3, p.z, PALETTE.white),
-        box(0.8, 0.42, 0.8, p.x - 0.8, 0.21, p.z, PALETTE.white),
-        box(0.8, 0.3, 0.8, p.x + 0.8, 0.15, p.z, PALETTE.white),
-        box(0.82, 0.04, 0.82, p.x, 0.62, p.z, "#d4af37"),
-        box(0.82, 0.04, 0.82, p.x - 0.8, 0.44, p.z, "#c0c4cc"),
-        box(0.82, 0.04, 0.82, p.x + 0.8, 0.32, p.z, "#c58a4e"),
-    ];
 }
 
 /** A toy car on a plinth: body, cabin, dark glass. Faces +z. */
@@ -312,7 +290,6 @@ export default function Landmarks({ still }: { still: boolean }) {
                 ...flagpoles(),
                 ...tennisFence(),
                 ...fallenBlossom(),
-                ...brisPulse(),
                 ...parkEase(),
                 ...journeyMate(),
                 ...gallery(),

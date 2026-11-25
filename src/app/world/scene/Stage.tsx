@@ -7,6 +7,8 @@ import Taipei101 from "./Taipei101";
 import Landmarks from "./Landmarks";
 import Formosa from "./Formosa";
 import ClubVelvet from "./ClubVelvet";
+import ControlCentre from "./ControlCentre";
+import SkyveilMuseum from "./SkyveilMuseum";
 import DataCentre from "./DataCentre";
 import GovTower from "./GovTower";
 import GreatCourt from "./GreatCourt";
@@ -102,6 +104,8 @@ export default function Stage({
             <GreatCourt />
             <GovTower />
             <DataCentre still={still} />
+            <ControlCentre still={still} />
+            <SkyveilMuseum still={still} />
 
             {OBJECTS.map((object) => (
                 <ObjectHit key={object.id} object={object} onObject={onObject} onHover={onHover} />

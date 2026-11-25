@@ -27,11 +27,13 @@ export const ZONES: Zone[] = [
     { id: "gov", number: 3, name: "Government tower", x: 27, z: -16, w: 13, d: 13, h: 33 },
     // Still id "site" (content files point at it); the building site became a finished shopfront.
     { id: "site", number: 4, name: "Shopfront", x: 26, z: 8, w: 17, d: 12, h: 9 },
-    { id: "garage", number: 5, name: "Skyveil garage", x: 0, z: 8.5, w: 15, d: 11, h: 9 },
+    { id: "garage", number: 5, name: "Skyveil museum", x: 0, z: 8.5, w: 15, d: 11, h: 9 },
     { id: "shed", number: 6, name: "Open-source shed", x: -26, z: 8, w: 11, d: 11, h: 9 },
-    { id: "park", number: 7, name: "Prototype park", x: -26, z: 24, w: 18, d: 10, h: 4 },
+    { id: "park", number: 7, name: "Prototype park", x: -22.5, z: 24, w: 13, d: 10, h: 4 },
     // Zone 8 stands on its own street south of the back row, so the first seven keep their order.
     { id: "club", number: 8, name: "Club Velvet", x: -16, z: 42, w: 22, d: 14, h: 6 },
+    // Zone 9 is BrisPulse's own building, east of the gallery and exit, once it was live rather than a concept.
+    { id: "transit", number: 9, name: "Transit control centre", x: 34, z: 31.2, w: 11.4, d: 9.6, h: 10.5 },
     { id: "gallery", number: null, name: "Gallery", x: 0, z: 24, w: 14, d: 9, h: 9 },
     { id: "exit", number: null, name: "Exit noticeboard", x: 26, z: 23, w: 8, d: 4, h: 4 },
 ];

@@ -78,7 +78,7 @@ export const PLACEMENTS: Placement[] = [
     // 4 · The Formosa Bauhaus shopfront is hand-made (Formosa.tsx): finished, so no fence (§4).
 
     // 5 · Skyveil garage.
-    { model: "building-type-g", x: 0, z: 7, solid: true },
+    // The museum and theatre is hand-made (SkyveilMuseum.tsx), in place of Kenney's building-type-g.
     { model: "dumpster", x: -9, z: 4.5, rot: 1, solid: true },
 
     // 6 · Open-source shed (shipped: a whole building, door open).
@@ -87,9 +87,9 @@ export const PLACEMENTS: Placement[] = [
     { model: "tree-large", x: -18.5, z: 4.5, solid: true },
 
     // 7 · Prototype park: trees around the plinths (the plinths themselves are Props).
-    { model: "tree-large", x: -34, z: 21, solid: true },
+    { model: "tree-large", x: -28.6, z: 21, solid: true },
     { model: "tree-small", x: -18.5, z: 27.5, solid: true },
-    { model: "tree-large", x: -34.5, z: 27.5, solid: true },
+    { model: "tree-large", x: -29, z: 27.5, solid: true },
     // The models on the plinths (§4: a prototype is a model on a plinth) are hand-made: Landmarks.tsx.
 
     // Gallery and exit. The gallery itself is hand-made (Landmarks.tsx).
@@ -105,7 +105,9 @@ export const PLACEMENTS: Placement[] = [
     { model: "building-c", x: 5.4, z: 41.5, solid: true },
     { model: "building-e", x: 13.8, z: 41.5, solid: true },
     { model: "tree-large", x: 19.6, z: 44, solid: true },
-    { model: "building-j", x: 29.5, z: 41.5, solid: true },
+    // (A building-j stood at x 29.5 until BrisPulse got its control centre behind it: the camera looks
+    // from the south-west, so it hid the new building. The end of the strip is trees now.)
+    { model: "tree-small", x: 37.5, z: 42.5, solid: true },
     { model: "tree-large", x: -34, z: 39.5, solid: true },
     { model: "tree-small", x: -31, z: 45, solid: true },
     { model: "tree-small", x: -4.5, z: 46.2, solid: true },
@@ -128,21 +130,21 @@ export const PLACEMENTS: Placement[] = [
  * place, with Taipei 101 (hand-made, scene/Taipei101.tsx) standing over them at TAIPEI_101.
  * Past tense only: nothing over there can be walked to or opened.
  */
-export const TAIPEI_101 = { x: 0, z: -48.6 };
+export const TAIPEI_101 = { x: -13, z: -48.6 };
 
 export const SKYLINE: Placement[] = [
     { model: "low-detail-building-m", x: -44, z: -48.4, scale: 6 },
     { model: "low-detail-building-a", x: -35, z: -48.5, scale: 6 },
     { model: "low-detail-building-e", x: -27, z: -49.5, scale: 6.6 },
-    { model: "low-detail-building-c", x: -19, z: -48, scale: 6 },
-    { model: "low-detail-building-wide-a", x: -10, z: -49, scale: 6 },
+    { model: "low-detail-building-c", x: -21, z: -48, scale: 6 },
+    { model: "low-detail-building-wide-a", x: 0, z: -49, scale: 6 },
     { model: "low-detail-building-g", x: 10, z: -48.5, scale: 6.6 },
     { model: "low-detail-building-i", x: 20, z: -49.5, scale: 6.6 },
     { model: "low-detail-building-k", x: 30, z: -48, scale: 6 },
     { model: "low-detail-building-c", x: 38, z: -49.5, scale: 5.4 },
     { model: "low-detail-building-a", x: 45, z: -48.5, scale: 5.6 },
     // A line of trees along the water's edge.
-    ...[-46, -38, -31, -23, -14.5, -5, 5, 14.5, 25, 34, 42].map((x, i) => ({ model: i % 2 ? "tree-small" : "tree-large", x, z: -45.4, scale: 7 })),
+    ...[-46, -38, -31, -26, -19, -7.5, 5, 14.5, 25, 34, 42].map((x, i) => ({ model: i % 2 ? "tree-small" : "tree-large", x, z: -45.4, scale: 7 })),
 ];
 /**
  * The easter egg (WORLD.md §3): a tennis racquet leaning on the fence by the UQ corner, for the
@@ -171,7 +173,9 @@ export const PROP_SOLIDS: { x: number; z: number; w: number; d: number }[] = [
     ...[-24.2, -22.9, -21.6, -20.3, -19].map((x) => ({ x, z: 48.8, w: 0.7, d: 0.6 })), // the queue, at its start
     { x: 4.5, z: -10.6, w: 2.6, d: 0.6 }, // volunteer noticeboard
     { x: 3.5, z: 13.2, w: 1, d: 1 }, // arcade cabinet
-    { x: -31, z: 24.5, w: 3.2, d: 2.2 }, // blueprint table
+    { x: 0, z: 7, w: 11.8, d: 8.4 }, // Skyveil's museum and theatre (SkyveilMuseum.tsx)
+    { x: -4.1, z: 12.6, w: 1.2, d: 1 }, // its two archery targets
+    { x: -2.1, z: 13.3, w: 1.2, d: 1 },
     { x: -25, z: 24.5, w: 2, d: 2 }, // ParkEase plinth
     { x: -20, z: 24.5, w: 2, d: 2 }, // JourneyMate plinth
     { x: 26, z: 22, w: 4.4, d: 0.6 }, // exit noticeboard
@@ -183,8 +187,8 @@ export const PROP_SOLIDS: { x: number; z: number; w: number; d: number }[] = [
     { x: 13.47, z: -19.5, w: 0.9, d: 0.9 },
     { x: 15.6, z: -12, w: 0.4, d: 10.2 }, // tennis fence, and its return
     { x: 17.3, z: -17, w: 3.6, d: 0.4 },
-    { x: -33.2, z: 23, w: 0.6, d: 0.6 }, // BrisPulse's traffic signal
-    { x: -31, z: 26.9, w: 2.6, d: 1 }, // and its podium
+    { x: 34, z: 31.2, w: 9.8, d: 8.8 }, // BrisPulse's control centre (ControlCentre.tsx)
+    { x: 32.2, z: 36.6, w: 0.7, d: 0.5 }, // and its information pillar
     { x: -14, z: -9.3, w: 3.2, d: 1.2 }, // bus stop, eastbound (Transit.tsx)
     { x: -20, z: 1.3, w: 3.2, d: 1.2 }, // bus stop, westbound
     { x: 6, z: 46.7, w: 3.2, d: 1.2 }, // bus stop on the night street, eastbound

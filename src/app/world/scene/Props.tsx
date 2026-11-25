@@ -10,12 +10,12 @@ import { mergeBoxes, mergeParts, paint, shadedBox, type BoxSpec } from "./shadin
 
 /**
  * Everything the kits don't have (WORLD.md §6): the river, pier, ferry, shutter, frosted glass,
- * arcade cabinet, noticeboards, plinths and blueprint table. The Formosa Bauhaus shopfront, which
+ * arcade cabinet, noticeboards and plinths. The Formosa Bauhaus shopfront, which
  * replaced the building site, has its own file (Formosa.tsx). All box-level,
  * coloured from the palette below, shaded through vertex colours, and unlit.
  *
  * Draw calls (§9: < 80): every static box is merged into one mesh. Only what moves (ferry, crane
- * screen) or is see-through (frosted glass, the blueprint wireframe) stands alone.
+ * screen) or is see-through (frosted glass) stands alone.
  *
  * Idle motion (§6) lives here too. All of it stops under prefers-reduced-motion (`still`).
  */
@@ -41,11 +41,6 @@ export default function Props({ still }: { still: boolean }) {
             <Racquet />
             {/* Finance Forms: frosted glass over the entrance (§4: confidential stays closed). */}
             <Glass at={[27, 2, -11.85]} size={[4, 4, 0.2]} />
-            {/* BrisPulse: a translucent wireframe over the blueprint table, no walls (§4: concept). */}
-            <mesh position={[-31, 1.75, 24.5]} raycast={() => null}>
-                <boxGeometry args={[2, 1.5, 1.3]} />
-                <meshBasicMaterial color="#9cc0ff" wireframe transparent opacity={0.8} />
-            </mesh>
         </>
     );
 }
@@ -88,10 +83,8 @@ const STATIC_BOXES: BoxSpec[] = [
     ...noticeboard(4.5, -10.6),
     // 5 · The arcade cabinet's body (the screen flickers, below).
     box([ARCADE.x, 0.9, ARCADE.z], [0.9, 1.8, 0.8], PALETTE.slate),
-    // 7 · The park: grass, the blueprint table, two plinths (their models are in Landmarks.tsx).
-    box([-26, 0.04, 24], [18, 0.08, 10], PALETTE.green),
-    box([-31, 0.45, 24.5], [3.2, 0.9, 2.2], PALETTE.wood),
-    box([-31, 0.92, 24.5], [2.9, 0.04, 1.9], "#3b6fd8"),
+    // 7 · The park: grass and two plinths (their models are in Landmarks.tsx).
+    box([-22.5, 0.04, 24], [13, 0.08, 10], PALETTE.green),
     box([-25, 0.55, 24.5], [2, 1.1, 2], PALETTE.white),
     box([-20, 0.55, 24.5], [2, 1.1, 2], PALETTE.white),
     // The exit noticeboard.
