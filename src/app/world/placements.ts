@@ -6,8 +6,6 @@
  * model's footprint and the model stands on y = 0 (or on `y`), whatever its own origin is.
  */
 export const KIT_SCALE = 8;
-/** The Watercraft Kit has its own unit: boat-row-small at 2.4 m/unit is a ~4 m dinghy. */
-export const WATER_SCALE = 2.4;
 
 export type Placement = {
     model: string;
@@ -52,9 +50,6 @@ export const PLACEMENTS: Placement[] = [
     // 1 · Ferry landing: E.SUN (its sign is in Landmarks) and StarLens (shuttered, see Props).
     { model: "building-c", x: -31, z: -18, solid: true },
     { model: "building-a", x: -22, z: -18, solid: true },
-    { model: "boat-row-small", x: -9, z: -27, rot: 1, scale: WATER_SCALE, solid: false },
-    { model: "buoy", x: -8, z: -41.5, scale: WATER_SCALE, solid: false },
-    { model: "buoy", x: 14, z: -41, scale: WATER_SCALE, solid: false },
 
     // 2 · UQ corner, with the EventNow stall out front (live, so open and lit, §4).
     // The sandstone building is hand-made (GreatCourt.tsx), in place of Kenney's building-j.

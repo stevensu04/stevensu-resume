@@ -1273,3 +1273,9 @@ all of them before ever reaching `/world`.
   (`dockX` -18) with 0.46 m to spare and never crosses anything. The buoys moved to z -41.5 and -41 and the
   rowing boat to (-9, -27). Steven can walk the gangway and the pontoon (`walk.ts`); the fin, the roof
   posts and the bench are walk-grid solids. The crossing card's hit area covers the whole terminal.
+- **The terminal flickered between its two colours (fixed).** The pontoon's hull top and its deck top were
+  the same height (0.05 m), so the depth buffer couldn't choose between dark grey and beige. The hull now
+  tops out 0.05 m under the deck.
+- **The rowing boat and the two buoys are gone** (Steven's call): the dinghy and the orange pillars on the
+  river weren't wanted. The Watercraft Kit is no longer used by any placement.
+

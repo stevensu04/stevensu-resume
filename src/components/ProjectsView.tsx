@@ -190,7 +190,20 @@ function ProjectCard({ project }: { project: Project }) {
                 </div>
 
                 {/* 可驗證性：live demo and source, always visible — never behind a hover state */}
-                <ProjectLinks project={project} variant="inline" className="mt-4 border-t border-gray-100 pt-4" />
+                {(project.video || project.demo || project.repo) && (
+                    <div className="mt-4 flex flex-wrap items-center gap-4 border-t border-gray-100 pt-4">
+                        {/* The film, when a project has one, as on the flagship above: it jumps to the player. */}
+                        {project.video && (
+                            <Link
+                                href={`${href}#film`}
+                                className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-700 transition-colors hover:text-blue-600"
+                            >
+                                <FaPlay className="text-[10px]" aria-hidden="true" /> Watch the film
+                            </Link>
+                        )}
+                        <ProjectLinks project={project} variant="inline" />
+                    </div>
+                )}
             </div>
         </div>
     );

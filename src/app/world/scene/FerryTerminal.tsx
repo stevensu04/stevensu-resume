@@ -54,7 +54,8 @@ function parts(): BufferGeometry[] {
     const pd = p.maxZ - p.minZ;
     const pcx = (p.minX + p.maxX) / 2;
     const pcz = (p.minZ + p.maxZ) / 2;
-    out.push(box(pw, 0.55, pd, pcx, -0.225, pcz, C.hull));
+    // The hull's top is 0.05 m under the deck's: faces in the same plane flickered between the two colours.
+    out.push(box(pw, 0.55, pd, pcx, -0.275, pcz, C.hull));
     out.push(box(pw - 0.3, 0.1, pd - 0.3, pcx, 0, pcz, C.deck));
 
     // The gangway from the bank: a deck, two steel trusses and a thin dark roof over them.
