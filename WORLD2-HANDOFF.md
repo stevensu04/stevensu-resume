@@ -101,6 +101,9 @@ The short version for a new session. The full plan, the decisions and the phase-
   1. Open `/world?poster`, press *Enter the world*, and screenshot the scene element at 1280 × 800, 2×.
   2. Save it as WebP (quality 80) over `poster.webp` and `public/projects/World.webp`.
   3. Re-cut `og-background.jpg`: 1200 wide, centre 630.
+  Hide the dev badge and header shadow first (`nextjs-portal{display:none}`), or they land in the picture. Playwright:
+  `PLAYWRIGHT=~/.npm/_npx/<hash>/node_modules/playwright`, `channel: "chrome"`, 1280 × 880 at 2×, then `sharp` for the WebP
+  (q80) and the JPG. The poster was last re-rendered on 26 Nov 2026 (the E.SUN branch, night lamps).
 
 ## Budgets now (production)
 
