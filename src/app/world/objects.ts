@@ -30,7 +30,7 @@ const ALL_OBJECTS: WorldObject[] = [
     { id: "eventnow", x: -7.25, z: -11.5, w: 7, d: 3.6, h: 4 },
     // 3 · Government tower
     { id: "finance-forms", x: 27, z: -17.5, w: 10.4, d: 11.3, h: 42 },
-    // 4 · Shopfront: Formosa Bauhaus itself, and the fitting mirror out front for "one more thing"
+    // 4 · 3D Storefront: Formosa Bauhaus itself, and the fitting mirror out front for "one more thing"
     { id: "formosa-bauhaus", x: 26.25, z: 7.5, w: 13.6, d: 7.2, h: 7 },
     { id: "one-more-thing", x: 33.75, z: 12, w: 1.3, d: 0.9, h: 2.4 },
     // 5 · Skyveil: the museum and theatre, with its archery targets in the forecourt
