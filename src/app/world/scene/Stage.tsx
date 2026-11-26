@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type RefObject } from "react";
-import type { ThreeEvent } from "@react-three/fiber";
+import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import { PLACEMENTS, PROP_SOLIDS, SKYLINE, TAIPEI_101 } from "../placements";
 import Taipei101 from "./Taipei101";
 import Landmarks from "./Landmarks";
@@ -15,17 +14,22 @@ import DataCentre from "./DataCentre";
 import GovTower from "./GovTower";
 import GreatCourt from "./GreatCourt";
 import Roads from "./Roads";
-import { FAR_BANK, RIVER, SLAB } from "../zones";
+import Island from "./Island";
+import Ground from "./Ground";
+import Vegetation, { blockVegetation, scatterVegetation } from "./Vegetation";
 import { OBJECTS, type WorldObject } from "../objects";
-import { InstancedMesh, Matrix4, MeshBasicMaterial, PlaneGeometry } from "three";
+import { InstancedMesh, Matrix4, MeshBasicMaterial, PlaneGeometry, type Group } from "three";
 import KitInstances, { placementTransform } from "./KitInstances";
 import { buildNav, type Nav } from "./nav";
 import Props, { PALETTE } from "./Props";
-import { shadedBox } from "./shading";
 import { useKit } from "./useKit";
+import { useStaticShadows } from "./Lighting";
+import { LOOK } from "./look";
+import { useStaticBatch } from "./batch";
 
-const SKY_TINT = { color: "#d3dceb", opacity: 0.7 };
-const RIVERBED = -0.8;
+// The skyline is haze across the water: pale by day, blue by night (Phase 4).
+const SKY_TINT = { color: LOOK.skyline, opacity: 0.7 };
+const SKY_TINT_NIGHT = { color: LOOK.night.skyline, opacity: 0.7 };
 
 /**
  * The block (WORLD.md §3, §6): the slab, the Kenney kit, the hand-made props and an invisible hit
@@ -33,6 +37,7 @@ const RIVERBED = -0.8;
  */
 export default function Stage({
     skyline,
+    night = false,
     still,
     navRef,
     onGround,
@@ -41,6 +46,8 @@ export default function Stage({
 }: {
     /** Draw Taipei across the river. Off when the camera looks from the river side (see Scene). */
     skyline: boolean;
+    /** Night: the skyline's haze turns blue. */
+    night?: boolean;
     still: boolean;
     /** Filled here once the kit has loaded, read by Player: where Steven can walk. */
     navRef: RefObject<Nav | null>;
@@ -49,54 +56,42 @@ export default function Stage({
     onHover: (object: WorldObject | null) => void;
 }) {
     const kit = useKit();
+    // The block is static: its shadows are baked once, and again when the skyline shows or hides.
+    const root = useRef<Group>(null);
+    // Static batching first (it decides which meshes are drawn), then the shadow flags.
+    useStaticBatch(root, kit);
+    useStaticShadows(root, skyline);
 
     // `?nav` (development only) draws the blocked cells, to check the grid against the models.
     const [showNav] = useState(() => process.env.NODE_ENV === "development" && new URLSearchParams(window.location.search).has("nav"));
-    const [navView, setNavView] = useState<Nav | null>(null);
 
     // The walk grid comes from the solid models' own triangles (nav.ts), so it always matches what
-    // you see: no invisible walls round an L-shaped fence or a tree's canopy.
-    useEffect(() => {
+    // you see: no invisible walls round an L-shaped fence or a tree's canopy. The vegetation is
+    // scattered onto the open cells, then its trunks and bushes join the grid as solids.
+    const { nav, vegetation } = useMemo(() => {
         const solids = PLACEMENTS.filter((p) => p.solid).flatMap((p) => {
             const model = kit.get(p.model)!;
             const { matrix } = placementTransform(p, model);
             return model.parts.map((part) => ({ geometry: part.geometry, matrix: new Matrix4().multiplyMatrices(matrix, part.matrix) }));
         });
         const rects = PROP_SOLIDS.map(({ x, z, w, d }) => ({ minX: x - w / 2, maxX: x + w / 2, minZ: z - d / 2, maxZ: z + d / 2 }));
-        navRef.current = buildNav(solids, rects);
-        if (showNav) setNavView(navRef.current);
-    }, [kit, navRef, showNav]);
-
-    const width = SLAB.maxX - SLAB.minX;
-    const landD = SLAB.maxZ - RIVER.maxZ;
-    const bedD = RIVER.maxZ - RIVER.minZ;
-    const land = useMemo(() => shadedBox(width, 2, landD), [width, landD]);
-    const bed = useMemo(() => shadedBox(width, 2 + RIVERBED, bedD), [width, bedD]);
-    const farD = FAR_BANK.maxZ - FAR_BANK.minZ;
-    const far = useMemo(() => shadedBox(width, 2, farD), [width, farD]);
-
-    const walk = (e: ThreeEvent<MouseEvent>) => {
-        e.stopPropagation();
-        onGround(e.point.x, e.point.z);
-    };
+        const grid = buildNav(solids, rects);
+        const set = scatterVegetation(grid);
+        blockVegetation(grid, set);
+        return { nav: grid, vegetation: set };
+    }, [kit]);
+    useEffect(() => {
+        navRef.current = nav;
+    }, [nav, navRef]);
 
     return (
-        <group>
-            {/* The slab: land at y = 0, the riverbed lower so the water sits below the bank. */}
-            <mesh geometry={land} position={[0, -1, (RIVER.maxZ + SLAB.maxZ) / 2]} onClick={walk}>
-                <meshBasicMaterial vertexColors color="#d9d4c7" />
-            </mesh>
-            <mesh geometry={bed} position={[0, -1 + RIVERBED / 2, (RIVER.minZ + RIVER.maxZ) / 2]} onClick={walk}>
-                <meshBasicMaterial vertexColors color="#8d8a80" />
-            </mesh>
-
+        <group ref={root}>
+            <Island still={still} onGround={onGround} />
+            <Ground />
+            <Vegetation set={vegetation} still={still} />
             <KitInstances kit={kit} placements={PLACEMENTS} />
-            {navView && <NavCells nav={navView} />}
-            {/* Taipei's bank: the same tabletop, a shade cooler, so the far side reads as elsewhere. */}
-            <mesh geometry={far} position={[0, -1, (FAR_BANK.minZ + FAR_BANK.maxZ) / 2]} raycast={() => null}>
-                <meshBasicMaterial vertexColors color="#cfd6d9" />
-            </mesh>
-            {skyline && <KitInstances kit={kit} placements={SKYLINE} tint={SKY_TINT} />}
+            {showNav && <NavCells nav={nav} />}
+            {skyline && <KitInstances kit={kit} placements={SKYLINE} tint={night ? SKY_TINT_NIGHT : SKY_TINT} />}
             {skyline && <Taipei101 x={TAIPEI_101.x} z={TAIPEI_101.z} />}
             <Props still={still} />
             <Landmarks still={still} />
@@ -137,6 +132,8 @@ function ObjectHit({
                 visible={false}
                 onClick={(e) => {
                     e.stopPropagation();
+                    // A press that turned into a drag was an orbit, not a click (Global view).
+                    if (e.delta > 6) return;
                     onObject(object);
                 }}
                 onPointerOver={(e) => {

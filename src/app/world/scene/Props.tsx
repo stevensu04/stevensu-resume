@@ -2,10 +2,10 @@
 
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { BoxGeometry, Color, ExtrudeGeometry, MeshBasicMaterial, PlaneGeometry, Shape, Vector2, type BufferGeometry, type Group, type ShaderMaterial } from "three";
+import { BoxGeometry, Color, ExtrudeGeometry, MeshBasicMaterial, MeshLambertMaterial, Plane, Shape, Vector2, Vector3, type BufferGeometry, type Group } from "three";
 import { withWorldShader } from "./worldShader";
 import { RACQUET, TERMINAL } from "../placements";
-import { RIVER, SLAB } from "../zones";
+import { ISLAND_EDGE_X } from "./Island";
 import { mergeBoxes, mergeParts, paint, shadedBox, type BoxSpec } from "./shading";
 
 /**
@@ -31,11 +31,10 @@ export const PALETTE = {
 
 export default function Props({ still }: { still: boolean }) {
     const statics = useMemo(() => mergeBoxes(STATIC_BOXES), []);
-    const staticsMaterial = useMemo(() => withWorldShader(new MeshBasicMaterial({ vertexColors: true })), []);
+    const staticsMaterial = useMemo(() => withWorldShader(new MeshLambertMaterial({ vertexColors: true })), []);
     return (
         <>
             <mesh geometry={statics} material={staticsMaterial} raycast={() => null} />
-            <River still={still} />
             <Ferry still={still} />
             <Arcade still={still} />
             <Racquet />
@@ -79,45 +78,9 @@ const STATIC_BOXES: BoxSpec[] = [
     ...noticeboard(26, 22, true),
 ];
 
-/* ---------------------------------------------------------------- river */
-
-const WATER_VERT = /* glsl */ `
-uniform float uTime;
-varying float vSwell;
-void main() {
-    vec3 p = position;
-    // Two crossing sine swells. Small: a diorama's river, not an ocean.
-    float s = sin(p.x * 0.45 + uTime * 0.9) * 0.5 + cos(p.y * 0.8 + uTime * 0.7) * 0.5;
-    p.z += s * 0.12;
-    vSwell = s;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
-}`;
-const WATER_FRAG = /* glsl */ `
-uniform vec3 uColor;
-varying float vSwell;
-void main() {
-    gl_FragColor = vec4(uColor * (0.92 + 0.1 * vSwell), 1.0);
-    #include <colorspace_fragment>
-}`;
-
-function River({ still }: { still: boolean }) {
-    const width = SLAB.maxX - SLAB.minX;
-    const depth = RIVER.maxZ - RIVER.minZ;
-    const geo = useMemo(() => new PlaneGeometry(width, depth, 64, 8), [width, depth]);
-    const uniforms = useMemo(() => ({ uTime: { value: 0 }, uColor: { value: new Color(PALETTE.water) } }), []);
-    const mat = useRef<ShaderMaterial>(null);
-    useFrame((_, dt) => {
-        if (mat.current && !still) mat.current.uniforms.uTime.value += dt;
-    });
-    // The riverbed is lowered (Stage), so the water sits below the bank.
-    return (
-        <mesh geometry={geo} position={[0, -0.35, (RIVER.minZ + RIVER.maxZ) / 2]} rotation-x={-Math.PI / 2} raycast={() => null}>
-            <shaderMaterial ref={mat} vertexShader={WATER_VERT} fragmentShader={WATER_FRAG} uniforms={uniforms} />
-        </mesh>
-    );
-}
-
 /* ---------------------------------------------------------------- ferry */
+
+const FERRY_CLIP = [new Plane(new Vector3(-1, 0, 0), ISLAND_EDGE_X), new Plane(new Vector3(1, 0, 0), ISLAND_EDGE_X)];
 
 /** One crossing every 30 s (§6): in from the west, 8 s at the terminal, out to the east. */
 const FERRY_LANE_Z = TERMINAL.lane;
@@ -180,9 +143,10 @@ function Ferry({ still }: { still: boolean }) {
         ref.current.position.set(ferryX(still ? DOCKED : t.current), -0.35, FERRY_LANE_Z);
     });
     return (
-        <group ref={ref}>
+        <group ref={ref} userData={{ dynamic: true }}>
             <mesh geometry={geo} raycast={() => null}>
-                <meshBasicMaterial vertexColors />
+                {/* Cut at the island's edge: it sails out of the diorama, not off into the air. */}
+                <meshLambertMaterial vertexColors clippingPlanes={FERRY_CLIP} />
             </mesh>
         </group>
     );
@@ -224,7 +188,7 @@ function Glass({ at, size }: { at: BoxSpec["at"]; size: BoxSpec["size"] }) {
     const geo = useMemo(() => shadedBox(w, h, d), [w, h, d]);
     return (
         <mesh geometry={geo} position={at} raycast={() => null}>
-            <meshBasicMaterial vertexColors color="#dfe8f0" transparent opacity={0.85} />
+            <meshLambertMaterial vertexColors color="#dfe8f0" transparent opacity={0.85} />
         </mesh>
     );
 }
@@ -235,11 +199,11 @@ function Racquet() {
     return (
         <group position={[RACQUET.x, 0, RACQUET.z]} rotation-z={0.3} scale={1.3}>
             <mesh geometry={handle} position={[0, 0.18, 0]} raycast={() => null}>
-                <meshBasicMaterial vertexColors color={PALETTE.slate} />
+                <meshLambertMaterial vertexColors color={PALETTE.slate} />
             </mesh>
             <mesh position={[0, 0.56, 0]} rotation-y={Math.PI / 2} scale={[1, 1.3, 1]} raycast={() => null}>
                 <torusGeometry args={[0.14, 0.022, 6, 18]} />
-                <meshBasicMaterial color="#e11d48" />
+                <meshLambertMaterial color="#e11d48" />
             </mesh>
         </group>
     );

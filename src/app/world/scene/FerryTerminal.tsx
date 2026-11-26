@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { BoxGeometry, CanvasTexture, ExtrudeGeometry, MeshBasicMaterial, SRGBColorSpace, Shape, Vector2, type BufferGeometry } from "three";
+import { BoxGeometry, CanvasTexture, ExtrudeGeometry, MeshLambertMaterial, SRGBColorSpace, Shape, Vector2, type BufferGeometry } from "three";
 import { TERMINAL } from "../placements";
 import { mergeParts, paint } from "./shading";
 import { withWorldShader } from "./worldShader";
@@ -135,8 +135,8 @@ function lettering(): CanvasTexture {
 
 export default function FerryTerminal() {
     const statics = useMemo(() => mergeParts(parts()), []);
-    const material = useMemo(() => withWorldShader(new MeshBasicMaterial({ vertexColors: true })), []);
-    const letters = useMemo(() => withWorldShader(new MeshBasicMaterial({ map: lettering(), transparent: true, alphaTest: 0.3 })), []);
+    const material = useMemo(() => withWorldShader(new MeshLambertMaterial({ vertexColors: true })), []);
+    const letters = useMemo(() => withWorldShader(new MeshLambertMaterial({ map: lettering(), transparent: true, alphaTest: 0.3 })), []);
     const { x, z } = TERMINAL.pylon;
     return (
         <>

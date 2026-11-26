@@ -24,12 +24,12 @@ const Scene = dynamic(() => import("./Scene"), {
     loading: () => <Poster loading />,
 });
 
-type Phase = { kind: "poster" } | { kind: "scene"; start: "tour" | "walk" } | { kind: "list"; reason?: "no-webgl" | "slow" | "chosen" };
+type Phase = { kind: "poster" } | { kind: "scene"; start: "tour" | "enter" } | { kind: "list"; reason?: "no-webgl" | "slow" | "chosen" };
 
 export default function WorldShell({ cards }: { cards: WorldCard[] }) {
     const [phase, setPhase] = useState<Phase>({ kind: "poster" });
 
-    const enter = (start: "tour" | "walk") => {
+    const enter = (start: "tour" | "enter") => {
         const probe = document.createElement("canvas").getContext("webgl2");
         setPhase(probe ? { kind: "scene", start } : { kind: "list", reason: "no-webgl" });
     };
@@ -39,26 +39,26 @@ export default function WorldShell({ cards }: { cards: WorldCard[] }) {
             {phase.kind === "scene" ? (
                 <Scene cards={cards} start={phase.start} onFallback={() => setPhase({ kind: "list", reason: "slow" })} />
             ) : (
-                <Poster onTour={() => enter("tour")} onWalk={() => enter("walk")} onList={() => setPhase({ kind: "list", reason: "chosen" })} />
+                <Poster onTour={() => enter("tour")} onEnter={() => enter("enter")} onList={() => setPhase({ kind: "list", reason: "chosen" })} />
             )}
             <WorldList
                 cards={cards}
                 visible={phase.kind === "list"}
                 reason={phase.kind === "list" ? phase.reason : undefined}
-                onRetry={phase.kind === "list" && phase.reason === "slow" ? () => setPhase({ kind: "scene", start: "walk" }) : undefined}
+                onRetry={phase.kind === "list" && phase.reason === "slow" ? () => setPhase({ kind: "scene", start: "enter" }) : undefined}
             />
         </>
     );
 }
 
 /** The poster, the headline and the two ways in. Also the loading state, so nothing jumps. */
-function Poster({ loading = false, onTour, onWalk, onList }: { loading?: boolean; onTour?: () => void; onWalk?: () => void; onList?: () => void }) {
+function Poster({ loading = false, onTour, onEnter, onList }: { loading?: boolean; onTour?: () => void; onEnter?: () => void; onList?: () => void }) {
     const btn = "rounded-full px-4 py-2 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600";
     return (
         <div className="relative h-[calc(100svh-5rem)] min-h-[480px] w-full overflow-hidden bg-[#eef1f5]">
             <Image
                 src={poster}
-                alt="A small riverside block in Brisbane, seen from above: a ferry pier, a university building, a government tower, a two-shop storefront with a banyan tree, a museum with a theatre behind it, a data centre, a small park, a transit control centre with a dish on its roof, and a nightclub with a queue outside on a street of its own beside two restaurants."
+                alt="A small floating island seen from above, Brisbane on the main island and Taipei's skyline on an islet across the water: a ferry pier, a university building, a government tower, a two-shop storefront with a banyan tree, a museum with a theatre behind it, a data centre, a small park, a transit control centre with a dish on its roof, and a nightclub with a queue outside on a street of its own beside two restaurants."
                 fill
                 preload
                 sizes="100vw"
@@ -71,16 +71,17 @@ function Poster({ loading = false, onTour, onWalk, onList }: { loading?: boolean
                 </p>
                 {loading ? (
                     <p role="status" className="mt-5 text-sm font-medium text-gray-500">
-                        Loading the block…
+                        Loading the island…
                     </p>
                 ) : (
                     <>
                         <div className="mt-5 flex flex-wrap gap-2">
-                            <button type="button" onClick={onTour} className={`${btn} bg-blue-600 text-white hover:bg-blue-700`}>
-                                Take the quick tour
+                            {/* WORLD2.md D5: the primary way in is the overview (Global view); the tour is one click away inside too. */}
+                            <button type="button" onClick={onEnter} className={`${btn} bg-blue-600 text-white hover:bg-blue-700`}>
+                                Enter the world
                             </button>
-                            <button type="button" onClick={onWalk} className={`${btn} bg-gray-100 text-gray-800 hover:bg-gray-200`}>
-                                Walk it yourself
+                            <button type="button" onClick={onTour} className={`${btn} bg-gray-100 text-gray-800 hover:bg-gray-200`}>
+                                Take the quick tour
                             </button>
                         </div>
                         <button

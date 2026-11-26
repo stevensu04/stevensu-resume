@@ -9,7 +9,7 @@ import {
     Color,
     DoubleSide,
     IcosahedronGeometry,
-    MeshBasicMaterial,
+    MeshLambertMaterial,
     PlaneGeometry,
     RepeatWrapping,
     SRGBColorSpace,
@@ -359,7 +359,7 @@ function unseenSign(): CanvasTexture {
 }
 
 function Lettered({ make, width, height, position, rotationY = 0 }: { make: () => CanvasTexture; width: number; height: number; position: [number, number, number]; rotationY?: number }) {
-    const mat = useMemo(() => withWorldShader(new MeshBasicMaterial({ map: make() })), [make]);
+    const mat = useMemo(() => withWorldShader(new MeshLambertMaterial({ map: make() })), [make]);
     return (
         <mesh position={position} rotation-y={rotationY} material={mat} raycast={() => null}>
             <planeGeometry args={[width, height]} />
@@ -371,11 +371,11 @@ function Lettered({ make, width, height, position, rotationY = 0 }: { make: () =
 
 export default function Formosa({ still }: { still: boolean }) {
     const statics = useMemo(() => mergeParts([...base(), ...bauhaus(), ...formosa(), ...banyanWood(), ...mirror()]), []);
-    const material = useMemo(() => withWorldShader(new MeshBasicMaterial({ vertexColors: true })), []);
+    const material = useMemo(() => withWorldShader(new MeshLambertMaterial({ vertexColors: true })), []);
     const crown = useMemo(() => mergeParts(banyanCrown()), []);
-    const swaying = useMemo(() => withWorldShader(new MeshBasicMaterial({ vertexColors: true }), { sway: !still }), [still]);
+    const swaying = useMemo(() => withWorldShader(new MeshLambertMaterial({ vertexColors: true }), { sway: !still }), [still]);
     const unseen = useMemo(() => unseenGeometry(), []);
-    const unseenMat = useMemo(() => withWorldShader(new MeshBasicMaterial({ map: hatchTexture(), side: DoubleSide })), []);
+    const unseenMat = useMemo(() => withWorldShader(new MeshLambertMaterial({ map: hatchTexture(), side: DoubleSide })), []);
     return (
         <>
             <mesh geometry={statics} material={material} raycast={() => null} />

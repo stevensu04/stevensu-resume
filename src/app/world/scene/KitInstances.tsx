@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useMemo } from "react";
-import { Color, InstancedMesh, Matrix4, Quaternion, Vector3, type MeshBasicMaterial } from "three";
+import { Color, InstancedMesh, Matrix4, Mesh, MeshBasicMaterial, Quaternion, Vector3, type BufferGeometry, type MeshLambertMaterial } from "three";
+import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
+import { bake } from "./batch";
 import { KIT_SCALE, type Placement } from "../placements";
 import { withWorldShader } from "./worldShader";
 import type { KitModel } from "./useKit";
@@ -43,10 +45,10 @@ export default function KitInstances({
     tint?: { color: string; opacity: number };
 }) {
     const meshes = useMemo(() => {
-        const groups = new Map<string, { geometry: KitModel["parts"][number]["geometry"]; material: MeshBasicMaterial; matrices: Matrix4[] }>();
+        const groups = new Map<string, { geometry: KitModel["parts"][number]["geometry"]; material: MeshLambertMaterial; matrices: Matrix4[] }>();
         // Trees get their own copy of the kit material with sway switched on (§6 idle motion).
-        const swaying = new Map<MeshBasicMaterial, MeshBasicMaterial>();
-        const swayed = (m: MeshBasicMaterial) => {
+        const swaying = new Map<MeshLambertMaterial, MeshLambertMaterial>();
+        const swayed = (m: MeshLambertMaterial) => {
             if (!swaying.has(m)) swaying.set(m, withWorldShader(m.clone(), { sway: true }));
             return swaying.get(m)!;
         };
@@ -62,20 +64,30 @@ export default function KitInstances({
                 g.matrices.push(new Matrix4().multiplyMatrices(matrix, part.matrix));
             });
         }
-        const tinted = new Map<MeshBasicMaterial, MeshBasicMaterial>();
-        return [...groups.values()].map(({ geometry, material, matrices }) => {
-            let m = material;
-            if (tint) {
-                if (!tinted.has(material)) {
-                    const t = material.clone();
-                    t.color = new Color(tint.color);
-                    t.transparent = tint.opacity < 1;
-                    t.opacity = tint.opacity;
-                    tinted.set(material, t);
-                }
-                m = tinted.get(material)!;
+        // The skyline stays unlit: it's haze across the water, not buildings in the sun. It's never
+        // tapped or walked, so it's baked into one mesh per tint rather than a dozen instanced ones
+        // (WORLD2.md Phase 2: the whole-island view's draw calls).
+        if (tint) {
+            const byTint = new Map<MeshLambertMaterial, BufferGeometry[]>();
+            for (const { geometry, material, matrices } of groups.values()) {
+                const flat = geometry.index ? geometry.toNonIndexed() : geometry;
+                const list = byTint.get(material) ?? [];
+                matrices.forEach((mx) => list.push(bake(flat, mx, false)));
+                byTint.set(material, list);
+                if (flat !== geometry) flat.dispose();
             }
-            const mesh = new InstancedMesh(geometry, m, matrices.length);
+            return [...byTint].map(([material, parts]) => {
+                const mesh = new Mesh(
+                    mergeGeometries(parts),
+                    new MeshBasicMaterial({ map: material.map, color: new Color(tint.color), transparent: tint.opacity < 1, opacity: tint.opacity }),
+                );
+                parts.forEach((p) => p.dispose());
+                mesh.raycast = () => {};
+                return mesh;
+            });
+        }
+        return [...groups.values()].map(({ geometry, material, matrices }) => {
+            const mesh = new InstancedMesh(geometry, material, matrices.length);
             matrices.forEach((mx, i) => mesh.setMatrixAt(i, mx));
             mesh.instanceMatrix.needsUpdate = true;
             mesh.computeBoundingSphere();
@@ -84,7 +96,7 @@ export default function KitInstances({
         });
     }, [kit, placements, tint]);
 
-    useEffect(() => () => meshes.forEach((m) => m.dispose()), [meshes]);
+    useEffect(() => () => meshes.forEach((m) => (m instanceof InstancedMesh ? m.dispose() : m.geometry.dispose())), [meshes]);
 
     return (
         <>

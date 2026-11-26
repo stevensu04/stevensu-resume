@@ -2,7 +2,7 @@
 
 import { Component, Suspense, useMemo, useRef, type ReactNode, type RefObject } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Vector3, type Group, type Mesh } from "three";
+import { PerspectiveCamera, Vector3, type Group, type Mesh } from "three";
 import { ACCENT, shadedBox } from "./shading";
 import { canStandAt, findPath, type Nav } from "./nav";
 import { worldUniforms } from "./worldShader";
@@ -10,26 +10,15 @@ import { RACQUET } from "../placements";
 import Avatar from "./Avatar";
 import { RUN_DISTANCE, RUN_SPEED, WALK_SPEED, type Motion, type MovementInput } from "./input";
 
-/** Zoom shared with Scene: what the visitor asked for, and the widest this screen allows. */
-export type ZoomState = { target: number; min: number };
-
 /** He is 1.72 m tall; speeds live in input.ts. */
 const HEIGHT = 1.72;
-const ISO_PITCH = Math.atan(1 / Math.SQRT2); // 35.264°, true isometric
-const CAMERA_DISTANCE = 120;
-
-const BLOCK_CENTRE = new Vector3(0, 0, 4);
-/** The closest the visitor can zoom in, as a multiple of the follow zoom. */
-export const MAX_ZOOM = 1.6;
-const aim = new Vector3();
-const toward = new Vector3();
 const playerPoint = new Vector3();
-const offset = new Vector3();
+const toward = new Vector3();
 
 /**
- * The kinematic controller and the camera rig in one place, because the camera follows Steven.
- * Positions live in refs and are mutated in `useFrame`, outside render, which is what both R3F
- * and the React Compiler expect. Nothing here sets React state per frame.
+ * The kinematic controller (the camera is CameraRig.tsx's since WORLD2.md Phase 2). Positions live in
+ * refs and are mutated in `useFrame`, outside render, which is what both R3F and the React Compiler
+ * expect. Nothing here sets React state per frame.
  *
  * Two drivers (§2): tap-to-move sets `target`; the keyboard and d-pad set `input`, which wins
  * while held and cancels any tap target.
@@ -40,12 +29,11 @@ export default function Player({
     input,
     pace,
     navRef,
-    step,
+    viewAzimuth,
     still,
-    lookAt,
-    overview = false,
+    occlude,
+    hidden = false,
     onRacquet,
-    zoomRef,
 }: {
     position: RefObject<Vector3>;
     target: RefObject<Vector3>;
@@ -54,27 +42,19 @@ export default function Player({
     pace: RefObject<number>;
     /** Where he can walk (filled by Stage once the kit has loaded; null until then). */
     navRef: RefObject<Nav | null>;
-    /** Camera azimuth in 90° steps (§6: free orbit destroys the isometric look). */
-    step: number;
-    /** prefers-reduced-motion: no walk cycle, no camera easing (§10). */
+    /** The camera's azimuth (CameraRig writes it each frame): keyboard walking is relative to the view. */
+    viewAzimuth: RefObject<number>;
+    /** prefers-reduced-motion: no walk cycle (§10). */
     still: boolean;
-    /** When set, the camera eases here instead of following Steven (keyboard focus, §10). */
-    lookAt?: RefObject<Vector3 | null>;
-    /** The whole block in frame: used to render the poster (`?poster` in development). */
-    overview?: boolean;
+    /** Cut a window round Steven through whatever hides him: on in Explore, where the camera is close. */
+    occlude: boolean;
+    /** First person: the camera is in his head, so his body isn't drawn (he still walks and collides). */
+    hidden?: boolean;
     /** The easter egg went off (true) or finished (false). */
     onRacquet?: (active: boolean) => void;
-    /**
-     * The visitor's zoom, as a multiple of the follow zoom: Scene sets `target` (wheel, pinch, the
-     * whole-block button); Player clamps it and writes `min`, the whole-block level for this screen.
-     */
-    zoomRef?: RefObject<ZoomState>;
 }) {
     const body = useRef<Group>(null);
     const marker = useRef<Mesh>(null);
-    const focus = useRef<Vector3>(null);
-    const azimuth = useRef<number>(null);
-    const zoomK = useRef<number>(null);
     const running = useRef(false);
     const motion = useRef<Motion>({ state: "Idle", pace: 1 });
     // The route being walked (nav.ts) and the target it was planned for.
@@ -90,24 +70,23 @@ export default function Player({
         const keys = input.current;
         const dt = Math.min(delta, 0.1); // a backgrounded tab must not teleport him on return
 
-        // Camera azimuth first: keyboard directions are relative to the view.
-        const goal = Math.PI / 4 + (step * Math.PI) / 2;
-        azimuth.current ??= goal;
-        const k = still ? 1 : 1 - Math.exp(-6 * dt);
-        azimuth.current += shortestAngle(azimuth.current, goal) * k;
-        const az = azimuth.current;
+        // Keyboard directions are relative to the view.
+        const az = viewAzimuth.current;
 
         const nav = navRef.current;
         const standable = (x: number, z: number) => (nav ? canStandAt(nav, x, z) : true);
 
         // Keyboard / d-pad: "up" walks away from the camera, whatever the azimuth.
-        const fwd = Number(keys.forward) - Number(keys.backward);
-        const side = Number(keys.right) - Number(keys.left);
+        // Keys give whole steps; the touch joystick (WORLD2.md Phase 3) gives an analog stick.
+        const stick = Math.hypot(keys.stickX, keys.stickY);
+        const fwd = Math.max(-1, Math.min(1, Number(keys.forward) - Number(keys.backward) + keys.stickY));
+        const side = Math.max(-1, Math.min(1, Number(keys.right) - Number(keys.left) + keys.stickX));
         let speed = 0;
         let dist = 0;
         if (fwd || side) {
             toward.set(-Math.sin(az) * fwd + Math.cos(az) * side, 0, -Math.cos(az) * fwd - Math.sin(az) * side).normalize();
-            speed = keys.run ? RUN_SPEED : WALK_SPEED;
+            // Shift, or the joystick pushed to its edge, runs; a gentle push walks slower.
+            speed = keys.run || stick > 0.92 ? RUN_SPEED : WALK_SPEED * (stick > 0 ? Math.max(stick, 0.45) : 1);
             dist = speed * dt;
             t.copy(p); // a held key replaces any tap target
             planned.current.copy(p);
@@ -206,53 +185,24 @@ export default function Player({
             marker.current.position.set(t.x, 0.03, t.z);
         }
 
-        // Zoom (§6 allows it; only free orbit is out). Two reference levels: "follow" (about 34 m
-        // across on a desktop, Steven ~55 px tall; never under 16 px/m, so a portrait phone doesn't
-        // shrink him to a speck) and "whole block" (the slab and Taipei in frame). The visitor's
-        // zoom is a multiple of follow, between whole block and 1.6×, eased; as it nears whole block
-        // the camera drifts from Steven to the middle of the block.
-        const follow = Math.min(Math.max(Math.min(state.size.width / 34, state.size.height / 22), 16), 34);
-        const whole = Math.min(state.size.width / 142, state.size.height / 131);
-        const minK = Math.min(1, whole / follow);
-        if (zoomRef) {
-            zoomRef.current.min = minK;
-            zoomRef.current.target = Math.min(Math.max(zoomRef.current.target, minK), MAX_ZOOM);
-        }
-        const kTarget = overview ? minK : (zoomRef?.current.target ?? 1);
-        zoomK.current ??= kTarget;
-        zoomK.current += (kTarget - zoomK.current) * (still || overview ? 1 : 1 - Math.exp(-8 * dt));
-        // 0 at follow zoom or closer, 1 at whole block.
-        const wide = minK < 1 ? Math.min(Math.max((1 - zoomK.current) / (1 - minK), 0), 1) : 0;
-
-        // Camera: orthographic, pitch locked, following Steven (or the keyboard's focus), drifting
-        // to the block's middle as it widens.
-        focus.current ??= p.clone();
-        aim.copy(lookAt?.current ?? p).lerp(BLOCK_CENTRE, wide);
-        focus.current.lerp(aim, overview ? 1 : k);
-        const cam = state.camera;
-        offset.set(Math.cos(ISO_PITCH) * Math.sin(az), Math.sin(ISO_PITCH), Math.cos(ISO_PITCH) * Math.cos(az));
-        cam.position.copy(focus.current).addScaledVector(offset, CAMERA_DISTANCE);
-        cam.lookAt(focus.current);
-
-        const zoom = follow * zoomK.current;
-        if (Math.abs(cam.zoom - zoom) > 0.01) {
-            cam.zoom = zoom;
-            cam.updateProjectionMatrix();
-        }
-
         // Occlusion fade: tell the shared shader where Steven is on screen and how deep, so whatever
-        // stands between him and the camera is stippled away round him (worldShader.ts).
+        // stands between him and the camera is stippled away round him (worldShader.ts). The window
+        // is ~2.4 m across at his depth: pixels per metre come from the perspective camera's FOV.
+        const cam = state.camera as PerspectiveCamera;
         const dpr = state.gl.getPixelRatio();
         playerPoint.set(p.x, 1, p.z).project(cam);
         worldUniforms.uPlayer.value[0] = (playerPoint.x * 0.5 + 0.5) * state.size.width * dpr;
         worldUniforms.uPlayer.value[1] = (playerPoint.y * 0.5 + 0.5) * state.size.height * dpr;
-        worldUniforms.uPlayer.value[2] = -playerPoint.set(p.x, 1, p.z).applyMatrix4(cam.matrixWorldInverse).z;
-        worldUniforms.uCutRadius.value = overview ? 0 : 2.4 * cam.zoom * dpr;
+        const depth = -playerPoint.set(p.x, 1, p.z).applyMatrix4(cam.matrixWorldInverse).z;
+        worldUniforms.uPlayer.value[2] = depth;
+        const pxPerMetre = (state.size.height * dpr) / (2 * Math.max(depth, 1) * Math.tan(((cam.fov ?? 24) * Math.PI) / 360));
+        // The window scales with distance: ~2.4 m across from far off, ~0.8 m for the close chase camera.
+        worldUniforms.uCutRadius.value = occlude ? Math.min(2.4, Math.max(0.8, depth * 0.06)) * pxPerMetre : 0;
     });
 
     return (
         <>
-            <group ref={body}>
+            <group ref={body} visible={!hidden}>
                 {/* A soft contact shadow: a light figure on a light pavement needs one to read. */}
                 <mesh position-y={0.04} rotation-x={-Math.PI / 2} raycast={() => null}>
                     <circleGeometry args={[0.55, 20]} />
@@ -291,8 +241,4 @@ class AvatarBoundary extends Component<{ children: ReactNode; fallback: ReactNod
     render() {
         return this.state.failed ? this.props.fallback : this.props.children;
     }
-}
-
-function shortestAngle(from: number, to: number): number {
-    return ((((to - from) % (2 * Math.PI)) + 3 * Math.PI) % (2 * Math.PI)) - Math.PI;
 }

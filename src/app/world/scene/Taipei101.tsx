@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { BoxGeometry, CylinderGeometry, MeshBasicMaterial, type BufferGeometry } from "three";
+import { BoxGeometry, CylinderGeometry, MeshLambertMaterial, type BufferGeometry } from "three";
 import { mergeParts, paint } from "./shading";
 
 /**
@@ -39,6 +39,6 @@ function taipei101(): BufferGeometry {
 
 export default function Taipei101({ x, z }: { x: number; z: number }) {
     const geo = useMemo(() => taipei101(), []);
-    const mat = useMemo(() => new MeshBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.82 }), []);
+    const mat = useMemo(() => new MeshLambertMaterial({ vertexColors: true, transparent: true, opacity: 0.82 }), []);
     return <mesh geometry={geo} material={mat} position={[x, 0, z]} raycast={() => null} />;
 }

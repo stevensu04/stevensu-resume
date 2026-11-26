@@ -3,6 +3,9 @@
 **What:** a walkable, semi-gamified 3D world at `/world`, where visitors steer Steven's avatar around
 one riverside block and learn who he is.
 **Status of this doc:** design agreed, nothing built. Written 10 Nov 2026 from a design discussion.
+**Since 26 Nov 2026:** `/world` 2.0 (a lit floating island, a Global view and first-person Explore) is
+planned and logged in `WORLD2.md`, which supersedes §6's camera and lighting rules. Everything else here
+(content rules, honesty grammar, accessibility) still applies.
 Read alongside `PLAN.md` (positioning, priorities) and `CONTENT.md` (content rules — they apply here
 in full).
 
@@ -159,6 +162,13 @@ ends the conversation. **Make the interaction playful and keep the text plain.**
 ---
 
 ## 6. Art direction
+
+> **Superseded in part by `WORLD2.md` (26 Nov 2026).** The world is now **lit**: real light and baked
+> soft shadows, Lambert materials, lamps that glow (D2). It's a **floating island** with Taipei on an
+> islet (D4), and the camera plan moves to perspective with free orbit (D3, Phase 2). The rules below
+> about unlit `MeshBasicMaterial`, "no real-time lights, no shadow maps" and "no free orbit" no
+> longer apply. The rest (kit first, palette discipline, bring the avatar down to the world's
+> style, occlusion fade, idle motion) still does.
 
 **A diorama on a table.** The block sits on a floating slab with rounded edges and a soft shadow
 underneath. All four reference reels use this frame, and it makes everything in the scene read as a

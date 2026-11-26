@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { BoxGeometry, CanvasTexture, CircleGeometry, ConeGeometry, CylinderGeometry, MeshBasicMaterial, PlaneGeometry, RepeatWrapping, SRGBColorSpace, type BufferGeometry, type Texture } from "three";
+import { BoxGeometry, CanvasTexture, CircleGeometry, ConeGeometry, CylinderGeometry, MeshLambertMaterial, PlaneGeometry, RepeatWrapping, SRGBColorSpace, type BufferGeometry, type Texture } from "three";
 import { mergeParts, paint } from "./shading";
 import { withWorldShader } from "./worldShader";
 
@@ -133,7 +133,7 @@ function Plane({ texture, w, h, at, transparent = false, repeat }: { texture: Te
         }
         return g;
     }, [w, h, repeat]);
-    const material = useMemo(() => withWorldShader(new MeshBasicMaterial({ map: texture, transparent, alphaTest: transparent ? 0.3 : 0 })), [texture, transparent]);
+    const material = useMemo(() => withWorldShader(new MeshLambertMaterial({ map: texture, transparent, alphaTest: transparent ? 0.3 : 0 })), [texture, transparent]);
     return <mesh geometry={geometry} material={material} position={at} raycast={() => null} />;
 }
 
@@ -196,7 +196,7 @@ function seoulGardenParts(): BufferGeometry[] {
 export function SeoulGarden() {
     const { x1, z1 } = SEOUL_GARDEN;
     const statics = useMemo(() => mergeParts(seoulGardenParts()), []);
-    const material = useMemo(() => withWorldShader(new MeshBasicMaterial({ vertexColors: true })), []);
+    const material = useMemo(() => withWorldShader(new MeshLambertMaterial({ vertexColors: true })), []);
     const block = useMemo(() => blockTexture(), []);
     const sign = useMemo(() => seoulSign(), []);
     const eat = useMemo(() => allYouCanEat(), []);
@@ -248,7 +248,7 @@ function dwParts(): BufferGeometry[] {
 export function DwSteakhouse() {
     const { z1 } = DW_STEAKHOUSE;
     const statics = useMemo(() => mergeParts(dwParts()), []);
-    const material = useMemo(() => withWorldShader(new MeshBasicMaterial({ vertexColors: true })), []);
+    const material = useMemo(() => withWorldShader(new MeshLambertMaterial({ vertexColors: true })), []);
     const sign = useMemo(() => dwSign(), []);
     const steak = useMemo(() => panel("Wagyu Beef Steak"), []);
     const burger = useMemo(() => panel("Wagyu Beef Burger"), []);

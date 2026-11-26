@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, type RefObject } from "react";
 import { useFrame } from "@react-three/fiber";
-import { BoxGeometry, MeshBasicMaterial, type BufferGeometry, type Group, type Vector3 } from "three";
+import { PlaneGeometry, Box3, BoxGeometry, MeshLambertMaterial, type BufferGeometry, type Group, Vector3, MeshBasicMaterial, type BufferAttribute, Matrix4, Quaternion, type InstancedMesh } from "three";
 import { mergeParts, paint } from "./shading";
 import { withWorldShader } from "./worldShader";
 import { PALETTE } from "./Props";
@@ -267,13 +267,33 @@ function shelterGeometry(): BufferGeometry {
 
 type BusState = { u: number; v: number; dwell: number; served: number };
 
+const BLOB = new MeshBasicMaterial({ color: "#1f2937", transparent: true, opacity: 0.22, depthWrite: false });
+/** One unit plane, instanced once per car (WORLD2.md Phase 5: one draw call for every bus shadow). */
+const BLOB_PLANE = new PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
+const blobMatrix = new Matrix4();
+
 export default function Transit({ still, player }: { still: boolean; player: RefObject<Vector3> }) {
     const pieces = useMemo(() => busPieces(), []);
     const shelters = useMemo(() => shelterGeometry(), []);
-    const material = useMemo(() => withWorldShader(new MeshBasicMaterial({ vertexColors: true })), []);
+    const material = useMemo(() => withWorldShader(new MeshLambertMaterial({ vertexColors: true })), []);
     // One group per piece per bus, moved every frame.
     const groups = useRef<(Group | null)[][]>(BUSES.map(() => []));
     const states = useRef<BusState[]>(BUSES.map((b) => ({ u: b.stopAt[0], v: 0, dwell: 1.5, served: 1 })));
+    const shadowMesh = useRef<InstancedMesh>(null);
+    // A soft contact shadow under each car (WORLD2.md Phase 4): buses move, so they can't be in the
+    // baked shadow map. Each is the car's own footprint, as a scale and offset of one unit plane.
+    const blobLocal = useMemo(
+        () =>
+            pieces.map(({ geometry }) => {
+                const b = new Box3().setFromBufferAttribute(geometry.attributes.position as BufferAttribute);
+                return new Matrix4().compose(
+                    new Vector3((b.max.x + b.min.x) / 2, 0.035, (b.max.z + b.min.z) / 2),
+                    new Quaternion(),
+                    new Vector3(b.max.x - b.min.x + 0.5, 1, b.max.z - b.min.z + 0.5),
+                );
+            }),
+        [pieces],
+    );
 
     useFrame((_, rawDt) => {
         const dt = Math.min(rawDt, 0.1);
@@ -313,8 +333,11 @@ export default function Transit({ still, player }: { still: boolean; player: Ref
                 g.position.set(at.x, 0, at.z);
                 // The bus's nose is +x; rotating by θ about y turns +x towards (cos θ, −sin θ).
                 g.rotation.y = Math.atan2(-at.hz, at.hx);
+                g.updateMatrix();
+                shadowMesh.current?.setMatrixAt(bi * pieces.length + pi, blobMatrix.multiplyMatrices(g.matrix, blobLocal[pi]));
             });
         });
+        if (shadowMesh.current) shadowMesh.current.instanceMatrix.needsUpdate = true;
     });
 
     return (
@@ -327,11 +350,12 @@ export default function Transit({ still, player }: { still: boolean; player: Ref
                             groups.current[bi][pi] = g;
                         }}
                     >
-                        <mesh geometry={geometry} material={material} raycast={() => null} />
+                        <mesh geometry={geometry} material={material} receiveShadow raycast={() => null} />
                     </group>
                 )),
             )}
-            <mesh geometry={shelters} material={material} raycast={() => null} />
+            <instancedMesh ref={shadowMesh} args={[BLOB_PLANE, BLOB, BUSES.length * pieces.length]} frustumCulled={false} raycast={() => null} />
+            <mesh geometry={shelters} material={material} castShadow receiveShadow raycast={() => null} />
         </>
     );
 }

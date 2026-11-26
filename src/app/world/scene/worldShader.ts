@@ -12,6 +12,9 @@ import { ZONES } from "../zones";
  *    behind a building. Per-fragment, so it works across instancing, where per-object fades can't.
  * 3. **Sway** for materials patched with `{ sway: true }` (the trees): a slow sideways lean that grows
  *    with height. All motion stops when `uTime` stops (reduced motion).
+ * 4. **Highlight** (Global view): the hovered and the selected zone brighten (`uHover`, `uSelect`).
+ * 5. **Lamps** (WORLD2.md, Phase 1): vertices marked self-lit by shading.ts (`uv.y = GLOW_UV`, lit
+ *    doorways and windows) keep their own colour whatever the light, so they read as lit in shade.
  */
 const CONTENT_ZONES = ZONES.filter((z) => z.number !== null);
 export const EXPLORE_ZONE_IDS = CONTENT_ZONES.map((z) => z.id);
@@ -26,11 +29,18 @@ export const worldUniforms = {
     /** Radius of the cut-out in drawing-buffer pixels; 0 turns it off. */
     uCutRadius: { value: 0 },
     uTime: { value: 0 },
+    /** Global view (WORLD2.md §5): the hovered and the selected zone, as indexes into EXPLORE_ZONE_IDS; -1 for none. */
+    uHover: { value: -1 },
+    uSelect: { value: -1 },
+    /** How far an unexplored zone is pulled towards grey: 0.7 from above, less at eye level (Explore). */
+    uDimAmount: { value: 0.7 },
 };
 
 const VERT_HEAD = /* glsl */ `
 varying vec2 vWorldXZ;
+varying float vWorldY;
 varying float vViewDepth;
+varying float vGlow;
 uniform float uTime;
 `;
 const VERT_SWAY = /* glsl */ `
@@ -52,18 +62,27 @@ const VERT_BODY = /* glsl */ `
         worldPos = instanceMatrix * worldPos;
     #endif
     vWorldXZ = (modelMatrix * worldPos).xz;
+    vWorldY = (modelMatrix * worldPos).y;
     vViewDepth = -mvPosition.z;
+    // Lamps (shading.ts GLOW_UV): lit doorways and windows stay at full colour, out of the light.
+    vGlow = uv.y < -50.0 ? 1.0 : 0.0;
 `;
 const FRAG_HEAD = /* glsl */ `
 varying vec2 vWorldXZ;
+varying float vWorldY;
 varying float vViewDepth;
+varying float vGlow;
 uniform vec4 uZoneRects[${N}];
 uniform float uZoneLit[${N}];
 uniform vec3 uPlayer;
 uniform float uCutRadius;
+uniform float uHover;
+uniform float uSelect;
+uniform float uDimAmount;
 `;
 const FRAG_CUT = /* glsl */ `
-    if (uCutRadius > 0.0 && vViewDepth < uPlayer.z - 0.8) {
+    // Only what stands up (above 0.3 m) is cut: the road and paths in front of him stay solid.
+    if (uCutRadius > 0.0 && vViewDepth < uPlayer.z - 0.8 && vWorldY > 0.3) {
         float r = length(gl_FragCoord.xy - uPlayer.xy) / uCutRadius;
         if (r < 1.0) {
             // An ordered 2x2 dither: denser towards the middle, so the hole has a soft edge.
@@ -74,16 +93,23 @@ const FRAG_CUT = /* glsl */ `
     }
 `;
 const FRAG_BODY = /* glsl */ `
+    // A lamp ignores the light: its own colour, a touch brighter so it reads as glowing.
+    gl_FragColor.rgb = mix(gl_FragColor.rgb, diffuseColor.rgb * 1.15, vGlow);
     float exploreDim = 0.0;
+    float highlight = 0.0;
     for (int i = 0; i < ${N}; i++) {
         vec4 r = uZoneRects[i];
         if (vWorldXZ.x > r.x && vWorldXZ.x < r.z && vWorldXZ.y > r.y && vWorldXZ.y < r.w) {
             exploreDim = max(exploreDim, 1.0 - uZoneLit[i]);
+            if (abs(float(i) - uHover) < 0.5) highlight = max(highlight, 1.0);
+            if (abs(float(i) - uSelect) < 0.5) highlight = max(highlight, 0.7);
         }
     }
+    // Hover and selection: the zone's buildings brighten a little, warm (the grass isn't patched).
+    gl_FragColor.rgb = mix(gl_FragColor.rgb, gl_FragColor.rgb * 1.14 + vec3(0.04, 0.035, 0.015), highlight);
     float exploreGrey = dot(gl_FragColor.rgb, vec3(0.299, 0.587, 0.114));
     // "Slightly": greyed and a touch lighter, never so flat that the shape is lost.
-    gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(exploreGrey) * 0.9 + 0.08, exploreDim * 0.7);
+    gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(exploreGrey) * 0.9 + 0.08, exploreDim * uDimAmount);
 `;
 
 /** Patch a basic material in place. Call once per material; returns it for chaining. */

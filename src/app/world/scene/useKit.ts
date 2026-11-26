@@ -4,11 +4,11 @@ import { useMemo } from "react";
 import { useLoader } from "@react-three/fiber";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
-import { Box3, Matrix4, Mesh, MeshBasicMaterial, type BufferGeometry, type Material, type Texture } from "three";
+import { Box3, Matrix4, Mesh, MeshLambertMaterial, type BufferGeometry, type Material, type Texture } from "three";
 import { withWorldShader } from "./worldShader";
 
 /** One drawable piece of a kit model, in the model's own space. */
-export type KitPart = { geometry: BufferGeometry; material: MeshBasicMaterial; matrix: Matrix4 };
+export type KitPart = { geometry: BufferGeometry; material: MeshLambertMaterial; matrix: Matrix4 };
 /** A kit model: its parts and its bounding box, both in kit units (1 unit = one 8 m road tile). */
 export type KitModel = { parts: KitPart[]; box: Box3 };
 
@@ -17,9 +17,9 @@ const KIT_URL = "/world/kit.glb";
 /**
  * Loads public/world/kit.glb (built by `npm run world:kit`) and indexes it by model name.
  *
- * Every material becomes a `MeshBasicMaterial` that keeps the Kenney colormap: the shading is
- * painted into that texture, so the kit needs no real-time light (WORLD.md §6). Materials are
- * shared, four in all, so instancing can batch everything that uses the same colormap.
+ * Every material becomes a `MeshLambertMaterial` that keeps the Kenney colormap, lit by the scene's
+ * light (WORLD2.md D2; until 2.0 it was unlit, WORLD.md §6). Materials are shared, four in all, so
+ * instancing can batch everything that uses the same colormap.
  */
 export function useKit(): Map<string, KitModel> {
     const gltf = useLoader(GLTFLoader, KIT_URL, (loader) => {
@@ -27,12 +27,12 @@ export function useKit(): Map<string, KitModel> {
     });
 
     return useMemo(() => {
-        const basic = new Map<Material, MeshBasicMaterial>();
+        const basic = new Map<Material, MeshLambertMaterial>();
         const toBasic = (m: Material) => {
             let b = basic.get(m);
             if (!b) {
                 const src = m as Material & { map?: Texture | null };
-                b = withWorldShader(new MeshBasicMaterial({ map: src.map ?? null }));
+                b = withWorldShader(new MeshLambertMaterial({ map: src.map ?? null }));
                 basic.set(m, b);
             }
             return b;

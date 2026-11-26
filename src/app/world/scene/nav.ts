@@ -109,6 +109,22 @@ function free(nav: Nav, i: number, j: number): boolean {
     return i >= 0 && j >= 0 && i < nav.cols && j < nav.rows && !nav.blocked[j * nav.cols + i];
 }
 
+/**
+ * Marks a disc solid after the grid is built (vegetation.tsx: trunks and bushes), grown by one cell
+ * for his body like everything else.
+ */
+export function blockDisc(nav: Nav, x: number, z: number, r: number) {
+    const reach = r + CELL;
+    const [i0, j0] = cellOf(nav, x - reach, z - reach);
+    const [i1, j1] = cellOf(nav, x + reach, z + reach);
+    for (let j = Math.max(j0, 0); j <= Math.min(j1, nav.rows - 1); j++)
+        for (let i = Math.max(i0, 0); i <= Math.min(i1, nav.cols - 1); i++) {
+            const cx = nav.minX + (i + 0.5) * CELL;
+            const cz = nav.minZ + (j + 0.5) * CELL;
+            if (Math.hypot(cx - x, cz - z) <= reach) nav.blocked[j * nav.cols + i] = 1;
+        }
+}
+
 export function canStandAt(nav: Nav, x: number, z: number): boolean {
     const [i, j] = cellOf(nav, x, z);
     return free(nav, i, j);

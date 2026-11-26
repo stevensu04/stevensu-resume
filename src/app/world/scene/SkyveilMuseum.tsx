@@ -10,7 +10,7 @@ import {
     CylinderGeometry,
     ExtrudeGeometry,
     IcosahedronGeometry,
-    MeshBasicMaterial,
+    MeshLambertMaterial,
     SRGBColorSpace,
     Shape,
     type BufferGeometry,
@@ -237,7 +237,7 @@ function plateTexture(text: string): CanvasTexture {
 }
 
 function Plate({ text, x }: { text: string; x: number }) {
-    const material = useMemo(() => withWorldShader(new MeshBasicMaterial({ map: plateTexture(text), transparent: true, alphaTest: 0.3 })), [text]);
+    const material = useMemo(() => withWorldShader(new MeshLambertMaterial({ map: plateTexture(text), transparent: true, alphaTest: 0.3 })), [text]);
     return (
         <mesh position={[x, 4.35, ZF + 0.12]} material={material} raycast={() => null}>
             <planeGeometry args={[2.6, 0.65]} />
@@ -267,7 +267,7 @@ function z1Note() {
 
 export default function SkyveilMuseum({ still }: { still: boolean }) {
     const statics = useMemo(() => mergeParts(parts()), []);
-    const material = useMemo(() => withWorldShader(new MeshBasicMaterial({ vertexColors: true })), []);
+    const material = useMemo(() => withWorldShader(new MeshLambertMaterial({ vertexColors: true })), []);
     const noteGeo = useMemo(() => note(), []);
     const groups = useRef<(Group | null)[]>([]);
 
@@ -291,6 +291,7 @@ export default function SkyveilMuseum({ still }: { still: boolean }) {
             {NOTES.map((n, i) => (
                 <group
                     key={i}
+                    userData={{ dynamic: true }}
                     ref={(g) => {
                         groups.current[i] = g;
                     }}

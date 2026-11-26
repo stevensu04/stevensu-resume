@@ -1,12 +1,14 @@
 /**
- * Movement input shared by the keyboard and the touch d-pad (WORLD.md §10: arrows and WASD move).
- * The key map is DECO7381 Team 41's, from `JourneyController.tsx`, reused with permission.
+ * Movement input shared by the keyboard and touch (WORLD.md §10: arrows and WASD move). The key map
+ * is DECO7381 Team 41's, from `JourneyController.tsx`, reused with permission. The touch joystick
+ * (WORLD2.md Phase 3) writes the analog stick: x to the right, y forward, each −1…1.
  */
-export type MovementInput = { forward: boolean; backward: boolean; left: boolean; right: boolean; run: boolean };
+export type KeyControl = "forward" | "backward" | "left" | "right" | "run";
+export type MovementInput = Record<KeyControl, boolean> & { stickX: number; stickY: number };
 
-export const EMPTY_INPUT: MovementInput = { forward: false, backward: false, left: false, right: false, run: false };
+export const EMPTY_INPUT: MovementInput = { forward: false, backward: false, left: false, right: false, run: false, stickX: 0, stickY: 0 };
 
-export const KEY_MAP: Record<string, keyof MovementInput> = {
+export const KEY_MAP: Record<string, KeyControl> = {
     KeyW: "forward",
     ArrowUp: "forward",
     KeyS: "backward",
@@ -31,5 +33,3 @@ export const WALK_SPEED = 2.2;
 export const RUN_SPEED = 4.4;
 /** A tap further away than this, he runs rather than walks (Player and the tour timer share it). */
 export const RUN_DISTANCE = 8;
-/** Holding the d-pad this long switches a walk to a run: the phone's Shift. */
-export const DPAD_RUN_AFTER_MS = 800;

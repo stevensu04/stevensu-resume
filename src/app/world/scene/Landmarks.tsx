@@ -12,7 +12,7 @@ import {
     DoubleSide,
     ExtrudeGeometry,
     IcosahedronGeometry,
-    MeshBasicMaterial,
+    MeshBasicMaterial, MeshLambertMaterial,
     PlaneGeometry,
     SRGBColorSpace,
     Shape,
@@ -297,9 +297,9 @@ export default function Landmarks({ still }: { still: boolean }) {
             ]),
         [],
     );
-    const material = useMemo(() => withWorldShader(new MeshBasicMaterial({ vertexColors: true })), []);
+    const material = useMemo(() => withWorldShader(new MeshLambertMaterial({ vertexColors: true })), []);
     const crowns = useMemo(() => mergeParts(jacarandaCrowns()), []);
-    const swaying = useMemo(() => withWorldShader(new MeshBasicMaterial({ vertexColors: true }), { sway: !still }), [still]);
+    const swaying = useMemo(() => withWorldShader(new MeshLambertMaterial({ vertexColors: true }), { sway: !still }), [still]);
     return (
         <>
             <mesh geometry={statics} material={material} raycast={() => null} />
@@ -329,7 +329,7 @@ function MapPin({ still }: { still: boolean }) {
             ]),
         [],
     );
-    const mat = useMemo(() => withWorldShader(new MeshBasicMaterial({ vertexColors: true })), []);
+    const mat = useMemo(() => withWorldShader(new MeshLambertMaterial({ vertexColors: true })), []);
     useFrame((_, dt) => {
         if (!pinRef.current || still) return;
         timeRef.current += dt;
@@ -337,7 +337,7 @@ function MapPin({ still }: { still: boolean }) {
         pinRef.current.rotation.y += dt * 0.8;
     });
     return (
-        <group ref={pinRef} position={[JOURNEYMATE.x, PLINTH_TOP + 1.55, JOURNEYMATE.z]}>
+        <group ref={pinRef} userData={{ dynamic: true }} position={[JOURNEYMATE.x, PLINTH_TOP + 1.55, JOURNEYMATE.z]}>
             <mesh geometry={geo} material={mat} raycast={() => null} />
         </group>
     );
@@ -354,7 +354,7 @@ function asColour<T extends Texture>(texture: T): T {
 function Emblem({ url, width, height, position }: { url: string; width: number; height: number; position: [number, number, number] }) {
     const texture = useLoader(TextureLoader, url);
     const mat = useMemo(() => {
-        return withWorldShader(new MeshBasicMaterial({ map: asColour(texture), transparent: true, alphaTest: 0.05 }));
+        return withWorldShader(new MeshLambertMaterial({ map: asColour(texture), transparent: true, alphaTest: 0.05 }));
     }, [texture]);
     return (
         <mesh position={position} material={mat} raycast={() => null}>
@@ -367,10 +367,10 @@ function Emblem({ url, width, height, position }: { url: string; width: number; 
 function EsunSign() {
     const texture = useLoader(TextureLoader, "/world/brand/esun.webp");
     const mat = useMemo(() => {
-        return withWorldShader(new MeshBasicMaterial({ map: asColour(texture) }));
+        return withWorldShader(new MeshLambertMaterial({ map: asColour(texture) }));
     }, [texture]);
     const plate = useMemo(() => mergeParts([paint(new CircleGeometry(1.42, 36).translate(ESUN.x, ESUN.y, ESUN.front + 0.05), "#ffffff")]), []);
-    const plateMat = useMemo(() => withWorldShader(new MeshBasicMaterial({ vertexColors: true })), []);
+    const plateMat = useMemo(() => withWorldShader(new MeshLambertMaterial({ vertexColors: true })), []);
     return (
         <>
             <mesh geometry={plate} material={plateMat} raycast={() => null} />
@@ -479,8 +479,8 @@ function Flag({ still, pole, kind }: { still: boolean; pole: { x: number; z: num
     const mat = useMemo(
         () =>
             kind === "australian"
-                ? new MeshBasicMaterial({ map: australianFlagTexture(), side: DoubleSide })
-                : new MeshBasicMaterial({ vertexColors: true, side: DoubleSide }),
+                ? new MeshLambertMaterial({ map: australianFlagTexture(), side: DoubleSide })
+                : new MeshLambertMaterial({ vertexColors: true, side: DoubleSide }),
         [kind],
     );
     useFrame((_, dt) => {
@@ -490,7 +490,7 @@ function Flag({ still, pole, kind }: { still: boolean; pole: { x: number; z: num
         flagRef.current.rotation.y = Math.sin(timeRef.current * 0.9) * 0.12;
     });
     return (
-        <group ref={flagRef} position={[pole.x + 0.06, 7.2, pole.z]}>
+        <group ref={flagRef} userData={{ dynamic: true }} position={[pole.x + 0.06, 7.2, pole.z]}>
             <mesh geometry={kind === "australian" ? plane : aboriginal} material={mat} raycast={() => null} />
         </group>
     );
@@ -552,7 +552,7 @@ function Olie({ still }: { still: boolean }) {
             ]),
         [],
     );
-    const mat = useMemo(() => withWorldShader(new MeshBasicMaterial({ vertexColors: true })), []);
+    const mat = useMemo(() => withWorldShader(new MeshLambertMaterial({ vertexColors: true })), []);
     useFrame((_, dt) => {
         if (!headRef.current || still) return;
         timeRef.current += dt;
@@ -564,7 +564,7 @@ function Olie({ still }: { still: boolean }) {
     return (
         <group position={[SKYVEIL_ROOF.x, SKYVEIL_ROOF.y, SKYVEIL_ROOF.z]} scale={1.5}>
             <mesh geometry={body} material={mat} raycast={() => null} />
-            <group ref={headRef} position={[0, 0.74, 0]}>
+            <group ref={headRef} userData={{ dynamic: true }} position={[0, 0.74, 0]}>
                 <mesh geometry={face} material={mat} raycast={() => null} />
             </group>
         </group>

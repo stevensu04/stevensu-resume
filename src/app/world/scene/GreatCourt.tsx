@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { BoxGeometry, MeshBasicMaterial, type BufferGeometry } from "three";
+import { BoxGeometry, MeshLambertMaterial, type BufferGeometry } from "three";
 import { mergeParts, paint } from "./shading";
 import { withWorldShader } from "./worldShader";
 
@@ -98,6 +98,6 @@ function parts(): BufferGeometry[] {
 
 export default function GreatCourt() {
     const geometry = useMemo(() => mergeParts(parts()), []);
-    const material = useMemo(() => withWorldShader(new MeshBasicMaterial({ vertexColors: true })), []);
+    const material = useMemo(() => withWorldShader(new MeshLambertMaterial({ vertexColors: true })), []);
     return <mesh geometry={geometry} material={material} raycast={() => null} />;
 }

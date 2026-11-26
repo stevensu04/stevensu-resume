@@ -2,7 +2,7 @@
 
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { BoxGeometry, CylinderGeometry, MeshBasicMaterial, type BufferGeometry, type Group } from "three";
+import { BoxGeometry, CylinderGeometry, MeshLambertMaterial, type BufferGeometry, type Group } from "three";
 import { mergeParts, paint } from "./shading";
 import { withWorldShader } from "./worldShader";
 
@@ -114,7 +114,7 @@ export default function DataCentre({ still }: { still: boolean }) {
     const statics = useMemo(() => mergeParts(parts()), []);
     const mastGeo = useMemo(() => mast(), []);
     const rotorGeo = useMemo(() => rotor(), []);
-    const material = useMemo(() => withWorldShader(new MeshBasicMaterial({ vertexColors: true })), []);
+    const material = useMemo(() => withWorldShader(new MeshLambertMaterial({ vertexColors: true })), []);
     const spin = useRef<Group>(null);
 
     useFrame((state) => {
@@ -125,7 +125,7 @@ export default function DataCentre({ still }: { still: boolean }) {
         <>
             <mesh geometry={statics} material={material} raycast={() => null} />
             <mesh geometry={mastGeo} material={material} raycast={() => null} />
-            <group ref={spin} position={[TURBINE.x, TURBINE.hub + 0.1, TURBINE.z + 0.55]}>
+            <group ref={spin} userData={{ dynamic: true }} position={[TURBINE.x, TURBINE.hub + 0.1, TURBINE.z + 0.55]}>
                 <mesh geometry={rotorGeo} material={material} raycast={() => null} />
             </group>
         </>

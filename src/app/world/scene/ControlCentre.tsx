@@ -2,7 +2,7 @@
 
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { BoxGeometry, CanvasTexture, CylinderGeometry, MeshBasicMaterial, SRGBColorSpace, type BufferGeometry } from "three";
+import { BoxGeometry, CanvasTexture, CylinderGeometry, MeshBasicMaterial, MeshLambertMaterial, SRGBColorSpace, type BufferGeometry } from "three";
 import { mergeParts, paint } from "./shading";
 import { withWorldShader } from "./worldShader";
 
@@ -223,7 +223,7 @@ function makeScreen() {
 
 export default function ControlCentre({ still }: { still: boolean }) {
     const statics = useMemo(() => mergeParts(parts()), []);
-    const material = useMemo(() => withWorldShader(new MeshBasicMaterial({ vertexColors: true })), []);
+    const material = useMemo(() => withWorldShader(new MeshLambertMaterial({ vertexColors: true })), []);
     const screen = useMemo(() => makeScreen(), []);
     const screenMaterial = useMemo(() => withWorldShader(new MeshBasicMaterial({ map: screen.texture })), [screen]);
     const last = useRef(0);

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { BoxGeometry, BufferAttribute, BufferGeometry, CanvasTexture, CylinderGeometry, DoubleSide, MeshBasicMaterial, RepeatWrapping, SRGBColorSpace, ShapeGeometry, Shape, Vector2 } from "three";
+import { BoxGeometry, BufferAttribute, BufferGeometry, CanvasTexture, CylinderGeometry, DoubleSide, MeshLambertMaterial, RepeatWrapping, SRGBColorSpace, ShapeGeometry, Shape, Vector2 } from "three";
 import { mergeParts, paint } from "./shading";
 import { withWorldShader } from "./worldShader";
 
@@ -171,10 +171,10 @@ export default function GovTower() {
     const statics = useMemo(() => mergeParts(podiumParts()), []);
     const glass = useMemo(() => shaft(GOV_TOWER.podiumH + 0.3), []);
     const rim = useMemo(() => mergeParts([cap(0, 0.02, C.rim), cap(0.55, 0.1, C.panel)]), []);
-    const staticMat = useMemo(() => withWorldShader(new MeshBasicMaterial({ vertexColors: true })), []);
+    const staticMat = useMemo(() => withWorldShader(new MeshLambertMaterial({ vertexColors: true })), []);
     // The roof's caps are one-sided shapes whose winding depends on the outline, so show both sides.
-    const rimMat = useMemo(() => withWorldShader(new MeshBasicMaterial({ vertexColors: true, side: DoubleSide })), []);
-    const glassMat = useMemo(() => withWorldShader(new MeshBasicMaterial({ map: glassTexture(), vertexColors: true, side: DoubleSide })), []);
+    const rimMat = useMemo(() => withWorldShader(new MeshLambertMaterial({ vertexColors: true, side: DoubleSide })), []);
+    const glassMat = useMemo(() => withWorldShader(new MeshLambertMaterial({ map: glassTexture(), vertexColors: true, side: DoubleSide })), []);
     return (
         <>
             <mesh geometry={statics} material={staticMat} raycast={() => null} />

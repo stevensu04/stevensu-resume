@@ -2,7 +2,7 @@
 
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { BoxGeometry, BufferAttribute, CanvasTexture, Color, MeshBasicMaterial, SRGBColorSpace, type BufferGeometry, type Group, type Mesh } from "three";
+import { BoxGeometry, BufferAttribute, CanvasTexture, Color, MeshBasicMaterial, MeshLambertMaterial, SRGBColorSpace, type BufferGeometry, type Group, type Mesh } from "three";
 import { mergeParts, paint } from "./shading";
 import { withWorldShader } from "./worldShader";
 
@@ -239,7 +239,7 @@ function creep(t: number) {
 
 export default function ClubVelvet({ still }: { still: boolean }) {
     const statics = useMemo(() => mergeParts([...building(), ...bin()]), []);
-    const material = useMemo(() => withWorldShader(new MeshBasicMaterial({ vertexColors: true })), []);
+    const material = useMemo(() => withWorldShader(new MeshLambertMaterial({ vertexColors: true })), []);
     const gusGeo = useMemo(() => gus(), []);
     const exclaimGeo = useMemo(() => exclaim(), []);
     const queuers = useMemo(() => QUEUERS.map((q) => person(q.shirt, q.skin, q.hair)), []);
@@ -271,15 +271,16 @@ export default function ClubVelvet({ still }: { still: boolean }) {
             <Textured make={neonSign} width={9} height={1.3} position={[GUS.x, 4.55, FRONT + 0.3]} />
             <Textured make={subtitle} width={3.6} height={0.45} position={[GUS.x, 3.55, FRONT + 0.12]} />
 
-            <group ref={gusRef} position={[GUS.x, 0, GUS.z]}>
+            <group ref={gusRef} userData={{ dynamic: true }} position={[GUS.x, 0, GUS.z]}>
                 <mesh geometry={gusGeo} material={material} raycast={() => null} />
             </group>
-            <group ref={exclaimRef} position={[GUS.x, 0, GUS.z]} visible={false}>
+            <group ref={exclaimRef} userData={{ dynamic: true }} position={[GUS.x, 0, GUS.z]} visible={false}>
                 <mesh geometry={exclaimGeo} material={material} raycast={() => null} />
             </group>
             {queuers.map((geo, i) => (
                 <group
                     key={i}
+                    userData={{ dynamic: true }}
                     ref={(g) => {
                         queueRefs.current[i] = g;
                     }}

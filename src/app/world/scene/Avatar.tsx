@@ -5,7 +5,7 @@ import { useFrame, useLoader } from "@react-three/fiber";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import { clone } from "three/examples/jsm/utils/SkeletonUtils.js";
-import { AnimationMixer, Mesh, MeshBasicMaterial, type AnimationAction, type Group, type Texture } from "three";
+import { AnimationMixer, Mesh, MeshLambertMaterial, type AnimationAction, type Group, type Texture } from "three";
 import { normaliseBoneScale } from "./clipScale";
 import { RUN_SPEED, WALK_SPEED, type Motion } from "./input";
 
@@ -36,8 +36,8 @@ const CLIP_RATE = {
  *
  * - One file. `npm run world:avatar` packs the mesh and the Idle, Walk and Run clips into
  *   public/world/steven.glb, instead of four GLBs that each carried the mesh.
- * - Flat, not relit (§6: bring the avatar down to the world's style). The 256 px texture goes on
- *   a `MeshBasicMaterial`, like the kit, so no light in the scene is needed for him either.
+ * - Simple, not PBR (§6: bring the avatar down to the world's style). The 256 px texture goes on
+ *   a `MeshLambertMaterial`, like the kit, and he takes the scene's light and shadow (WORLD2.md D2).
  * - drei's `useGLTF`/`useAnimations` are replaced by R3F's `useLoader` and a plain
  *   `AnimationMixer`, so drei stays out of the bundle.
  * - The fixed rig body: no sizing for whoever is walking.
@@ -56,7 +56,8 @@ export default function Avatar({ motion, still }: { motion: RefObject<Motion>; s
         m.traverse((o) => {
             if (!(o instanceof Mesh)) return;
             const src = o.material as { map?: Texture | null };
-            o.material = new MeshBasicMaterial({ map: src.map ?? null });
+            o.material = new MeshLambertMaterial({ map: src.map ?? null });
+            o.receiveShadow = true;
             o.raycast = () => {};
             // A skinned mesh's bounds are its bind pose; walking can take it outside them.
             o.frustumCulled = false;
