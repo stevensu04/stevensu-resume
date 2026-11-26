@@ -33,14 +33,19 @@ export const LOOK = {
      * (shading.ts lamps), which is what makes the night worth switching to.
      */
     night: {
-        background: "linear-gradient(180deg, #172039 0%, #25304f 55%, #39395a 100%)",
-        sky: "#5b6fa8",
-        ground: "#2a2d44",
-        hemiIntensity: 1.05,
-        sun: "#a9bcff",
-        sunIntensity: 0.72,
-        fill: "#6d7cb8",
-        fillIntensity: 0.3,
+        background: "linear-gradient(180deg, #1b2646 0%, #2d3a60 55%, #43436a 100%)",
+        /** A sprinkling of stars over the backdrop, which Global view shows (Explore draws its own in 3D). */
+        stars:
+            "radial-gradient(1.2px 1.2px at 8% 12%, #fff, transparent), radial-gradient(1px 1px at 19% 31%, #fff, transparent), radial-gradient(1.4px 1.4px at 27% 8%, #fff, transparent), radial-gradient(1px 1px at 36% 22%, #fff, transparent), radial-gradient(1.2px 1.2px at 47% 10%, #fff, transparent), radial-gradient(1px 1px at 58% 28%, #fff, transparent), radial-gradient(1.4px 1.4px at 66% 6%, #fff, transparent), radial-gradient(1px 1px at 74% 19%, #fff, transparent), radial-gradient(1.2px 1.2px at 83% 9%, #fff, transparent), radial-gradient(1px 1px at 91% 26%, #fff, transparent), radial-gradient(1px 1px at 14% 44%, #fff, transparent), radial-gradient(1.2px 1.2px at 94% 46%, #fff, transparent)",
+        // Moonlight, brighter than the first pass (26 Nov 2026: "too dark"): a blue-white key from the moon's
+        // direction and a cool sky, so a street is readable at eye level and the lamps add warmth, not sight.
+        sky: "#8da0dc",
+        ground: "#434a72",
+        hemiIntensity: 1.6,
+        sun: "#c4d2ff",
+        sunIntensity: 1.35,
+        fill: "#8796cc",
+        fillIntensity: 0.55,
         fog: "#26304d",
         skyline: "#465680",
     },

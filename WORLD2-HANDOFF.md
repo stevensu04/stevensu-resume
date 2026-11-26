@@ -75,6 +75,19 @@ The short version for a new session. The full plan, the decisions and the phase-
 - **Check it:** `?debug` exposes `__world.ride`. Set `__world.position.current` beside a shelter, wait for
   the prompt, press E.
 
+## Night, the bank and the ride's view (26 Nov 2026)
+
+- **Night:** brighter moonlight (`LOOK.night`), a moon and stars in the sky (`scene/NightLife.tsx`: 3D in
+  Explore, a CSS moon and stars over Global view's backdrop in `Scene.tsx`), and the 11 Kenney street
+  lamps lit: an additive halo at each head and a warm pool of light on the ground, two draw calls in all,
+  no real lights. The lamp head positions (`HEAD`) were read from kit.glb's vertices.
+- **E.SUN's branch** is hand-made now (`scene/EsunBank.tsx`, replacing Kenney's building-c): teal lit
+  fascia with the round mark and "E.SUN BANK", glass front under a canopy, steps, planters and two ATMs
+  with a lit sign. Footprint is in `PROP_SOLIDS`; the hit area in `objects.ts` matches.
+- **Boarding** always switches to first person (the car's inside) and stepping off restores the view he
+  had; V still swaps to the chase view during the ride.
+- `?debug` also exposes `window.__buses()` (position, speed, dwell of each bus).
+
 ## How to check things
 
 - **Measure:** `PLAYWRIGHT=<path to an installed playwright> node scripts/world-measure.mjs <origin> [query] [shotPrefix]`

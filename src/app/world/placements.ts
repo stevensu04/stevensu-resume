@@ -47,8 +47,7 @@ export const PLACEMENTS: Placement[] = [
     ...nightStreet,
     ...connectors,
 
-    // 1 · Ferry landing: E.SUN (its sign is in Landmarks) and StarLens (shuttered, see Props).
-    { model: "building-c", x: -31, z: -18, solid: true },
+    // 1 · Ferry landing: E.SUN is hand-made (EsunBank.tsx; its round mark is in Landmarks) and StarLens (shuttered, see Props).
     { model: "building-a", x: -22, z: -18, solid: true },
 
     // 2 · UQ corner, with the EventNow stall out front (live, so open and lit, §4).
@@ -170,6 +169,7 @@ export const PROP_SOLIDS: { x: number; z: number; w: number; d: number }[] = [
     { x: 33.75, z: 12, w: 1.1, d: 0.5 }, // and the fitting mirror out front
     { x: 2, z: -17.5, w: 16.8, d: 10.9 }, // the UQ sandstone building (GreatCourt.tsx)
     { x: 27, z: -17.5, w: 10.4, d: 11.3 }, // the government tower's podium (GovTower.tsx)
+    { x: -31, z: -17.7, w: 7.2, d: 8.0 }, // E.SUN's branch, with its steps and planters (EsunBank.tsx)
     { x: -26, z: 7, w: 9.2, d: 7.6 }, // the data centre (DataCentre.tsx)
     { x: -20.1, z: 11.4, w: 0.8, d: 0.8 }, // and its wind turbine
     { x: -16, z: 41.75, w: 14, d: 9.5 }, // Club Velvet (ClubVelvet.tsx)

@@ -4,7 +4,7 @@ import { Component, Suspense, useMemo, useRef, type ReactNode, type RefObject } 
 import { useFrame } from "@react-three/fiber";
 import { PerspectiveCamera, Vector3, type Group, type Mesh } from "three";
 import { ACCENT, shadedBox } from "./shading";
-import { canStandAt, findPath, type Nav } from "./nav";
+import { canStandAt, findPath, nearestFree, type Nav } from "./nav";
 import { worldUniforms } from "./worldShader";
 import { RACQUET } from "../placements";
 import type { RideState } from "./ride";
@@ -93,6 +93,12 @@ export default function Player({
 
         const nav = navRef.current;
         const standable = (x: number, z: number) => (nav ? canStandAt(nav, x, z) : true);
+        // Never leave him on a blocked cell: every step he could take would land on one too, and he could
+        // not move at all (a keyboard step is a few centimetres; a tap's route starts from the nearest free cell).
+        if (nav && !standable(p.x, p.z)) {
+            const free = nearestFree(nav, p.x, p.z);
+            if (free) p.set(free[0], 0, free[1]);
+        }
 
         // Keyboard / d-pad: "up" walks away from the camera, whatever the azimuth.
         // Keys give whole steps; the touch joystick (WORLD2.md Phase 3) gives an analog stick.

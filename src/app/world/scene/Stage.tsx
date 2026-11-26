@@ -11,6 +11,7 @@ import SkyveilMuseum from "./SkyveilMuseum";
 import FerryTerminal from "./FerryTerminal";
 import { DwSteakhouse, SeoulGarden } from "./Restaurants";
 import DataCentre from "./DataCentre";
+import EsunBank from "./EsunBank";
 import GovTower from "./GovTower";
 import GreatCourt from "./GreatCourt";
 import Roads from "./Roads";
@@ -101,6 +102,7 @@ export default function Stage({
             <GreatCourt />
             <GovTower />
             <DataCentre still={still} />
+            <EsunBank />
             <ControlCentre still={still} />
             <SkyveilMuseum still={still} />
             <FerryTerminal />

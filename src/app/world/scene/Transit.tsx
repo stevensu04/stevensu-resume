@@ -6,7 +6,7 @@ import { CanvasTexture, PlaneGeometry, Box3, SRGBColorSpace, BoxGeometry, MeshLa
 import { mergeParts, paint } from "./shading";
 import { withWorldShader } from "./worldShader";
 import { PALETTE } from "./Props";
-import { canStandAt, type Nav } from "./nav";
+import { nearestFree, type Nav } from "./nav";
 import { BUS_FLOOR, type RideInfo, type RideState } from "./ride";
 import { RING } from "../zones";
 
@@ -188,15 +188,15 @@ const BUSES = [
     stops: stops.map((shelter) => ({ at: stopAt(route, shelter), shelter })).sort((a, b) => a.at - b.at),
 }));
 
-/** Where he steps down: on the footpath in front of the shelter, nudged to the nearest free cell. */
+/**
+ * Where he steps down: on the footpath in front of the shelter, then moved to the nearest cell he can
+ * actually stand on. The shelter and the buildings round it are solid in the walk grid, so the spot
+ * in front of the roof can be blocked; landing on a blocked cell would leave him unable to take a step.
+ */
 function alightPoint(shelter: Shelter, nav: Nav | null): [number, number] {
     const x = shelter.x - 0.3;
-    // Clear of the shelter's roof and more than two metres from the lane, or the bus would wait for him.
-    for (let d = 1.2; d >= 0.4; d -= 0.4) {
-        const z = shelter.z + shelter.face * d;
-        if (!nav || canStandAt(nav, x, z)) return [x, z];
-    }
-    return [x, shelter.z + shelter.face * 1.2];
+    const z = shelter.z + shelter.face * 1.4; // 2.2 m from the lane, so the bus doesn't wait for him
+    return (nav && nearestFree(nav, x, z)) || [x, z];
 }
 
 /* ---------------------------------------------------------------- the bus */
@@ -554,6 +554,17 @@ export default function Transit({
             }),
         [pieces],
     );
+
+    // `?debug` (development only): where each bus is and what it is doing, for the ride checks.
+    useEffect(() => {
+        if (process.env.NODE_ENV !== "development" || !new URLSearchParams(window.location.search).has("debug")) return;
+        (window as unknown as { __buses?: unknown }).__buses = () =>
+            BUSES.map((bus, bi) => {
+                const st = states.current[bi];
+                const at = bus.route.place(st.u);
+                return { x: +at.x.toFixed(1), z: +at.z.toFixed(1), v: +st.v.toFixed(1), dwell: +st.dwell.toFixed(1), served: st.served, stops: bus.stops.map((x) => x.shelter.name) };
+            });
+    }, []);
 
     // Runs before the camera and Steven (priority −2, both are 0): while he rides, this frame moves him
     // with the bus first, so the camera never lags a frame behind. A negative priority leaves R3F's own

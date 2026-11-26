@@ -15,7 +15,8 @@ import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js
  * don't otherwise read, so it costs no attribute and no draw call.
  */
 // The last three are the Metro's inside (Transit.tsx): the silver ceiling, its tube lights and the route screen.
-const LAMPS = new Set(["#f2d98a", "#f2c14e", "#d9dde2", "#fbfdff", "#2fb5e8"]);
+// And E.SUN's branch (EsunBank.tsx): its lit teal fascia.
+const LAMPS = new Set(["#f2d98a", "#f2c14e", "#d9dde2", "#fbfdff", "#2fb5e8", "#19b3aa"]);
 /** worldShader.ts treats `uv.y` below -50 as self-lit. */
 export const GLOW_UV = -100;
 

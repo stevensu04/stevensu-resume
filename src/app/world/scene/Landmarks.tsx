@@ -53,7 +53,8 @@ import { OLIE_PERCH } from "./SkyveilMuseum";
 
 const STARLENS = { x: -22, z: -18, roof: 9.62 };
 const UQ = { x: 2, front: -12.08, crestY: 9.4 };
-const ESUN = { x: -31, front: -13.64, y: 5.3 };
+/** The round mark sits on the bank's teal fascia (EsunBank.tsx), at its left end. */
+const ESUN = { x: -33.5, front: -14.2, y: 5.8, r: 0.95 };
 /** The Australian flag on the viewer's left, as protocol puts it; the Aboriginal flag beside it. */
 export const FLAGPOLES = { australian: { x: 7.4, z: -10.7 }, aboriginal: { x: 10.4, z: -10.7 } };
 export const JACARANDAS = [
@@ -369,13 +370,13 @@ function EsunSign() {
     const mat = useMemo(() => {
         return withWorldShader(new MeshLambertMaterial({ map: asColour(texture) }));
     }, [texture]);
-    const plate = useMemo(() => mergeParts([paint(new CircleGeometry(1.42, 36).translate(ESUN.x, ESUN.y, ESUN.front + 0.05), "#ffffff")]), []);
+    const plate = useMemo(() => mergeParts([paint(new CircleGeometry(ESUN.r + 0.1, 36).translate(ESUN.x, ESUN.y, ESUN.front + 0.05), "#ffffff")]), []);
     const plateMat = useMemo(() => withWorldShader(new MeshLambertMaterial({ vertexColors: true })), []);
     return (
         <>
             <mesh geometry={plate} material={plateMat} raycast={() => null} />
             <mesh position={[ESUN.x, ESUN.y, ESUN.front + 0.08]} material={mat} raycast={() => null}>
-                <circleGeometry args={[1.3, 36]} />
+                <circleGeometry args={[ESUN.r, 36]} />
             </mesh>
         </>
     );

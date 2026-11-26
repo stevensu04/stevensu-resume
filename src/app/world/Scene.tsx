@@ -9,6 +9,7 @@ import { ZONES } from "./zones";
 import { OBJECTS, TOUR, objectStandPoint } from "./objects";
 import { LOOK } from "./scene/look";
 import Lighting from "./scene/Lighting";
+import { NightSky, StreetLights } from "./scene/NightLife";
 import Stage from "./scene/Stage";
 import Transit from "./scene/Transit";
 import Player from "./scene/Player";
@@ -87,6 +88,9 @@ export default function Scene({
     const ride = useRef<RideState>({ ...NO_RIDE });
     const [rideInfo, setRideInfo] = useState<RideInfo | null>(null);
     const riding = rideInfo?.kind === "riding";
+    // Boarding always puts him in the car, whichever view he walked up in; stepping off puts the view back.
+    // V still swaps to the view from outside during the ride.
+    const viewBeforeRide = useRef<View | null>(null);
     // The open location (its panel) and the card in it that was clicked or toured.
     const [selected, setSelected] = useState<string | null>(null);
     const [focusCard, setFocusCard] = useState<string | null>(null);
@@ -395,7 +399,17 @@ export default function Scene({
             style={{ background: LOOK.background }}
         >
             {/* Night's sky, crossfading over the day gradient behind the transparent canvas. */}
-            <div aria-hidden className={`pointer-events-none absolute inset-0 transition-opacity duration-1000 ${night ? "opacity-100" : "opacity-0"}`} style={{ background: LOOK.night.background }} />
+            <div
+                aria-hidden
+                className={`pointer-events-none absolute inset-0 transition-opacity duration-1000 ${night ? "opacity-100" : "opacity-0"}`}
+                style={{ background: `${LOOK.night.stars}, ${LOOK.night.background}` }}
+            >
+                {/* The moon over Global view's backdrop (Explore has its own, in the 3D sky). */}
+                <div
+                    className={`absolute right-[11%] top-[9%] h-14 w-14 rounded-full transition-opacity duration-700 sm:h-20 sm:w-20 ${mode === "global" ? "opacity-100" : "opacity-0"}`}
+                    style={{ background: "radial-gradient(circle at 38% 38%, #fffbe6 0%, #f6efcf 55%, #e3dcb8 100%)", boxShadow: "0 0 40px 14px rgba(214,226,255,0.35), 0 0 120px 40px rgba(214,226,255,0.15)" }}
+                />
+            </div>
             {/* The poster stays behind the transparent canvas until the island has loaded. */}
             {!ready && <Image src={poster} alt="" fill sizes="100vw" className="object-cover" />}
             <Canvas
@@ -411,6 +425,7 @@ export default function Scene({
                 }}
             >
                 <Lighting night={night} still={still} />
+                <NightSky night={night} still={still} />
                 <Suspense fallback={null}>
                     <Stage
                         still={still}
@@ -429,6 +444,7 @@ export default function Scene({
                         }}
                         onHover={(o) => setHover(o ? (locationOf.get(o.id)?.id ?? null) : null)}
                     />
+                    <StreetLights night={night} still={still} />
                     <Ready
                         onReady={() => {
                             if (ready) return;
@@ -476,7 +492,18 @@ export default function Scene({
                     navRef={navRef}
                     rideRef={ride}
                     canBoard={mode === "explore"}
-                    onStatus={setRideInfo}
+                    onStatus={(info) => {
+                        setRideInfo(info);
+                        if (info?.kind === "riding") {
+                            if (viewBeforeRide.current === null) {
+                                viewBeforeRide.current = view;
+                                setView("first");
+                            }
+                        } else if (viewBeforeRide.current !== null) {
+                            setView(viewBeforeRide.current);
+                            viewBeforeRide.current = null;
+                        }
+                    }}
                     onAlight={(x, z) => target.current.set(x, 0, z)}
                 />
                 <FocusAnchor object={focused ? (OBJECT_BY_ID.get(focused) ?? null) : null} ring={ring} />

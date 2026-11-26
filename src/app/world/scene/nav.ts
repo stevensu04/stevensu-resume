@@ -125,6 +125,22 @@ export function blockDisc(nav: Nav, x: number, z: number, r: number) {
         }
 }
 
+/** The centre of the free cell nearest (x, z), looking up to `rings` cells out; null when there is none. */
+export function nearestFree(nav: Nav, x: number, z: number, rings = 8): [number, number] | null {
+    const [ci, cj] = cellOf(nav, x, z);
+    let best: [number, number] | null = null;
+    let bestD = Infinity;
+    for (let dj = -rings; dj <= rings; dj++)
+        for (let di = -rings; di <= rings; di++) {
+            if (!free(nav, ci + di, cj + dj)) continue;
+            const cx = nav.minX + (ci + di + 0.5) * CELL;
+            const cz = nav.minZ + (cj + dj + 0.5) * CELL;
+            const d = Math.hypot(cx - x, cz - z);
+            if (d < bestD) [best, bestD] = [[cx, cz], d];
+        }
+    return best;
+}
+
 export function canStandAt(nav: Nav, x: number, z: number): boolean {
     const [i, j] = cellOf(nav, x, z);
     return free(nav, i, j);

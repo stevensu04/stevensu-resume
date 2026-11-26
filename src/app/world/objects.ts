@@ -21,7 +21,7 @@ export type WorldObject = {
 
 const ALL_OBJECTS: WorldObject[] = [
     // 1 · Ferry landing
-    { id: "esun", x: -31, z: -18, w: 7.2, d: 7.4, h: 9 },
+    { id: "esun", x: -31, z: -17.7, w: 7.2, d: 8.0, h: 9.4 },
     { id: "starlens", x: -22, z: -18, w: 7.2, d: 7.8, h: 10.5 },
     { id: "crossing", x: -26.5, z: -28.5, w: 16, d: 10.4, h: 8 },
     // 2 · UQ corner
