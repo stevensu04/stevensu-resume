@@ -2,8 +2,9 @@
 
 **What:** upgrade `/world` into a *Cozy Miniature World* with two modes, **Global view** (the overview a
 recruiter reads in 30 seconds) and **Explore** (walk the same world in first person).
-**Status of this doc:** all five phases built on 26 Nov 2026, uncommitted, awaiting Steven's go-ahead to
-commit and deploy. The short version for a new session is `WORLD2-HANDOFF.md`. Written 26 Nov 2026 from a full read of `src/app/world/`,
+**Status of this doc:** all five phases built on 26 Nov 2026, committed as `1b93f7d` and **live in
+production since 26 Nov 2026** (stevensu-resume.vercel.app/world). The short version for a new session
+is `WORLD2-HANDOFF.md`. Written 26 Nov 2026 from a full read of `src/app/world/`,
 `src/lib/world.ts`, `WORLD.md` and the installed packages. **Steven approved D1–D6 as recommended on
 26 Nov 2026** (§11), and Phase 1 started the same day. Progress is logged in §12.
 Read it alongside `WORLD.md` (the v1 spec and its build log) and `CONTENT.md` (content rules, unchanged).
@@ -916,7 +917,7 @@ tooltip).
 4. **Carried over:** the link-preview image (`opengraph-image.tsx`) still shows the v1 look; no real
    device yet.
 
-### Phase 5: optimisation and release prep (26 Nov 2026) — done; commit and deploy await approval
+### Phase 5: optimisation and release prep (26 Nov 2026) — done; live the same day
 
 **Changed:**
 
@@ -983,3 +984,22 @@ tooltip).
    `… 2.ts` copies in `.next/types/` (they break `tsc`; deleted twice, safe to delete again) and the
    untracked `… 2.jpg` / `build-cv 2.py` files in git status. Moving the repo out of the synced folder
    would stop it.
+
+### Release (26 Nov 2026)
+
+- **Committed** as `1b93f7d` on `feat/world-2`, authored as stevensu04 with no AI co-author. Vercel's
+  preview built (it sits behind Vercel's login).
+- **Fast-forwarded to `main` on Steven's OK and deployed.**
+- **Production smoke test** at stevensu-resume.vercel.app/world:
+  - *Enter the world* loads the island with its labels.
+  - The Shopfront panel opens; Explore and night work.
+  - The link-preview image returns 200.
+  - No console errors.
+  - `/`, `/projects`, `/about`, the World case study and the CV return 200.
+- **Follow-ups, the same day, with Steven's approval:**
+  - the case study's wording updated to the Phase 5 proposal (without the optional day/night line);
+  - `.claude/**` added to ESLint's ignores (`npm run lint` is clean);
+  - these status lines.
+- **Still open:** real-device checks (Safari, iOS, Android); the optional items in Phase 5's list
+  (sound, night tuning, the iCloud-synced folder).
+

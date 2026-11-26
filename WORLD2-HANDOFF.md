@@ -5,11 +5,11 @@ The short version for a new session. The full plan, the decisions and the phase-
 
 ## State (26 Nov 2026)
 
-- **All five phases are built and verified** (development and production builds), and the new UI copy
-  is approved.
-- **Nothing is committed.** 31 files are modified and 12 are new under `src/app/world/` and
-  `scripts/`. Commit and deploy only on Steven's explicit OK. Commits are authored as stevensu04 only,
-  with no AI co-author.
+- **All five phases are built, verified and live in production** (stevensu-resume.vercel.app/world),
+  shipped as `1b93f7d`, fast-forwarded to `main`. The new UI copy and the case study's updated wording
+  are approved.
+- **Commits** are authored as stevensu04 only, with no AI co-author. Deploys (pushes to `main`) only
+  on Steven's explicit OK. Vercel previews of branches sit behind Vercel's login.
 - **Not yet tested on real devices:** Safari, iOS, Android. See "Open".
 
 ## What it is
@@ -83,14 +83,9 @@ The short version for a new session. The full plan, the decisions and the phase-
 
 ## Open
 
-1. **Commit and deploy**, on approval.
-2. **Real devices:** Safari pointer lock and touch look, joystick feel, a mid-range Android GPU, the
+1. **Real devices:** Safari pointer lock and touch look, joystick feel, a mid-range Android GPU, the
    portrait home view, VoiceOver.
-3. **The case study (`content/projects/world.md`) is out of date.** Proposed wording is in `WORLD2.md`
-   §12, Phase 5. It's published copy, so it stays unedited until approved.
-4. **`npm run lint`** walks old worktrees in `.claude/worktrees/`. Add `".claude/**"` to the ESLint
-   ignores, with approval.
-5. **The iCloud-synced Desktop** keeps creating `… 2.ts` copies in `.next/types/` (they break `tsc`;
+2. **The iCloud-synced Desktop** keeps creating `… 2.ts` copies in `.next/types/` (they break `tsc`;
    safe to delete) and `… 2.jpg` files in the repo.
-6. **Optional:** sound (only with licensed audio and a mute toggle), night tuning (`LOOK.night`),
+3. **Optional:** sound (only with licensed audio and a mute toggle), night tuning (`LOOK.night`),
    pedestrians walking through Steven.
