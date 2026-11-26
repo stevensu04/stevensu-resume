@@ -14,7 +14,8 @@ import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js
  * the light. The marker rides in `uv`, which every program declares and vertex-coloured models
  * don't otherwise read, so it costs no attribute and no draw call.
  */
-const LAMPS = new Set(["#f2d98a", "#f2c14e"]);
+// The last three are the Metro's inside (Transit.tsx): the silver ceiling, its tube lights and the route screen.
+const LAMPS = new Set(["#f2d98a", "#f2c14e", "#d9dde2", "#fbfdff", "#2fb5e8"]);
 /** worldShader.ts treats `uv.y` below -50 as self-lit. */
 export const GLOW_UV = -100;
 

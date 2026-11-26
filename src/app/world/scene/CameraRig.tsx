@@ -6,6 +6,7 @@ import { Fog, PerspectiveCamera, Spherical, Vector3 } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { framing, labelPoint, type Location } from "./locations";
 import { canStandAt, type Nav } from "./nav";
+import type { RideState } from "./ride";
 
 /**
  * The one camera (WORLD2.md §5, decision D3). It never remounts; every change of view is a flight.
@@ -22,6 +23,10 @@ import { canStandAt, type Nav } from "./nav";
  * motion), so Global view swoops down into Steven's eyes and back out. A light fog fades in at eye
  * level only (the far edge of a small island is close, and fog hides it kindly); it costs no recompile,
  * because the fog always exists and only its distances move.
+ *
+ * **Riding** (ride.ts): when Steven boards a bus the camera flies into the car, and while he rides the
+ * look turns with the bus (its heading is added to the yaw each frame), so a corner swings the view
+ * the way it would in a seat. Getting off flies back out. Third person circles the bus, further back.
  */
 export type Mode = "global" | "explore";
 export type View = "first" | "third";
@@ -47,6 +52,8 @@ const POLAR_MAX = 1.12;
 const PITCH_LIMIT = 1.0; // ±57° at eye level
 const FLIGHT_SECONDS = 1.1;
 const CHASE_DISTANCE = 5.5;
+/** Third person while riding: far enough back to take in the whole car. */
+const RIDE_CHASE_DISTANCE = 12;
 const TURN_SPEED = 1.9; // rad/s for held arrow keys
 const HOME_AIM = new Vector3(0, -1, 6);
 /** The aim point stays over the island. */
@@ -64,6 +71,7 @@ export default function CameraRig({
     request,
     player,
     navRef,
+    rideRef,
     zoomRef,
     lookAt,
     still,
@@ -83,6 +91,8 @@ export default function CameraRig({
     player: RefObject<Vector3>;
     /** The walk grid, so the chase camera doesn't back through a wall. */
     navRef: RefObject<Nav | null>;
+    /** Who is aboard which bus, and which way it faces (ride.ts). */
+    rideRef: RefObject<RideState>;
     /** Third person's zoom: the chase distance is CHASE_DISTANCE / zoom. */
     zoomRef: RefObject<number>;
     /** Keyboard focus on an object (§10): Global view's aim eases there. */
@@ -112,6 +122,8 @@ export default function CameraRig({
     const drawnMode = useRef<Mode>("global");
     // Explore's look: the azimuth faced (walking away from the camera is (−sin, −cos)) and the pitch.
     const look = useRef({ yaw: DEFAULT_AZIMUTH, pitch: -0.08, turn: 0, pending: 0 });
+    // The bus last frame had Steven aboard (−1 on foot), and the heading it faced, to turn the look with it.
+    const rode = useRef({ bus: -1, heading: 0 });
     // Latest props for the frame loop and the request handler.
     const live = useRef({ mode, view, still, poster, panelOpen });
     useEffect(() => {
@@ -194,14 +206,15 @@ export default function CameraRig({
         const { yaw, pitch } = look.current;
         const p = player.current;
         if (live.current.view === "first") {
-            const eye = new Vector3(p.x, EYE, p.z);
+            const eye = new Vector3(p.x, p.y + EYE, p.z); // p.y is the bus floor while he rides
             const dir = forward(yaw, pitch, scratch.dir);
             return { target: eye.add(dir), r: 1, polar: Math.PI / 2 + pitch, az: yaw, fov: FOV_FIRST };
         }
         const polar = Math.min(Math.max(Math.PI / 2 + pitch - 0.32, 0.5), 2.0);
-        let r = CHASE_DISTANCE / zoomRef.current;
+        const riding = rideRef.current.bus >= 0;
+        let r = (riding ? RIDE_CHASE_DISTANCE : CHASE_DISTANCE) / zoomRef.current;
         // Pull in rather than back through a wall: walk the line behind him on the walk grid.
-        const nav = navRef.current;
+        const nav = riding ? null : navRef.current;
         if (nav) {
             const back = Math.sin(polar);
             for (let d = 0.6; d <= r; d += 0.25) {
@@ -211,7 +224,7 @@ export default function CameraRig({
                 }
             }
         }
-        return { target: new Vector3(p.x, 1.45, p.z), r, polar, az: yaw, fov: FOV_THIRD };
+        return { target: new Vector3(p.x, p.y + 1.45, p.z), r, polar, az: yaw, fov: FOV_THIRD };
     };
 
     const homePose = (az = DEFAULT_AZIMUTH): Pose => ({ target: HOME_AIM.clone(), r: homeDistance(camera as PerspectiveCamera), polar: ISO_POLAR, az, fov: FOV });
@@ -270,6 +283,24 @@ export default function CameraRig({
         const c = controls.current;
         const { mode: m, still: s, poster: p } = live.current;
         const dt = Math.min(delta, 0.1);
+
+        // Steven boarded or stepped off a bus: fly between the street and the seat. On boarding the look
+        // starts facing the way the bus goes; while aboard it turns with the bus.
+        const ride = rideRef.current;
+        if (ride.bus !== rode.current.bus && m === "explore" && !p) {
+            const from = currentPose();
+            if (ride.bus >= 0) {
+                look.current.yaw = ride.heading;
+                look.current.pitch = -0.05;
+                look.current.pending = 0;
+            }
+            flight.current = { from, to: explorePose, t: 0 };
+            if (c) c.enabled = false;
+        }
+        if (ride.bus >= 0 && rode.current.bus >= 0) {
+            look.current.yaw += ((((ride.heading - rode.current.heading) % (2 * Math.PI)) + 3 * Math.PI) % (2 * Math.PI)) - Math.PI;
+        }
+        rode.current = { bus: ride.bus, heading: ride.heading };
 
         // Explore's held-key turning and eased quarter turns.
         const l = look.current;

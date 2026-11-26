@@ -7,6 +7,7 @@ import { ACCENT, shadedBox } from "./shading";
 import { canStandAt, findPath, type Nav } from "./nav";
 import { worldUniforms } from "./worldShader";
 import { RACQUET } from "../placements";
+import type { RideState } from "./ride";
 import Avatar from "./Avatar";
 import { RUN_DISTANCE, RUN_SPEED, WALK_SPEED, type Motion, type MovementInput } from "./input";
 
@@ -33,6 +34,7 @@ export default function Player({
     still,
     occlude,
     hidden = false,
+    rideRef,
     onRacquet,
 }: {
     position: RefObject<Vector3>;
@@ -50,6 +52,8 @@ export default function Player({
     occlude: boolean;
     /** First person: the camera is in his head, so his body isn't drawn (he still walks and collides). */
     hidden?: boolean;
+    /** Aboard a bus (ride.ts): Transit carries him, so he neither walks nor is drawn. */
+    rideRef: RefObject<RideState>;
     /** The easter egg went off (true) or finished (false). */
     onRacquet?: (active: boolean) => void;
 }) {
@@ -69,6 +73,20 @@ export default function Player({
         const t = target.current;
         const keys = input.current;
         const dt = Math.min(delta, 0.1); // a backgrounded tab must not teleport him on return
+
+        // Aboard a bus, Transit has already put him on his seat this frame. Keep every walking state
+        // where he is, so he steps off with nothing queued, and leave the body (hidden) and the cut-out alone.
+        if (rideRef.current.bus >= 0) {
+            t.copy(p);
+            planned.current.copy(p);
+            path.current = [];
+            running.current = false;
+            motion.current.state = "Idle";
+            if (marker.current) marker.current.visible = false;
+            if (body.current) body.current.visible = false;
+            worldUniforms.uCutRadius.value = 0;
+            return;
+        }
 
         // Keyboard directions are relative to the view.
         const az = viewAzimuth.current;
@@ -179,7 +197,10 @@ export default function Player({
             }
         }
 
-        if (body.current) body.current.position.set(p.x, lift, p.z);
+        if (body.current) {
+            body.current.visible = !hidden; // he was hidden aboard a bus
+            body.current.position.set(p.x, lift, p.z);
+        }
         if (marker.current) {
             marker.current.visible = !fwd && !side && p.distanceTo(t) > 0.3;
             marker.current.position.set(t.x, 0.03, t.z);

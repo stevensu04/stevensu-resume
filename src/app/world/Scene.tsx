@@ -21,7 +21,8 @@ import { canStandAt, findPath, type Nav } from "./scene/nav";
 import { clampToGround } from "./scene/walk";
 import { EMPTY_INPUT, KEY_MAP, type MovementInput } from "./scene/input";
 import { EXPLORE_ZONE_IDS, worldUniforms } from "./scene/worldShader";
-import { Counter, EXPLORE_KEYS, ExploreControls, GLOBAL_KEYS, KeysHelp, LocationPanel, ModeSwitcher, OutLinks, TourBar, ViewSwitcher } from "./ui";
+import { Counter, EXPLORE_KEYS, ExploreControls, GLOBAL_KEYS, KeysHelp, LocationPanel, ModeSwitcher, OutLinks, RideBar, TourBar, ViewSwitcher } from "./ui";
+import { NO_RIDE, type RideInfo, type RideState } from "./scene/ride";
 import FocusAnchor from "./scene/FocusAnchor";
 import PlayerAnchor from "./scene/PlayerAnchor";
 import poster from "./poster.webp";
@@ -82,6 +83,10 @@ export default function Scene({
     const [view, setView] = useState<View>("first");
     // What Explore offers to open: the object he's next to and facing (Proximity.tsx).
     const [facing, setFacing] = useState<string | null>(null);
+    // The Brisbane Metro (ride.ts): a bus offering its door, or the ride itself. Transit decides both.
+    const ride = useRef<RideState>({ ...NO_RIDE });
+    const [rideInfo, setRideInfo] = useState<RideInfo | null>(null);
+    const riding = rideInfo?.kind === "riding";
     // The open location (its panel) and the card in it that was clicked or toured.
     const [selected, setSelected] = useState<string | null>(null);
     const [focusCard, setFocusCard] = useState<string | null>(null);
@@ -155,8 +160,14 @@ export default function Scene({
         pace.current = 1;
     };
 
+    // Riding is an Explore thing: leaving it (Global view, the tour) sets him down at the nearest stop.
+    const leaveBus = () => {
+        if (ride.current.bus >= 0) ride.current.command = "eject";
+    };
+
     const switchMode = (next: Mode) => {
         if (next === mode) return;
+        if (next === "global") leaveBus();
         if (next === "explore") {
             endTour();
             ask({ kind: "explore" });
@@ -172,6 +183,7 @@ export default function Scene({
             return;
         }
         // The tour is a Global view thing: the camera frames each stop beside its panel.
+        leaveBus();
         if (mode !== "global") setMode("global");
         pace.current = TOUR_PACE;
         setTour({ index });
@@ -209,8 +221,11 @@ export default function Scene({
         [],
     );
 
+    // E (or the prompt button): get off, board, or open what he faces, in that order. A bus's door is
+    // only ever in reach while it stands at its stop, so it can't shadow a building for long.
     const interact = () => {
-        if (facing) openCard(facing, false);
+        if (rideInfo) ride.current.command = rideInfo.kind === "riding" ? "alight" : "board";
+        else if (facing) openCard(facing, false);
     };
     const toggleView = () => setView((v) => (v === "first" ? "third" : "first"));
 
@@ -352,11 +367,21 @@ export default function Scene({
     // Phase 3 checks (walls and water block him; every location can be walked to). See WORLD2.md §12.
     useEffect(() => {
         if (process.env.NODE_ENV !== "development" || !new URLSearchParams(window.location.search).has("debug")) return;
-        (window as unknown as { __world?: unknown }).__world = { position, target, navRef, rig, viewAzimuth, findPath, canStandAt, objects: OBJECTS, standPoint: objectStandPoint };
+        (window as unknown as { __world?: unknown }).__world = { position, target, navRef, rig, ride, viewAzimuth, findPath, canStandAt, objects: OBJECTS, standPoint: objectStandPoint };
     }, []);
 
     // Leaving the page with an object hovered must not leave the pointer cursor stuck on <body>.
     useEffect(() => () => void (document.body.style.cursor = ""), []);
+
+    // The one thing E does right now, as the prompt's button reads.
+    const prompt =
+        rideInfo?.kind === "riding"
+            ? { label: rideInfo.here ? "Get off here" : rideInfo.requested ? "Cancel stop request" : "Request stop" }
+            : rideInfo?.kind === "offer"
+              ? { label: "Board the Brisbane Metro" }
+              : facing && cardById.get(facing)
+                ? { label: `Open ${cardById.get(facing)!.title}` }
+                : null;
 
     const hoverLocation = hover ? locations.find((l) => l.id === hover) : undefined;
     const galleryOpen = explored.length === EXPLORE_ZONE_IDS.length;
@@ -416,6 +441,7 @@ export default function Scene({
                     mode={mode}
                     view={view}
                     navRef={navRef}
+                    rideRef={ride}
                     request={request}
                     player={position}
                     zoomRef={zoom}
@@ -439,16 +465,25 @@ export default function Scene({
                     still={still}
                     occlude={mode === "explore" && view === "third" && !posterMode}
                     hidden={mode === "explore" && view === "first"}
+                    rideRef={ride}
                     onRacquet={setCheer}
                 />
-                {mode === "explore" && <Proximity player={position} viewAzimuthRef={viewAzimuth} view={view} objects={OBJECTS} onTarget={setFacing} />}
+                {mode === "explore" && <Proximity player={position} viewAzimuthRef={viewAzimuth} view={view} objects={OBJECTS} paused={riding} onTarget={setFacing} />}
                 <PlayerAnchor position={position} el={emote} />
-                <Transit still={still} player={position} />
+                <Transit
+                    still={still}
+                    player={position}
+                    navRef={navRef}
+                    rideRef={ride}
+                    canBoard={mode === "explore"}
+                    onStatus={setRideInfo}
+                    onAlight={(x, z) => target.current.set(x, 0, z)}
+                />
                 <FocusAnchor object={focused ? (OBJECT_BY_ID.get(focused) ?? null) : null} ring={ring} />
                 {!posterMode && <Watchdog onSlow={onFallback} />}
                 <Pedestrians still={still} />
                 <JourneyLine navRef={navRef} active={!!tour} stop={tour?.index ?? 0} still={still} />
-                <ZoneWatcher position={position} onEnter={explore} />
+                <ZoneWatcher position={position} paused={riding} onEnter={explore} />
                 <ExploreFade explored={explored} still={still} />
             </Canvas>
 
@@ -515,6 +550,8 @@ export default function Scene({
                                             <span className="pointer-fine:hidden">Drag to turn · pinch to zoom · tap a building</span>
                                             <span className="hidden pointer-fine:inline">Drag to turn · scroll to zoom · click a building to open it</span>
                                         </>
+                                    ) : riding ? (
+                                        <>Riding the Brisbane Metro · drag to look around · V for the view from outside</>
                                     ) : (
                                         <>
                                             <span className="pointer-fine:hidden">Left thumb walks · drag to look · tap a place to walk there</span>
@@ -619,11 +656,13 @@ export default function Scene({
                             inputRef={input}
                             rigRef={rig}
                             view={view}
-                            target={facing && cardById.get(facing) ? { id: facing, title: cardById.get(facing)!.title } : null}
+                            target={prompt}
                             panelOpen={!!selectedLocation}
                             onInteract={interact}
                         />
                     )}
+
+                    {rideInfo?.kind === "riding" && <RideBar here={rideInfo.here} next={rideInfo.next} requested={rideInfo.requested} />}
 
                     {!ready && (
                         <p role="status" className="absolute inset-x-0 top-[62%] text-center text-sm font-medium text-gray-500">
@@ -678,9 +717,11 @@ function Ready({ onReady }: { onReady: () => void }) {
 }
 
 /** Walking into a content zone explores it (§2). Fires only when the zone underfoot changes. */
-function ZoneWatcher({ position, onEnter }: { position: RefObject<Vector3>; onEnter: (zone: string) => void }) {
+function ZoneWatcher({ position, paused, onEnter }: { position: RefObject<Vector3>; paused: boolean; onEnter: (zone: string) => void }) {
     const last = useRef<string | null>(null);
     useFrame(() => {
+        // A bus passing by hasn't walked in (and `last` stays, so stepping off at the same zone doesn't re-fire).
+        if (paused) return;
         const { x, z } = position.current;
         // A little slack round each zone: standing at its door counts.
         const zone = ZONES.find((r) => Math.abs(x - r.x) < r.w / 2 + 2 && Math.abs(z - r.z) < r.d / 2 + 2)?.id ?? null;

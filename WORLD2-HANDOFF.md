@@ -36,6 +36,7 @@ The short version for a new session. The full plan, the decisions and the phase-
 | `scene/Island.tsx` | The island, skirt, Taipei islet, water shader |
 | `scene/Ground.tsx`, `scene/Vegetation.tsx` | Footpaths; seeded trees, bushes, flowers and rocks (trunks join the walk grid) |
 | `scene/Proximity.tsx` | What Explore offers to open |
+| `scene/Transit.tsx`, `scene/ride.ts` | The Metro buses, and riding them (below) |
 | `scene/JourneyLine.tsx`, `scene/Pedestrians.tsx` | The tour's trail; people on the paths |
 | `scene/worldShader.ts`, `scene/shading.ts` | Shared shader patch (light-up, occlusion, sway, highlight, lamps, dimming); colours and the lamp flag |
 
@@ -56,6 +57,23 @@ The short version for a new session. The full plan, the decisions and the phase-
   through `useFrame` state or refs, never through memoised values.
 - **No new runtime packages.** Orbit controls come from `three/examples`. drei, physics and
   postprocessing stay out.
+
+## Riding the Metro (added 26 Nov 2026)
+
+- **Flow:** in Explore, walk up to a bus standing at a shelter (within ~6.5 m of its front door) and press
+  E (or tap the prompt) to board. Inside, first person is a real interior; V gives a chase view of the
+  whole bus. E again at a stop gets off; between stops it pulls the cord and he steps off at the next.
+  Switching to Global view or starting the tour sets him down at the nearest shelter.
+- **Moving parts:** `Transit` owns the buses and the ride (its frame runs at priority −2 so the camera
+  never lags the bus); `ride.ts` holds the shared ref and types; `CameraRig` flies in and out and turns
+  the look with the bus; `Player` freezes while aboard; `RideBar` and the prompt button are the HUD.
+  The interior is part of each car's geometry (the shell's back faces are culled from inside, so the
+  windows are simply open). Steven's feet are at `BUS_FLOOR`, carried in `player.y`.
+- **Rules:** buses hold their doors up to 10 s for someone walking up; a bus brakes for anyone within 2 m
+  of its lane (as before), so the step-down point is 2.4 m from the lane. Under reduced motion the buses
+  stand still, so no ride is offered. Riding past a zone doesn't count it as explored.
+- **Check it:** `?debug` exposes `__world.ride`. Set `__world.position.current` beside a shelter, wait for
+  the prompt, press E.
 
 ## How to check things
 

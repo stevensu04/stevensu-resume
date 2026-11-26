@@ -262,12 +262,40 @@ export const GLOBAL_KEYS: [string, string][] = [
     ["Esc", "Close the panel"],
 ];
 
+/**
+ * Aboard the Brisbane Metro: the line, and where it is. At a stop the doors are open and the prompt
+ * button reads "Get off here"; between stops it reads "Request stop" (the cord), and once pulled this
+ * bar says where it will stop. A live region, so a screen reader hears each stop.
+ */
+export function RideBar({ here, next, requested }: { here: string | null; next: string; requested: boolean }) {
+    return (
+        <div role="status" className="pointer-events-none absolute inset-x-0 bottom-[7.25rem] flex justify-center px-4">
+            <div className="flex max-w-full items-center gap-2.5 rounded-2xl bg-white/95 py-2 pl-2.5 pr-4 text-xs shadow-lg ring-1 ring-black/5">
+                <span aria-hidden className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="4" y="3.5" width="16" height="13" rx="2.5" />
+                        <path d="M4 10.5h16M8 16.5v2.5M16 16.5v2.5" />
+                        <circle cx="8" cy="13.6" r=".6" fill="currentColor" />
+                        <circle cx="16" cy="13.6" r=".6" fill="currentColor" />
+                    </svg>
+                </span>
+                <span className="min-w-0">
+                    <span className="block font-semibold text-gray-900">Brisbane Metro</span>
+                    <span className="block truncate text-gray-600">
+                        {here ? `Doors open · ${here}` : requested ? `Stopping at ${next}` : `Next stop · ${next}`}
+                    </span>
+                </span>
+            </div>
+        </div>
+    );
+}
+
 export const EXPLORE_KEYS: [string, string][] = [
     ["W A S D / ↑ ↓", "Walk"],
     ["Drag / ← →", "Look around"],
     ["L", "Lock the mouse to look (Esc frees it)"],
     ["Shift", "Run"],
-    ["E", "Open what you're facing"],
+    ["E", "Open what you're facing; board a bus at its stop, get off"],
     ["V", "First or third person"],
     ["Esc", "Close the panel"],
 ];
@@ -373,8 +401,8 @@ export function ExploreControls({
     inputRef: RefObject<MovementInput>;
     rigRef: RefObject<RigApi | null>;
     view: View;
-    /** What the prompt offers: an object's id and its card's title. */
-    target: { id: string; title: string } | null;
+    /** What the prompt offers, as its button reads: "Open Club Velvet", "Board the Brisbane Metro"… */
+    target: { label: string } | null;
     panelOpen: boolean;
     onInteract: () => void;
 }) {
@@ -515,7 +543,7 @@ export function ExploreControls({
                         className={`pointer-events-auto rounded-full bg-gray-900/85 px-4 py-2 text-xs font-semibold text-white shadow-lg ${focusRing}`}
                     >
                         <span className="mr-2 hidden rounded bg-white/20 px-1.5 py-0.5 font-mono pointer-fine:inline">E</span>
-                        Open {target.title}
+                        {target.label}
                     </button>
                 </div>
             )}

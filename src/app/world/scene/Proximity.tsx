@@ -19,16 +19,26 @@ export default function Proximity({
     viewAzimuthRef,
     view,
     objects,
+    paused,
     onTarget,
 }: {
     player: RefObject<Vector3>;
     viewAzimuthRef: RefObject<number>;
     view: View;
     objects: WorldObject[];
+    /** Aboard a bus: nothing to open from a seat. */
+    paused: boolean;
     onTarget: (id: string | null) => void;
 }) {
     const current = useRef<string | null>(null);
     useFrame(() => {
+        if (paused) {
+            if (current.current !== null) {
+                current.current = null;
+                onTarget(null);
+            }
+            return;
+        }
         const p = player.current;
         const az = viewAzimuthRef.current;
         const fx = -Math.sin(az);
