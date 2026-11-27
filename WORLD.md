@@ -1368,3 +1368,22 @@ Steven sent a photo of the trophy and asked for it, scaled up, on the building. 
   `/projects` case study yet (§14 Q1), so those three are where it is described.
 - **Draw calls:** +1 (the lettering). The cube and ring merge into the museum's static mesh.
 
+### A lamp for every zone, and the exit moves to the corner (27 Nov 2026)
+
+At night the prototype park and the gallery had no lamp of their own, so they were the darkest
+part of the block. Steven's rule: every zone has at least one. `placements.ts` (any `light-*`
+placed there is lit by NightLife.tsx, halo and pool included):
+
+- **Prototype park:** a `light-square` on its south-east corner by the back path (−16.4, 30), arm
+  over the grass. It first stood between the plinths; Steven asked for it off the middle.
+- **Gallery:** front right (4.6, 29.4), opposite the sculpture, arm towards the door.
+- **Transit control centre:** front right (37.4, 37.4), clear of the information pillar on its
+  front left. Its nearest lamp was the exit's, nearly 4 m off its corner.
+
+**The exit noticeboard** moved from the back row (26, 22), where it was lost among the buildings,
+to the block's south-west corner (−36, 43), by the ring road's bend: well apart from everything,
+and on the way off the island, which is what an exit should feel like. The night street's lamp at
+(−32, 46.8) lights it. Its zone, object, walk-grid obstacle and model moved together (`zones.ts`,
+`objects.ts`, `placements.ts`, `Props.tsx`); the curved lamp that stood beside it stays for the
+path between the shopfront and the control centre.
+

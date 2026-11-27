@@ -49,7 +49,8 @@ const ALL_OBJECTS: WorldObject[] = [
     { id: "brispulse", x: 34, z: 31.2, w: 9.8, d: 8.8, h: 7.6 },
     // Facilities
     { id: "gallery", x: 0, z: 23.5, w: 12.4, d: 8, h: 7.4 },
-    { id: "exit", x: 26, z: 22, w: 4.6, d: 1, h: 3.2 },
+    // On the block's south-west corner by the ring road, apart from every building (27 Nov 2026).
+    { id: "exit", x: -36, z: 43, w: 4.6, d: 1, h: 3.2 },
 ];
 
 /** The Gallery's hit area exists only once its photos do (GALLERY_READY in src/lib/world.ts). */

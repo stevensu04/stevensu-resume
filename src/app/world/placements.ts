@@ -84,11 +84,18 @@ export const PLACEMENTS: Placement[] = [
     { model: "tree-large", x: -28.6, z: 21, solid: true },
     { model: "tree-small", x: -18.5, z: 27.5, solid: true },
     { model: "tree-large", x: -29, z: 27.5, solid: true },
+    // The park's lamp, on its south-east corner by the back path rather than among the plinths, arm
+    // out over the grass (27 Nov 2026: every zone has at least one lamp; NightLife lights any lamp here).
+    { model: "light-square", x: -16.4, z: 30, rot: 3 },
     // The models on the plinths (§4: a prototype is a model on a plinth) are hand-made: Landmarks.tsx.
 
-    // Gallery and exit. The gallery itself is hand-made (Landmarks.tsx).
+    // The gallery. It is hand-made (Landmarks.tsx).
     { model: "tree-small", x: -9, z: 20, solid: true },
     { model: "tree-small", x: 9, z: 20, solid: true },
+    // The gallery's lamp: front right, opposite the sculpture, its arm towards the door.
+    { model: "light-square", x: 4.6, z: 29.4, rot: 2 },
+    // Lit the exit noticeboard until it moved to the block's south-west corner (27 Nov 2026); it
+    // stays for the path between the shopfront and the control centre.
     { model: "light-curved", x: 31, z: 22.5, rot: 3, solid: false },
 
     // 8 · Club Velvet is hand-made (ClubVelvet.tsx). Its neighbours on the night street are plain
@@ -101,6 +108,8 @@ export const PLACEMENTS: Placement[] = [
     // (A building-j stood at x 29.5 until BrisPulse got its control centre behind it: the camera looks
     // from the south-west, so it hid the new building. The end of the strip is trees now.)
     { model: "tree-small", x: 37.5, z: 42.5, solid: true },
+    // The control centre's lamp: front right, clear of the kiosk at its front left, arm towards the door.
+    { model: "light-square", x: 37.4, z: 37.4, rot: 2 },
     { model: "tree-large", x: -34, z: 39.5, solid: true },
     { model: "tree-small", x: -31, z: 45, solid: true },
     { model: "tree-small", x: -4.5, z: 46.2, solid: true },
@@ -192,7 +201,7 @@ export const PROP_SOLIDS: { x: number; z: number; w: number; d: number }[] = [
     { x: -2.1, z: 13.3, w: 1.2, d: 1 },
     { x: -25, z: 24.5, w: 2, d: 2 }, // ParkEase plinth
     { x: -20, z: 24.5, w: 2, d: 2 }, // JourneyMate plinth
-    { x: 26, z: 22, w: 4.4, d: 0.6 }, // exit noticeboard
+    { x: -36, z: 43, w: 4.4, d: 0.6 }, // exit noticeboard, on the block's south-west corner
     { x: 0, z: 23.5, w: 12.4, d: 8 }, // the gallery (Landmarks.tsx)
     { x: -4.6, z: 29.1, w: 1.7, d: 1.7 }, // its sculpture
     { x: 10.4, z: -10.7, w: 0.8, d: 0.8 }, // UQ flagpoles: Aboriginal

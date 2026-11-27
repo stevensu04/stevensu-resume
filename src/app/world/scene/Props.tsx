@@ -74,8 +74,8 @@ const STATIC_BOXES: BoxSpec[] = [
     box([-22.5, 0.04, 24], [13, 0.08, 10], PALETTE.green),
     box([-25, 0.55, 24.5], [2, 1.1, 2], PALETTE.white),
     box([-20, 0.55, 24.5], [2, 1.1, 2], PALETTE.white),
-    // The exit noticeboard.
-    ...noticeboard(26, 22, true),
+    // The exit noticeboard, on the block's south-west corner by the ring road (moved 27 Nov 2026).
+    ...noticeboard(-36, 43, true),
 ];
 
 /* ---------------------------------------------------------------- ferry */
