@@ -325,7 +325,8 @@ approved. At four sentences and ~73 words it's over the card limits, which this 
 > **Skyveil Studio** · Co-founder · Aug 2026 – Present
 > An independent studio making hand-tracked browser games — webcam in, no controller, no download.
 > Our first title, Veilcore, is built as a museum and a theatre. The team made it together, and I
-> worked mostly on its Cradle and Archery rooms. Built with MediaPipe and Three.js — the second of which
+> worked mostly on its Cradle and Archery rooms. It took second place, UQRL Best Exhibition, at UQ
+> Reality Labs' Exhibition Night 2026. Built with MediaPipe and Three.js — the second of which
 > you're standing in.
 > → See the experience
 
@@ -1081,8 +1082,8 @@ because the content files point at it).
   construction fence, cones and barrier. Those three Kenney models are still in `kit.glb`. Dropping
   them needs the kit rebuilt from the Kenney zips, which aren't in the repo.
 - **Illuminate isn't in the geometry.** The card prints `status.label` ("Selected · UQ Illuminate
-  2026" then; "Winner · Smart Tech Award · UQ Illuminate 2026" since the award on 27 Nov 2026),
-  and §4 rule 4 keeps marks to the ones Steven chose.
+  2026"), and §4 rule 4 keeps marks to the ones Steven chose. *Changed 27 Nov 2026, once it won:
+  see "The award on the roof" below.*
 - **Draw calls:** +6 (one merged static mesh, the crown, the hatching, two fascias and the sign),
   −1 for the crane's jib.
 - **Poster re-rendered**, and its copy `public/projects/World.webp` with it: 2560 × 1600, WebP
@@ -1309,4 +1310,61 @@ Steven supplied, with the name in plain lettering and no logos or photographs (�
   except those two", because "also on my CV" stopped being true. The tour button says "quick tour"
   (twelve stops now run about 75 s, not a minute). The tour visits both after Club Velvet.
 - Zone ids `seoul` and `dw` (`WORLD_ZONES`, `zones.ts`); cards in `src/lib/world.ts`.
+
+### The award on the roof (27 Nov 2026)
+
+Formosa Bauhaus won the Smart Tech Award at UQ Illuminate 2026, and Steven asked for something on
+the building that says so at a glance. `scene/Formosa.tsx` ("the award"):
+
+- **A gold cup** on a dark plinth at the back of the BAUHAUS roof, faceted (an 8-sided lathe) to
+  match the kit, with two handles and a star on top. It stands clear of the banyan's crown, which
+  covers the FORMOSA roof, so it reads from across the island.
+- **A winner sign** along the roof's front edge: "★ WINNER ★ / Smart Tech Award / UQ Illuminate
+  2026" in white on the purple-to-orange gradient the event's own winner sign used. It's turned
+  0.5 rad towards the default camera (south-east), because square to the street it was too oblique
+  to read. Unlit (`MeshBasicMaterial`, like Club Velvet's neon), so it stays bright at night.
+- **§4 rule 4 still holds:** no Illuminate, Optiver or UQ logo, only lettering. Rule 2 does too: the
+  card prints `status.label`, which says the same as the sign.
+- **Draw calls:** +1 (the sign). The cup, plinth and sign frame merge into the existing static mesh.
+
+### Push-button crossings (27 Nov 2026)
+
+Steven asked for the pedestrian push button at the zebra crossings, the one anyone who has lived
+in Australia knows. `scene/CrossingSignals.tsx`:
+
+- **Four poles,** one at each end of the two crossings (the street at x = 4, the night street at
+  x = −4), on the footpath just west of the stripes. Each has a signal head facing across the road
+  (red standing man over green walking man) and, on its east side, a "WALK WITH CARE" sign over a
+  black button box with the arrow plate and the round steel button.
+- **Click a pole** (Global view or Explore; the hit box is wider than the pole, because the button
+  is a few pixels across) and that crossing runs the cycle: a two-note beep, the green man after
+  2 s with the rapid tick for 6 s, the flashing red man with the slow tock for 4 s, then red.
+  Pressing again mid-cycle does nothing, as with the real button. A drag that starts on a pole is
+  still an orbit, not a press.
+- **Sound** is synthesised with Web Audio (square-wave chirps), only ever after a press, so nothing
+  plays unasked and no audio files load. It is the world's first sound; there is no mute yet,
+  because nothing else makes a noise.
+- **Reduced motion:** the red man holds steady instead of flashing. The sound still plays, because
+  the visitor pressed for it.
+- **§5:** this is a playful interaction, not a game mechanic. No counter, no reward, nothing gated.
+- **Draw calls:** +9 (one merged mesh for the poles, four sign-and-button planes and four signal
+  faces; each crossing's two faces share one material, so they change together).
+
+### Veilcore's trophy on the museum (27 Nov 2026)
+
+Veilcore took second place, UQRL Best Exhibition, at UQ Reality Labs' Exhibition Night 2026.
+Steven sent a photo of the trophy and asked for it, scaled up, on the building. `scene/SkyveilMuseum.tsx`
+("the trophy"):
+
+- **As the real one looks:** a black cube about 1.5 m across, lettered "2026 / UQRL Best /
+  Exhibition" in white on its front, with a white power-symbol ring (open at the top, a bar through
+  the gap) standing on a short neck. The lettering shrinks per line to fit, because Arial Black at
+  full size cut "Exhibition" off.
+- **Where:** the roof's free front-left corner, over Archery (Olie is over the door, Cradle's birds
+  on the right, the theatre tower behind), turned 0.45 rad towards the default camera. The lettering
+  is unlit so it reads at night.
+- **Copy:** the Skyveil card here (§7), `/about` and the CV each gained one sentence: "It took
+  second place, UQRL Best Exhibition, at UQ Reality Labs' Exhibition Night 2026." Skyveil has no
+  `/projects` case study yet (§14 Q1), so those three are where it is described.
+- **Draw calls:** +1 (the lettering). The cube and ring merge into the museum's static mesh.
 

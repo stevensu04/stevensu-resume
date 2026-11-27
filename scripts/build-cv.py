@@ -147,7 +147,8 @@ EXPERIENCE = [
             "Co-founded an independent studio building hand-tracked browser games — webcam in, "
             "no controller, no download (MediaPipe, Three.js).",
             "Our first title, Veilcore, is built as a museum and a theatre. The team made it "
-            "together, and I worked mostly on its Cradle and Archery rooms.",
+            "together, and I worked mostly on its Cradle and Archery rooms. It took second place, "
+            "UQRL Best Exhibition, at UQ Reality Labs' Exhibition Night 2026.",
         ],
     ),
     (

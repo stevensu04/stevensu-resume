@@ -125,7 +125,7 @@ export default function AboutPage() {
                     company="Skyveil Studio"
                     location="Brisbane, QLD (Australia)"
                     time="Aug 2026 - Present"
-                    work="Co-founded an independent studio building hand-tracked games that run in the browser from a webcam, with no controller or download (MediaPipe, Three.js). Our first title, Veilcore, is built as a museum and a theatre. The team made it together, and I worked mostly on its Cradle and Archery rooms."
+                    work="Co-founded an independent studio building hand-tracked games that run in the browser from a webcam, with no controller or download (MediaPipe, Three.js). Our first title, Veilcore, is built as a museum and a theatre. The team made it together, and I worked mostly on its Cradle and Archery rooms. It took second place, UQRL Best Exhibition, at UQ Reality Labs' Exhibition Night 2026."
                 />
 
                 <ExperienceItem

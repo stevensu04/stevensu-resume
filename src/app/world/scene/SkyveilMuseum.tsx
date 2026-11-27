@@ -10,9 +10,11 @@ import {
     CylinderGeometry,
     ExtrudeGeometry,
     IcosahedronGeometry,
+    MeshBasicMaterial,
     MeshLambertMaterial,
     SRGBColorSpace,
     Shape,
+    TorusGeometry,
     type BufferGeometry,
     type Group,
 } from "three";
@@ -34,10 +36,14 @@ import { withWorldShader } from "./worldShader";
  * - **Olie**, the owl that stands for the studio, still perches on the cornice above the door
  *   (Landmarks.tsx), and archery targets stand on easels in the forecourt.
  *
+ * - **The trophy** (27 Nov 2026): Veilcore's UQRL Best Exhibition prize (second place, UQ Reality
+ *   Labs' Exhibition Night 2026), scaled up on the roof's front-left corner. See "the trophy", below.
+ *
  * It's a whole building with its door open and lit (§4: Steven is a co-founder and the studio is
  * live). Nothing from the game's screens is modelled beyond its look (§4 rule 3).
  *
- * Draw calls: one merged static mesh, two sign planes and two groups of drifting notes.
+ * Draw calls: one merged static mesh (the trophy included), two sign planes, the trophy's lettering
+ * and the drifting notes.
  */
 
 /** Footprint, metres. The front faces +z, towards the default camera. */
@@ -212,6 +218,70 @@ function parts(): BufferGeometry[] {
     return out;
 }
 
+/* ---------------------------------------------------------------- the trophy */
+
+/**
+ * Veilcore's prize, scaled up onto the roof: second place, UQRL Best Exhibition, at UQ Reality Labs'
+ * Exhibition Night 2026. Modelled on the real one from Steven's photo: a black cube lettered in
+ * white, with a white power-symbol ring standing on it. On the roof's free front-left corner (Olie
+ * is over the door, Cradle's birds on the right), turned towards the default camera.
+ */
+const TROPHY = { x: -3.7, z: 8.9, y: 5.5, cube: 1.5, ring: 0.62, tube: 0.16, rot: 0.45 };
+
+function trophy(): BufferGeometry[] {
+    const { x, z, y, cube, ring, tube, rot } = TROPHY;
+    const ringY = cube + 0.12 + ring + tube;
+    const gap = Math.PI / 3;
+    const local = [
+        box(cube, cube, cube, 0, cube / 2, 0, "#16171a"),
+        // A short white neck where the ring meets the cube.
+        box(0.5, 0.14, 0.34, 0, cube + 0.07, 0, "#f4f4f2"),
+        // The ring, open at the top, and the bar through the gap: the power symbol.
+        paint(new TorusGeometry(ring, tube, 6, 20, Math.PI * 2 - gap).rotateZ(Math.PI / 2 + gap / 2).translate(0, ringY, 0), "#f4f4f2"),
+        box(tube * 1.9, ring * 1.15, tube * 1.9, 0, ringY + ring * 0.5, 0, "#f4f4f2"),
+    ];
+    return local.map((g) => g.rotateY(rot).translate(x, y, z));
+}
+
+/** The cube's lettering, as on the real trophy. */
+function trophyTexture(): CanvasTexture {
+    const c = document.createElement("canvas");
+    c.width = 512;
+    c.height = 512;
+    const g = c.getContext("2d")!;
+    g.fillStyle = "#16171a";
+    g.fillRect(0, 0, 512, 512);
+    g.fillStyle = "#f4f4f2";
+    g.textAlign = "center";
+    g.textBaseline = "middle";
+    // Each line shrinks until it fits the face with a margin: Arial Black runs wide.
+    const line = (text: string, size: number, y: number) => {
+        let s = size;
+        do g.font = `900 ${s}px "Arial Black", "Helvetica Neue", Arial, sans-serif`;
+        while (g.measureText(text).width > 452 && --s > 20);
+        g.fillText(text, 256, y);
+    };
+    line("2026", 120, 132);
+    line("UQRL Best", 88, 266);
+    line("Exhibition", 88, 382);
+    const t = new CanvasTexture(c);
+    t.colorSpace = SRGBColorSpace;
+    t.anisotropy = 4;
+    return t;
+}
+
+function TrophyFace() {
+    // Unlit, so the lettering still reads in shade and at night.
+    const material = useMemo(() => withWorldShader(new MeshBasicMaterial({ map: trophyTexture() })), []);
+    const { x, z, y, cube, rot } = TROPHY;
+    const out = cube / 2 + 0.005;
+    return (
+        <mesh position={[x + Math.sin(rot) * out, y + cube / 2, z + Math.cos(rot) * out]} rotation-y={rot} material={material} raycast={() => null}>
+            <planeGeometry args={[cube - 0.08, cube - 0.08]} />
+        </mesh>
+    );
+}
+
 /* ---------------------------------------------------------------- the name plates */
 
 function plateTexture(text: string): CanvasTexture {
@@ -266,7 +336,7 @@ function z1Note() {
 }
 
 export default function SkyveilMuseum({ still }: { still: boolean }) {
-    const statics = useMemo(() => mergeParts(parts()), []);
+    const statics = useMemo(() => mergeParts([...parts(), ...trophy()]), []);
     const material = useMemo(() => withWorldShader(new MeshLambertMaterial({ vertexColors: true })), []);
     const noteGeo = useMemo(() => note(), []);
     const groups = useRef<(Group | null)[]>([]);
@@ -288,6 +358,7 @@ export default function SkyveilMuseum({ still }: { still: boolean }) {
             <mesh geometry={statics} material={material} raycast={() => null} />
             <Plate text="ARCHERY" x={-2.9} />
             <Plate text="CRADLE" x={2.9} />
+            <TrophyFace />
             {NOTES.map((n, i) => (
                 <group
                     key={i}

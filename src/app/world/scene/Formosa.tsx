@@ -8,13 +8,18 @@ import {
     CircleGeometry,
     Color,
     DoubleSide,
+    ExtrudeGeometry,
     IcosahedronGeometry,
+    LatheGeometry,
+    MeshBasicMaterial,
     MeshLambertMaterial,
     PlaneGeometry,
     RepeatWrapping,
     SRGBColorSpace,
     Shape,
     ShapeGeometry,
+    TorusGeometry,
+    Vector2,
     type BufferGeometry,
 } from "three";
 import { mergeParts, paint } from "./shading";
@@ -38,8 +43,11 @@ import { PALETTE } from "./Props";
  *
  * "One more thing" (the avatar came out of this project) stands on a fitting mirror out front.
  *
- * Draw calls: one merged static mesh, one for the swaying crown, one for the hatching, and three
- * textured planes (two fascias and the sign).
+ * Since 27 Nov 2026 it won the Smart Tech Award at UQ Illuminate 2026: a gold cup stands on the
+ * BAUHAUS roof with a lit winner sign in front of it (see "the award", below).
+ *
+ * Draw calls: one merged static mesh (the cup included), one for the swaying crown, one for the
+ * hatching, three textured planes (two fascias and the north sign) and the winner sign.
  */
 
 /** Footprints, metres. Fronts face +z, towards the default camera. */
@@ -185,6 +193,81 @@ function mirror(): BufferGeometry[] {
         box(0.1, 0.2, 0.5, x - 0.4, 0.1, z, PALETTE.wood),
         box(0.1, 0.2, 0.5, x + 0.4, 0.1, z, PALETTE.wood),
     ];
+}
+
+/* ---------------------------------------------------------------- the award */
+
+/**
+ * The Smart Tech Award, UQ Illuminate 2026 (won 27 Nov 2026). A gold cup on a dark plinth at the
+ * back of the BAUHAUS roof, so it stands clear of the banyan, with a sign along the roof's front
+ * edge saying in words what it is (§4 rule 2). No Illuminate, Optiver or UQ logo (§4 rule 4): the
+ * sign is lettering on the gradient the event's own winner sign used.
+ */
+const AWARD = { x: (BAUHAUS.x0 + BAUHAUS.x1) / 2, z: 6.6, plinth: 0.7 };
+/** Turned towards the default camera (south-east), so the lettering faces the visitor rather than the street. */
+const AWARD_SIGN = { w: 5.2, h: 1.5, y: BAUHAUS.h + 0.25 + 0.75, z: FRONT - 1.4, rot: 0.5 };
+const GOLD = "#d9a92b";
+
+/** A faceted cup, turned from one profile: foot, stem, knot, bowl, and the bowl's inside back down. */
+function trophyCup(): BufferGeometry {
+    const s = 1.25;
+    const profile: [number, number][] = [
+        [0, 0], [0.42, 0], [0.42, 0.1], [0.28, 0.16], [0.09, 0.22], [0.09, 0.5], [0.17, 0.56], [0.09, 0.62],
+        [0.09, 0.72], [0.22, 0.78], [0.44, 0.98], [0.52, 1.26], [0.54, 1.42], [0.46, 1.42], [0.43, 1.26], [0.36, 1.02], [0.12, 0.84], [0, 0.84],
+    ];
+    const g = new LatheGeometry(profile.map(([r, y]) => new Vector2(r * s, y * s)), 8).toNonIndexed();
+    g.deleteAttribute("normal");
+    g.computeVertexNormals();
+    return g;
+}
+
+function award(): BufferGeometry[] {
+    const { x, z, plinth } = AWARD;
+    const top = BAUHAUS.h + plinth;
+    const parts = [
+        box(1.4, plinth, 1.4, x, BAUHAUS.h + plinth / 2, z, PALETTE.slate),
+        box(1.55, 0.08, 1.55, x, top + 0.04, z, GOLD),
+        paint(trophyCup().translate(x, top + 0.08, z), GOLD),
+    ];
+    // Two handles, half-rings either side of the bowl.
+    for (const side of [-1, 1])
+        parts.push(paint(new TorusGeometry(0.28, 0.06, 4, 8, Math.PI).rotateZ(-side * Math.PI / 2).translate(x + side * 0.62, top + 1.48, z), GOLD));
+    // A star on top of the lid line, so it reads as a prize even from across the island.
+    const star = new Shape();
+    for (let i = 0; i < 10; i++) {
+        const r = i % 2 ? 0.14 : 0.32;
+        const a = Math.PI / 2 + (i * Math.PI) / 5;
+        if (i) star.lineTo(Math.cos(a) * r, Math.sin(a) * r);
+        else star.moveTo(Math.cos(a) * r, Math.sin(a) * r);
+    }
+    parts.push(paint(new ExtrudeGeometry(star, { depth: 0.1, bevelEnabled: false }).translate(0, 0, -0.05).translate(x, top + 2.25, z), GOLD));
+    parts.push(box(0.06, 0.22, 0.06, x, top + 1.98, z, GOLD));
+    // The sign's frame and two posts, built at the origin and turned with the sign.
+    const { w, h, y, z: sz, rot } = AWARD_SIGN;
+    const frame = [box(w + 0.14, h + 0.14, 0.08, 0, y, -0.06, PALETTE.slate)];
+    for (const dx of [-2.1, 2.1]) frame.push(box(0.12, 0.6, 0.12, dx, BAUHAUS.h + 0.3, -0.08, PALETTE.slate));
+    for (const f of frame) parts.push(f.rotateY(rot).translate(x, 0, sz));
+    return parts;
+}
+
+/** The winner sign: the event's gradient, three lines of white lettering. */
+function awardSign(): CanvasTexture {
+    return canvasTexture(1024, 296, (g) => {
+        const grad = g.createLinearGradient(0, 0, 1024, 296);
+        grad.addColorStop(0, "#4c2ad1");
+        grad.addColorStop(0.5, "#c2338f");
+        grad.addColorStop(1, "#f2843a");
+        g.fillStyle = grad;
+        g.fillRect(0, 0, 1024, 296);
+        g.fillStyle = "#ffffff";
+        g.textAlign = "left";
+        g.font = `700 46px ${SANS}`;
+        tracked(g, "★  WINNER  ★", 512, 56, 10);
+        g.font = `700 92px ${SANS}`;
+        tracked(g, "Smart Tech Award", 512, 150, 2);
+        g.font = `500 52px ${SANS}`;
+        tracked(g, "UQ Illuminate 2026", 512, 244, 4);
+    });
 }
 
 /* ---------------------------------------------------------------- the banyan */
@@ -370,7 +453,9 @@ function Lettered({ make, width, height, position, rotationY = 0 }: { make: () =
 /* ---------------------------------------------------------------- the whole building */
 
 export default function Formosa({ still }: { still: boolean }) {
-    const statics = useMemo(() => mergeParts([...base(), ...bauhaus(), ...formosa(), ...banyanWood(), ...mirror()]), []);
+    const statics = useMemo(() => mergeParts([...base(), ...bauhaus(), ...formosa(), ...banyanWood(), ...mirror(), ...award()]), []);
+    // Unlit, like Club Velvet's neon, so the winner sign stays bright after dark.
+    const signMat = useMemo(() => withWorldShader(new MeshBasicMaterial({ map: awardSign() })), []);
     const material = useMemo(() => withWorldShader(new MeshLambertMaterial({ vertexColors: true })), []);
     const crown = useMemo(() => mergeParts(banyanCrown()), []);
     const swaying = useMemo(() => withWorldShader(new MeshLambertMaterial({ vertexColors: true }), { sway: !still }), [still]);
@@ -390,6 +475,9 @@ export default function Formosa({ still }: { still: boolean }) {
                 position={[(BAUHAUS.x0 + BAUHAUS.x1) / 2, 2.35, BAUHAUS.z0 - 0.05]}
                 rotationY={Math.PI}
             />
+            <mesh position={[AWARD.x, AWARD_SIGN.y, AWARD_SIGN.z]} rotation-y={AWARD_SIGN.rot} material={signMat} raycast={() => null}>
+                <planeGeometry args={[AWARD_SIGN.w, AWARD_SIGN.h]} />
+            </mesh>
         </>
     );
 }

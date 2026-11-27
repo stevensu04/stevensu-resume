@@ -15,6 +15,7 @@ import EsunBank from "./EsunBank";
 import GovTower from "./GovTower";
 import GreatCourt from "./GreatCourt";
 import Roads from "./Roads";
+import CrossingSignals from "./CrossingSignals";
 import Island from "./Island";
 import Ground from "./Ground";
 import Vegetation, { blockVegetation, scatterVegetation } from "./Vegetation";
@@ -99,6 +100,7 @@ export default function Stage({
             <Formosa still={still} />
             <ClubVelvet still={still} />
             <Roads />
+            <CrossingSignals still={still} />
             <GreatCourt />
             <GovTower />
             <DataCentre still={still} />
