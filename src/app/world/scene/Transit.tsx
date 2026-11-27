@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, type RefObject } from "react";
 import { useFrame } from "@react-three/fiber";
-import { CanvasTexture, PlaneGeometry, Box3, SRGBColorSpace, BoxGeometry, MeshLambertMaterial, type BufferGeometry, type Group, Vector3, MeshBasicMaterial, type BufferAttribute, Matrix4, Quaternion, type InstancedMesh } from "three";
+import { AdditiveBlending, BufferAttribute as Attribute, BufferGeometry as Geometry, CanvasTexture, DoubleSide, PlaneGeometry, PointsMaterial, Box3, RepeatWrapping, SRGBColorSpace, BoxGeometry, MeshLambertMaterial, type BufferGeometry, type Group, Vector3, MeshBasicMaterial, type BufferAttribute, Matrix4, Quaternion, type InstancedMesh, type Mesh, type Points } from "three";
 import { mergeParts, paint } from "./shading";
 import { withWorldShader } from "./worldShader";
 import { PALETTE } from "./Props";
@@ -523,6 +523,180 @@ function Screen({ material }: { material: MeshBasicMaterial }) {
     );
 }
 
+/* ---------------------------------------------------------------- the bellows and the headlights */
+
+/**
+ * The bellows as a stretching concertina (27 Nov 2026): rebuilt every frame from the two faces it
+ * joins, the rear face of one car and the front face of the next, so on a bend its outside stretches
+ * and its inside squeezes and no gap opens. A rigid box between angled cars left wedges of daylight
+ * at the joints, which from inside looked like the bus coming apart. Four quads per joint: two walls,
+ * the roof and the floor inside.
+ */
+const BELLOWS_HALF_W = 1.17;
+const BELLOWS_Y = [0.45, 3.05] as const;
+const QUADS_PER_JOINT = 4;
+const JOINTS = CARS.length - 1;
+
+function bellowsGeometry(): Geometry {
+    const g = new Geometry();
+    const verts = JOINTS * QUADS_PER_JOINT * 4;
+    g.setAttribute("position", new Attribute(new Float32Array(verts * 3), 3));
+    const uv = new Float32Array(verts * 2);
+    const index: number[] = [];
+    for (let q = 0; q < JOINTS * QUADS_PER_JOINT; q++) {
+        uv.set([0, 0, 1, 0, 1, 1, 0, 1], q * 8);
+        const o = q * 4;
+        index.push(o, o + 1, o + 2, o, o + 2, o + 3);
+    }
+    g.setAttribute("uv", new Attribute(uv, 2));
+    g.setIndex(index);
+    return g;
+}
+
+/** The concertina's folds: dark ribs across a silver band, repeated along its length. */
+function ribTexture(): CanvasTexture {
+    const c = document.createElement("canvas");
+    c.width = 64;
+    c.height = 8;
+    const g = c.getContext("2d")!;
+    g.fillStyle = METRO.bellows;
+    g.fillRect(0, 0, 64, 8);
+    g.fillStyle = METRO.rib;
+    g.fillRect(0, 0, 14, 8);
+    const t = new CanvasTexture(c);
+    t.colorSpace = SRGBColorSpace;
+    t.wrapS = RepeatWrapping;
+    t.repeat.set(6, 1);
+    return t;
+}
+
+/** Writes the joints between consecutive cars (poses from `articulate`, cars rear to front). */
+function shapeBellows(g: Geometry, poses: Pose[]) {
+    const pos = g.getAttribute("position") as BufferAttribute;
+    const [y0, y1] = BELLOWS_Y;
+    const yf = BUS_FLOOR - 0.02;
+    let v = 0;
+    const put = (x: number, y: number, z: number) => pos.setXYZ(v++, x, y, z);
+    for (let j = 0; j < JOINTS; j++) {
+        // Face A: the rear of car j + 1. Face B: the front of car j.
+        const a = poses[j + 1];
+        const b = poses[j];
+        const ax = a.x - (a.hx * CARS[j + 1]) / 2;
+        const az = a.z - (a.hz * CARS[j + 1]) / 2;
+        const bx = b.x + (b.hx * CARS[j]) / 2;
+        const bz = b.z + (b.hz * CARS[j]) / 2;
+        // Each face's own sideways direction, so the walls meet both cars square.
+        const arx = -a.hz;
+        const arz = a.hx;
+        const brx = -b.hz;
+        const brz = b.hx;
+        for (const side of [1, -1]) {
+            const w = side * BELLOWS_HALF_W;
+            put(ax + arx * w, y0, az + arz * w);
+            put(bx + brx * w, y0, bz + brz * w);
+            put(bx + brx * w, y1, bz + brz * w);
+            put(ax + arx * w, y1, az + arz * w);
+        }
+        const W = BELLOWS_HALF_W;
+        put(ax + arx * W, y1, az + arz * W);
+        put(bx + brx * W, y1, bz + brz * W);
+        put(bx - brx * W, y1, bz - brz * W);
+        put(ax - arx * W, y1, az - arz * W);
+        // The turntable floor inside.
+        const F = 1.0;
+        put(ax + arx * F, yf, az + arz * F);
+        put(bx + brx * F, yf, bz + brz * F);
+        put(bx - brx * F, yf, bz - brz * F);
+        put(ax - arx * F, yf, az - arz * F);
+    }
+    pos.needsUpdate = true;
+    g.computeVertexNormals();
+    g.computeBoundingSphere();
+}
+
+/** A soft round glow, white at the heart. */
+function glowTexture(): CanvasTexture {
+    const c = document.createElement("canvas");
+    c.width = c.height = 64;
+    const g = c.getContext("2d")!;
+    const r = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+    r.addColorStop(0, "rgba(255,255,245,1)");
+    r.addColorStop(0.3, "rgba(255,244,210,0.6)");
+    r.addColorStop(1, "rgba(255,236,190,0)");
+    g.fillStyle = r;
+    g.fillRect(0, 0, 64, 64);
+    const t = new CanvasTexture(c);
+    t.colorSpace = SRGBColorSpace;
+    return t;
+}
+
+/** The headlights' light on the road: bright by the bumper, fading ahead and to the sides. */
+function beamTexture(): CanvasTexture {
+    const c = document.createElement("canvas");
+    c.width = 128;
+    c.height = 64;
+    const g = c.getContext("2d")!;
+    const along = g.createLinearGradient(0, 0, 128, 0);
+    along.addColorStop(0, "rgba(255,240,200,0.95)");
+    along.addColorStop(0.5, "rgba(255,236,190,0.4)");
+    along.addColorStop(1, "rgba(255,236,190,0)");
+    g.fillStyle = along;
+    g.fillRect(0, 0, 128, 64);
+    g.globalCompositeOperation = "destination-in";
+    const across = g.createLinearGradient(0, 0, 0, 64);
+    across.addColorStop(0, "rgba(0,0,0,0)");
+    across.addColorStop(0.3, "rgba(0,0,0,1)");
+    across.addColorStop(0.7, "rgba(0,0,0,1)");
+    across.addColorStop(1, "rgba(0,0,0,0)");
+    g.fillStyle = across;
+    g.fillRect(0, 0, 128, 64);
+    const t = new CanvasTexture(c);
+    t.colorSpace = SRGBColorSpace;
+    return t;
+}
+
+/** In the front car's own frame: its nose is +x, CARS[last] / 2 from its centre. */
+const NOSE_LOCAL = CARS[CARS.length - 1] / 2;
+
+/**
+ * Headlights, on at night (27 Nov 2026): a glow at each lamp and their light spread on the road ahead.
+ * Inside the front car's group, so they turn and stop with it. Fades in with the night, like the lamps.
+ */
+function HeadLights({ night, still }: { night: boolean; still: boolean }) {
+    const assets = useMemo(() => {
+        const halo = new Geometry();
+        halo.setAttribute("position", new Attribute(new Float32Array([NOSE_LOCAL + 0.15, 0.62, 0.95, NOSE_LOCAL + 0.15, 0.62, -0.95]), 3));
+        return {
+            halo,
+            haloMat: new PointsMaterial({ map: glowTexture(), size: 1.5, sizeAttenuation: true, transparent: true, opacity: 0, depthWrite: false, blending: AdditiveBlending, toneMapped: false }),
+            beam: new PlaneGeometry(8, 3.6).rotateX(-Math.PI / 2).translate(NOSE_LOCAL + 4.2, 0.06, 0),
+            beamMat: new MeshBasicMaterial({ map: beamTexture(), transparent: true, opacity: 0, depthWrite: false, blending: AdditiveBlending, toneMapped: false }),
+        };
+    }, []);
+    const haloRef = useRef<Points>(null);
+    const beamRef = useRef<Mesh>(null);
+    const blend = useRef(night ? 1 : 0);
+    useFrame((_, dt) => {
+        const goal = night ? 1 : 0;
+        blend.current = still ? goal : blend.current + Math.max(-dt, Math.min(dt, goal - blend.current)) * 0.8;
+        const b = blend.current;
+        if (haloRef.current) {
+            haloRef.current.visible = b > 0.01;
+            (haloRef.current.material as PointsMaterial).opacity = b;
+        }
+        if (beamRef.current) {
+            beamRef.current.visible = b > 0.01;
+            (beamRef.current.material as MeshBasicMaterial).opacity = b * 0.55;
+        }
+    });
+    return (
+        <>
+            <points ref={haloRef} geometry={assets.halo} material={assets.haloMat} frustumCulled={false} raycast={() => null} />
+            <mesh ref={beamRef} geometry={assets.beam} material={assets.beamMat} raycast={() => null} />
+        </>
+    );
+}
+
 const BLOB = new MeshBasicMaterial({ color: "#1f2937", transparent: true, opacity: 0.22, depthWrite: false });
 /** One unit plane, instanced once per car (WORLD2.md Phase 5: one draw call for every bus shadow). */
 const BLOB_PLANE = new PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
@@ -530,6 +704,7 @@ const blobMatrix = new Matrix4();
 
 export default function Transit({
     still,
+    night = false,
     player,
     navRef,
     rideRef,
@@ -538,6 +713,8 @@ export default function Transit({
     onAlight,
 }: {
     still: boolean;
+    /** Headlights on (HeadLights). */
+    night?: boolean;
     player: RefObject<Vector3>;
     /** The walk grid: where Steven steps down. */
     navRef: RefObject<Nav | null>;
@@ -553,6 +730,9 @@ export default function Transit({
     const pieces = useMemo(() => busPieces(), []);
     const shelters = useMemo(() => shelterGeometry(), []);
     const material = useMemo(() => withWorldShader(new MeshLambertMaterial({ vertexColors: true })), []);
+    // The stretching bellows: one mesh per bus, both joints, reshaped every frame (shapeBellows).
+    const bellowsGeos = useMemo(() => BUSES.map(() => bellowsGeometry()), []);
+    const bellowsMat = useMemo(() => withWorldShader(new MeshLambertMaterial({ map: ribTexture(), side: DoubleSide })), []);
     // One next-stop display per bus: a canvas, its texture and an unlit material (a screen glows).
     const screens = useMemo(
         () =>
@@ -655,6 +835,7 @@ export default function Transit({
                 }
             }
             const poses = articulate(bus.route, st.u);
+            shapeBellows(bellowsGeos[bi], poses);
             pieces.forEach((_, pi) => {
                 const g = groups.current[bi][pi];
                 if (!g) return;
@@ -673,7 +854,12 @@ export default function Transit({
         BUSES.forEach((bus, bi) => {
             if (bi === ride.bus) return;
             const st = states.current[bi];
-            for (let s = -NOSE + 0.6; s <= NOSE - 0.6 && n < BUS_BODY.xz.length / 2; s += 1) {
+            // Evenly spaced from 0.3 m inside the tail to 0.3 m inside the nose. (Stepping a metre from the
+            // tail left the last centre 1.4 m short of the nose, so he could walk in through the windscreen.)
+            const end = NOSE - 0.3;
+            const count = Math.ceil(2 * end) + 1;
+            for (let k = 0; k < count && n < BUS_BODY.xz.length / 2; k++) {
+                const s = -end + (k * 2 * end) / (count - 1);
                 const at = bus.route.place(st.u + s);
                 BUS_BODY.xz[2 * n] = at.x;
                 BUS_BODY.xz[2 * n + 1] = at.z;
@@ -779,11 +965,16 @@ export default function Transit({
                             groups.current[bi][pi] = g;
                         }}
                     >
-                        <mesh geometry={geometry} material={material} receiveShadow raycast={() => null} />
+                        {/* The rigid bellows pieces only place their shadow now; the concertina is drawn below. */}
+                        {pi < CARS.length && <mesh geometry={geometry} material={material} receiveShadow raycast={() => null} />}
                         {pi === RIDE_CAR && <Screen material={screens[bi].material} />}
+                        {pi === RIDE_CAR && <HeadLights night={night} still={still} />}
                     </group>
                 )),
             )}
+            {bellowsGeos.map((g, bi) => (
+                <mesh key={`bellows-${bi}`} geometry={g} material={bellowsMat} frustumCulled={false} userData={{ dynamic: true }} raycast={() => null} />
+            ))}
             <instancedMesh ref={shadowMesh} args={[BLOB_PLANE, BLOB, BUSES.length * pieces.length]} frustumCulled={false} raycast={() => null} />
             <mesh geometry={shelters} material={material} castShadow receiveShadow raycast={() => null} />
         </>

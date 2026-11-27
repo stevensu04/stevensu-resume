@@ -488,6 +488,7 @@ export default function Scene({
                 <PlayerAnchor position={position} el={emote} />
                 <Transit
                     still={still}
+                    night={night}
                     player={position}
                     navRef={navRef}
                     rideRef={ride}

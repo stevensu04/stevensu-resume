@@ -1460,3 +1460,25 @@ Three things Steven found walking the new world:
   car-length apart, and each bellows spans from one car's rear to the next car's front, so the joints
   stay joined and the bus folds round the corner. The rider sits in the front car as it actually lies.
   Checked headlessly from inside the north-west bend.
+
+### Headlights, a concertina bellows, a darker beach, smooth palms (27 Nov 2026)
+
+- **Headlights at night** (`HeadLights` in `Transit.tsx`, inside the front car's group so they turn and
+  stop with it): a glow at each lamp and their light spread on the road ahead, fading in with the
+  night. Transit now takes `night` from Scene.
+- **The bus still didn't turn as one** (seen from inside, looking back): even with `articulate`, the
+  bellows was a rigid box, so between angled cars the outside of the bend opened in wedges of
+  daylight. The bellows is now a concertina rebuilt every frame (`shapeBellows`) from the two faces
+  it joins, the rear face of one car and the front face of the next: its outside stretches, its
+  inside squeezes, no gap. Ribbed texture, double-sided so it reads from inside too. The rigid bellows
+  pieces now only place their shadow.
+- **Walking in through the windscreen:** the bus body's circles stepped a metre from the tail, so the
+  last one stopped 1.4 m short of the nose. They are now spread evenly from 0.3 m inside the tail to
+  0.3 m inside the nose.
+- **The beach glowed at night.** Its sand and lagoon are `ShapeGeometry`, whose UVs are the shape's own
+  coordinates (−60 to −80 here), and the world shader treats uv.y below −50 as self-lit (the lamps).
+  The UVs are dropped (`pad` in `SouthBank.tsx`), so the beach darkens with everything else.
+- **Palms** were three stacked cylinders and looked broken; each trunk is now one tapered cylinder bent
+  along a quadratic curve.
+- **The Wheel's ticket booth** has a lit window on its plaza side and its south side, with a counter
+  under each and a blue band over it.

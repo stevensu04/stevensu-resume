@@ -16,7 +16,6 @@ import {
     ShapeGeometry,
     SphereGeometry,
     TorusGeometry,
-    Vector3,
     type BufferGeometry,
     type Group,
 } from "three";
@@ -62,27 +61,37 @@ function pad(minX: number, maxX: number, minZ: number, maxZ: number, r: number, 
     s.quadraticCurveTo(minX, -maxZ, minX, -maxZ + r);
     s.lineTo(minX, -minZ - r);
     s.quadraticCurveTo(minX, -minZ, minX + r, -minZ);
-    return paint(new ShapeGeometry(s, 6).rotateX(-Math.PI / 2).translate(0, y, 0), color);
+    const g = new ShapeGeometry(s, 6).rotateX(-Math.PI / 2).translate(0, y, 0);
+    // A shape's UVs are its own coordinates (here −60 to −80), and the world shader reads uv.y below
+    // −50 as "self-lit" (shading.ts, the lamps), which kept the beach bright all night. No texture
+    // uses them, so they go; mergeParts gives the part zero UVs.
+    g.deleteAttribute("uv");
+    return paint(g, color);
 }
 
 /* ---------------------------------------------------------------- Streets Beach */
 
-/** A palm: a leaning trunk in three segments, a ring of drooping fronds, two coconuts. */
+/**
+ * A palm: one tapered trunk that curves out as it rises (a cylinder bent along a quadratic, not
+ * stacked segments, which read as a broken trunk), a ring of drooping fronds and two coconuts.
+ */
 function palm(x: number, z: number, lean: number, turn: number, h = 5.2): BufferGeometry[] {
     const out: BufferGeometry[] = [];
-    const dir = new Vector3(Math.sin(turn), 0, Math.cos(turn));
-    let px = x;
-    let pz = z;
-    let py = 0;
-    const seg = h / 3;
-    for (let i = 0; i < 3; i++) {
-        const k = lean * (i + 1) * 0.35;
-        const g = new CylinderGeometry(0.16 - i * 0.025, 0.2 - i * 0.025, seg, 6).rotateZ(-k * Math.cos(turn)).rotateX(k * Math.sin(turn));
-        out.push(paint(g.translate(px + dir.x * k * seg * 0.5, py + seg / 2, pz + dir.z * k * seg * 0.5), "#9a7b55"));
-        px += dir.x * k * seg;
-        pz += dir.z * k * seg;
-        py += seg * 0.98;
+    const dx = Math.sin(turn);
+    const dz = Math.cos(turn);
+    const bend = lean * h * 0.9; // how far the top ends up from the foot
+    const trunk = new CylinderGeometry(0.13, 0.21, h, 7, 10).translate(0, h / 2, 0);
+    const pos = trunk.getAttribute("position");
+    for (let i = 0; i < pos.count; i++) {
+        const t = pos.getY(i) / h;
+        const off = bend * t * t;
+        pos.setXYZ(i, pos.getX(i) + dx * off, pos.getY(i), pos.getZ(i) + dz * off);
     }
+    trunk.computeVertexNormals();
+    out.push(paint(trunk.translate(x, 0, z), "#9a7b55"));
+    const px = x + dx * bend;
+    const pz = z + dz * bend;
+    const py = h;
     for (let f = 0; f < 7; f++) {
         const a = (f / 7) * Math.PI * 2;
         const frond = new BoxGeometry(0.42, 0.06, 2.4).translate(0, 0, 1.2).rotateX(0.5).rotateY(a);
@@ -262,7 +271,17 @@ function wheelBase(): BufferGeometry[] {
     local.push(paint(new CylinderGeometry(0.25, 0.25, 3.6, 8).rotateX(Math.PI / 2).translate(0, hub, 0), "#cfd3da"));
     const out = local.map((g) => g.rotateY(WHEEL_TURN).translate(x, 0, z));
     out.push(paint(new CircleGeometry(9.5, 28).rotateX(-Math.PI / 2).translate(x, 0.05, z), "#d8d4cc"));
-    out.push(box(2.6, 2.2, 1.8, x + 6.5, 1.1, z + 5.5, "#2b2f36"));
+    // The ticket booth, with a window on the side facing the plaza and the side facing south: a lit
+    // window (the lamp colour, so it glows at night), a counter under it and a blue band over it.
+    const bx = x + 6.5;
+    const bz = z + 5.5;
+    out.push(box(2.6, 2.2, 1.8, bx, 1.1, bz, "#2b2f36"));
+    out.push(box(1.4, 0.8, 0.04, bx, 1.3, bz + 0.92, "#f2d98a"));
+    out.push(box(1.6, 0.08, 0.35, bx, 0.86, bz + 1.05, "#e9e4da"));
+    out.push(box(1.8, 0.26, 0.05, bx, 1.92, bz + 0.93, "#2456d6"));
+    out.push(box(0.04, 0.8, 1.0, bx - 1.32, 1.3, bz, "#f2d98a"));
+    out.push(box(0.35, 0.08, 1.2, bx - 1.45, 0.86, bz, "#e9e4da"));
+    out.push(box(0.05, 0.26, 1.4, bx - 1.33, 1.92, bz, "#2456d6"));
     out.push(paint(new ConeGeometry(2.1, 0.8, 4).rotateY(Math.PI / 4).translate(x + 6.5, 2.6, z + 5.5), "#e9e4da"));
     return out;
 }
