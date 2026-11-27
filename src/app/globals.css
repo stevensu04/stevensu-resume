@@ -193,3 +193,34 @@ html {
 @media (any-pointer: coarse) {
   .card-inline-detail { display: block; }
 }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   /about's terminal card, typed out (TypewriterCode). Its code is rendered
+   whole; while it waits to be typed it is hidden, but only when motion is
+   allowed, so reduced motion simply shows it (and a <noscript> style in the
+   component undoes the hiding without JS).
+   ───────────────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  .tw-code[data-state="pending"] .tw-lines {
+    visibility: hidden;
+  }
+}
+
+.tw-caret {
+  display: inline-block;
+  width: 0.55em;
+  height: 1.15em;
+  margin-left: 2px;
+  vertical-align: -0.22em;
+  background: #d1d5db;
+}
+
+@keyframes caret-blink {
+  50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tw-caret {
+    animation: caret-blink 1.05s steps(1) infinite;
+  }
+}

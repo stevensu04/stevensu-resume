@@ -6,6 +6,7 @@ import { site } from '@/lib/site';
 import { professionalSkills, techRings } from '@/lib/stack';
 import HireCta from '@/components/HireCta';
 import CvNote from '@/components/CvNote';
+import TypewriterCode from '@/components/TypewriterCode';
 
 export default function AboutPage() {
     return (
@@ -80,26 +81,18 @@ export default function AboutPage() {
                         <div className="w-3 h-3 rounded-full bg-[#ffbd2e]" />
                         <div className="w-3 h-3 rounded-full bg-[#27c93f]" />
                     </div>
-                    <div className="flex-1 space-y-2">
-                        <p className="text-blue-400">const <span className="text-yellow-200">developer</span> = &#123;</p>
-                        <p className="pl-4 text-gray-300">background: <span className="text-green-400">&quot;Economics & Finance&quot;</span>,</p>
-                        <p className="pl-4 text-gray-300">education: <span className="text-green-400">&quot;Master of IT @ UQ&quot;</span>,</p>
-                        <p className="pl-4 text-gray-300">specialization: [<span className="text-orange-400">&quot;Full-stack&quot;, &quot;AI Search &amp; RAG&quot;</span>],</p>
-                        <p className="pl-4 text-gray-300">focus: <span className="text-green-400">&quot;Information Retrieval &amp; HCI&quot;</span></p>
-                        <p className="text-blue-400">&#125;;</p>
-                        {/* String literal, not a bare text node — this is rendered content
-                            inside the terminal graphic, not a code comment. */}
-                        <p className="mt-4 text-gray-500">{"// Ready to bridge strategy, code, and intelligent search..."}</p>
-                    </div>
+                    {/* Typed out once when it scrolls into view; whole for reduced motion and without JS. */}
+                    <TypewriterCode />
                 </div>
             </div>
         </section>
 
-        {/* Anchor Links. Sticky under the navbar on mobile, where this page is about ten
-            screens tall and this was the only way to jump between sections. z-40 keeps it below
-            the navbar's z-[100]. Order = how a tech recruiter reads: what he built, then what he
-            studied. */}
-        <div className="sticky top-[76px] z-40 flex items-center justify-center w-full mb-16 lg:static lg:mb-24">
+        {/* Anchor Links. Sticky under the navbar (73px tall at every width) on every screen
+            since 28 Nov 2026: it used to scroll away on desktop, so jumping from Experience to
+            Activities meant scrolling back up first. z-40 keeps it below the navbar's z-[100].
+            The sections' scroll-mt clears the navbar plus this bar. Order = how a tech recruiter
+            reads: what he built, then what he studied. */}
+        <div className="sticky top-[76px] z-40 flex items-center justify-center w-full mb-16 lg:mb-24">
             <nav className="flex gap-4 p-2 px-6 bg-gray-50/90 backdrop-blur-sm border border-gray-200 rounded-full shadow-sm">
                 <NavLink href="#experience" text="Experience" />
                 <div className="w-[1px] h-4 bg-gray-300 self-center" /> {/* Nav anchor divider */}
@@ -110,7 +103,7 @@ export default function AboutPage() {
         </div>
 
         {/* 2. Professional Experience — first: it's what a tech recruiter is looking for */}
-        <section id="experience" className="w-full mb-24 scroll-mt-32">
+        <section id="experience" className="w-full mb-24 scroll-mt-36">
             <h2 className="font-bold text-4xl mb-16 w-full text-center">Work Experience</h2>
             <div className="max-w-[85%] mx-auto">
                 {/* Concrete, quantified bullets from the Aug 2026 resume — replaced a generic
@@ -163,7 +156,7 @@ export default function AboutPage() {
         </section>
 
         {/* 3. Education */}
-        <section id="education" className="w-full mb-24 scroll-mt-32">
+        <section id="education" className="w-full mb-24 scroll-mt-36">
             <h2 className="font-bold text-4xl mb-16 w-full text-center">Education</h2>
             <div className="max-w-[85%] mx-auto">
                 <EducationItem 
@@ -195,7 +188,7 @@ export default function AboutPage() {
         {/* 4. Extracurricular Activities — one step smaller than Experience and Education on
             purpose. All true, but supporting evidence rather than the main case; at the same
             text-4xl a student-union role read as loud as the Django work. */}
-        <section id="activities" className="w-full mb-16 scroll-mt-32">
+        <section id="activities" className="w-full mb-16 scroll-mt-36">
             <h2 className="font-bold text-2xl mb-3 w-full text-center">Beyond the code</h2>
             <p className="mx-auto mb-10 max-w-xl text-center text-sm text-gray-500">
                 Leadership and community work alongside the degree.
