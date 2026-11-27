@@ -31,12 +31,16 @@ const BED_Y = -0.8;
 
 type Outline = { cx: number; cz: number; hw: number; hd: number; r: number; wobble: [number, number]; seed: number };
 
-/** Brisbane: the old slab's land (x ±48, z −24…60) with room for the ring road's corners and the south shelters. */
-const BRISBANE: Outline = { cx: 0, cz: 19.25, hw: 50.5, hd: 43.25, r: 6, wobble: [0.2, 0.9], seed: 1 };
+/**
+ * Brisbane: the old slab's land (x ±48, z −24…60) with room for the ring road's corners and the
+ * south shelters, and since 27 Nov 2026 a South Bank strip past the night street (to z 82.5) for
+ * Streets Beach, the BRISBANE letters and the Wheel (SouthBank.tsx).
+ */
+const BRISBANE: Outline = { cx: 0, cz: 29.25, hw: 50.5, hd: 53.25, r: 6, wobble: [0.2, 0.9], seed: 1 };
 /** Taipei: where FAR_BANK was (z −51.5…−44), a little deeper for the skyline's footprints. */
 const TAIPEI: Outline = { cx: 0, cz: -48.25, hw: 49, hd: 4.75, r: 3.5, wobble: [0.2, 0.8], seed: 2 };
 /** The platform, with about 5 m of water round both. */
-const PLATFORM: Outline = { cx: 0, cz: 5, hw: 57, hd: 64, r: 16, wobble: [0, 2.2], seed: 3 };
+const PLATFORM: Outline = { cx: 0, cz: 15, hw: 57, hd: 74, r: 16, wobble: [0, 2.2], seed: 3 };
 /** Brisbane's outline before its wobble, for anything that needs to know what's land (Vegetation.tsx). */
 export const BRISBANE_LAND = BRISBANE;
 /** Both shorelines as they're drawn, with outward normals (rocks go along them). */

@@ -135,8 +135,9 @@ Rules:
    misread. A sentence can't.
 3. **No invented interiors and no invented screens.** Confidential objects stay closed.
 4. **Real marks only where Steven chose them.** The UQ crest (he is an alumnus) and E.SUN's logo
-   (his employer) are shown because he supplied them and decided to use them on 11 Nov 2026. They
-   mark where he studied and worked, and nothing else. There are still no government crests
+   (his employer) are shown because he supplied them and decided to use them on 11 Nov 2026. Star
+   Trade's mark (the bolt alone, no Chinese name and no wordmark, at his request) joined them on
+   27 Nov 2026, on the StarLens building. They mark where he studied and worked, and nothing else. There are still no government crests
    (Finance Forms stays frosted), and no mark goes on a project that isn't Steven's own. A city
    landmark is not a brand: Taipei 101 on the far bank implies nobody's endorsement, so it is
    modelled as itself.
@@ -1387,3 +1388,47 @@ and on the way off the island, which is what an exit should feel like. The night
 `objects.ts`, `placements.ts`, `Props.tsx`); the curved lamp that stood beside it stays for the
 path between the shopfront and the control centre.
 
+
+### South Bank, the Story Bridge and The Star; StarLens turned to the street (27 Nov 2026)
+
+Steven asked for Brisbane's landmarks: the BRISBANE letters, Streets Beach and the Wheel at South
+Bank, the Story Bridge lit up at night, and The Star (Queen's Wharf). All are scenery, like Taipei
+101 (§4 rule 4: a city landmark is not a brand): no zone, no card, no number.
+
+- **The island grew 20 m south.** Brisbane's land runs to z 82.5 (`Island.tsx`: `BRISBANE` cz 29.25,
+  hd 53.25; `PLATFORM` cz 15, hd 74), `SLAB.maxZ` 60 → 82, `WALKABLE.maxZ` 58.5 → 80.5. The home view
+  aims at z 20 (was 6) and stands a little further back (`homeDistance` 72/100 → 80/108), so the
+  whole island still fits and sits in the middle of the frame.
+- **South Bank** (`scene/SouthBank.tsx`, footprints in `zones.ts` `SOUTH_BANK`), in the new strip:
+  - *The Wheel of Brisbane* at the west end: a white wheel 20 m across on two A-frames, 24 gondolas
+    that hang level as it turns (one turn in two minutes; still under reduced motion), a red-and-black
+    hub, a paved plaza and a ticket booth. West, because the camera looks from the south-east and a
+    23 m wheel at the east end would stand in front of the whole block.
+  - *Streets Beach* in the middle: sand, a turquoise lagoon in a stone rim (solid in the walk grid;
+    the sand is walkable), eight palms, umbrellas and towels, the red-and-yellow lifesaving flags,
+    sunbathers, and six swimmers bobbing.
+  - *The BRISBANE letters* in the east, chunky letters on a 0.5 m grid, each in its own pair of
+    colours on a mint plinth, facing south, the camera's side. The real panels are artists' work, so
+    these are plain colour blocks, not copies.
+- **The riverside** (`scene/Riverside.tsx`, `zones.ts` `RIVERSIDE`), the island's north-east corner:
+  - *The Story Bridge* over the river's east end, Brisbane bank to Taipei's: a grey cantilever truss
+    peaking over two piers that stand either side of the ferry's lane, its deck at 6.5 m so the
+    ferry's wheelhouse (~4.8 m) passes under. At night strings of lamps along both top chords and
+    the deck edges run through the rainbow, the colours flowing along the bridge, with coloured halos
+    so they carry across the island and a rainbow reflection on the water. Held still under reduced
+    motion. Not walkable.
+  - *The Star*, beside the bridge's landing: a round tower of gold fins on dark glass, split by a
+    vertical slot turned to the default camera, on a banded podium with the sky deck's ring on top.
+    The fins and the podium's windows glow at night. Two kit trees that stood there were removed.
+- **Vegetation** is now seeded per cell (`Vegetation.tsx`), so a new solid only reshuffles the plants
+  beside it; this change reshuffled the island's trees once. Plants on the landmarks' footprints are
+  dropped after scattering.
+- **StarLens** (zone 1): the kit's `building-a` has its glass doors on its −z side, so at rot 0 they
+  faced the river. It is turned round (rot 2) so they face the street, the shutter widened and moved
+  to cover them (StarLens stays confidential), and Star Trade's mark (drawn, not loaded: the bolt
+  alone, no Chinese name, no wordmark) hangs on a white plate above (`Landmarks.tsx`, §4 rule 4).
+- **Poster, project image and link preview re-rendered** from the scene (Playwright and the installed
+  Chrome on `/world?poster`, 1280 × 880 at 2×, encoded to 2560 × 1600 WebP q80; `og-background.jpg`
+  re-cut with sips as `opengraph-image.tsx` describes).
+- **Draw calls:** about +12 (South Bank's static mesh, the turning wheel, gondolas, swimmers; the
+  bridge's steel, lamps, halos and reflection; The Star's shell, podium and crown; the Star Trade mark).

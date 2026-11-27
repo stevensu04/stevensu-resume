@@ -55,9 +55,10 @@ const CHASE_DISTANCE = 5.5;
 /** Third person while riding: far enough back to take in the whole car. */
 const RIDE_CHASE_DISTANCE = 12;
 const TURN_SPEED = 1.9; // rad/s for held arrow keys
-const HOME_AIM = new Vector3(0, -1, 6);
+/** Over the platform's middle: it grew 20 m south for South Bank on 27 Nov 2026 (was z 6). */
+const HOME_AIM = new Vector3(0, -1, 20);
 /** The aim point stays over the island. */
-const AIM_BOUNDS = { minX: -56, maxX: 56, minZ: -56, maxZ: 68, maxY: 12 };
+const AIM_BOUNDS = { minX: -56, maxX: 56, minZ: -56, maxZ: 88, maxY: 12 };
 /** Global view has no fog; at eye level it starts 70 m out. */
 const FOG_COLOUR = "#e4ebf0";
 
@@ -416,7 +417,8 @@ function forward(yaw: number, pitch: number, out: Vector3): Vector3 {
 function homeDistance(cam: PerspectiveCamera): number {
     const tanV = Math.tan(((FOV / 2) * Math.PI) / 180);
     const tanH = tanV * cam.aspect;
-    return Math.max(72 / tanV, 100 / tanH);
+    // Half-heights the island needs on screen, metres; the second number grew with South Bank.
+    return Math.max(80 / tanV, 108 / tanH);
 }
 
 function apply(cam: PerspectiveCamera, pose: Pose) {

@@ -46,7 +46,7 @@ export const ZONES: Zone[] = [
 ];
 
 /** The slab is the whole block, river strip included (§0: about 80 × 60 m). */
-export const SLAB = { minX: -48, maxX: 48, minZ: -44, maxZ: 60 };
+export const SLAB = { minX: -48, maxX: 48, minZ: -44, maxZ: 82 };
 /** Taipei's bank, across the river: scenery only, never walkable (placements.ts SKYLINE). */
 export const FAR_BANK = { minZ: -51.5, maxZ: -44 };
 /** The Brisbane River runs along the north edge of the slab. */
@@ -61,5 +61,29 @@ export const STREET_SOUTH = { z: 52 };
  */
 export const RING = { west: -44, east: 44, north: STREET.z, south: STREET_SOUTH.z };
 /** Where Steven may stand: the slab minus the river and a margin. Buildings are cut out in placements.ts. */
-export const WALKABLE = { minX: -46.5, maxX: 46.5, minZ: RIVER.maxZ + 1.2, maxZ: 58.5 };
+export const WALKABLE = { minX: -46.5, maxX: 46.5, minZ: RIVER.maxZ + 1.2, maxZ: 80.5 };
+/**
+ * South Bank (27 Nov 2026): the strip past the night street, scenery only (no zone, no card, like
+ * Taipei 101). What stands there is in scene/SouthBank.tsx; these are its parts' footprints, so
+ * vegetation keeps off them (Vegetation.tsx) and Steven walks round the solid ones (placements.ts).
+ */
+export const SOUTH_BANK = {
+    /** The Wheel of Brisbane: hub over (x, z), the wheel's plane facing the default camera (south-east). */
+    wheel: { x: -35, z: 70, radius: 10, hub: 12.5 },
+    /** Streets Beach: the sand, and the lagoon inside it. */
+    sand: { minX: -23, maxX: 11, minZ: 59.5, maxZ: 79.5 },
+    lagoon: { minX: -17, maxX: 5, minZ: 63.5, maxZ: 73.5 },
+    /** The BRISBANE letters, standing along x on a low plinth, facing south. */
+    letters: { x0: 16, z: 75 },
+};
+/**
+ * The riverside landmarks (27 Nov 2026), in the island's north-east corner: the Story Bridge over
+ * the river's east end, landing beside The Star (Queen's Wharf). Scenery only. scene/Riverside.tsx.
+ */
+export const RIVERSIDE = {
+    /** Deck centreline x; from the Brisbane bank (z0) to the Taipei bank (z1). */
+    bridge: { x: 41, z0: -21.5, z1: -44.6, width: 3.2 },
+    /** The Star's round tower: centre and radius, on a slightly wider podium. */
+    star: { x: 41.5, z: -13.8, r: 4.2 },
+};
 

@@ -4,7 +4,7 @@ import { useEffect, useMemo } from "react";
 import { BufferGeometry, Color, CylinderGeometry, IcosahedronGeometry, InstancedMesh, Matrix4, MeshLambertMaterial, Quaternion, Vector3 } from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { OBJECTS } from "../objects";
-import { RING, WALKABLE, ZONES } from "../zones";
+import { RING, RIVERSIDE, SOUTH_BANK, WALKABLE, ZONES } from "../zones";
 import { distanceToPaths } from "./Ground";
 import { BRISBANE_LAND, shorePoints } from "./Island";
 import { blockDisc, canStandAt, type Nav } from "./nav";
@@ -61,6 +61,19 @@ const inZone = (x: number, z: number, m: number) =>
     ZONES.some((r) => x > r.x - r.w / 2 - m && x < r.x + r.w / 2 + m + 1.5 && z > r.z - r.d / 2 - m && z < r.z + r.d / 2 + m + 3) ||
     OBJECTS.some((o) => Math.abs(x - o.x) < o.w / 2 + m + 1 && Math.abs(z - o.z) < o.d / 2 + m + 1);
 
+/** The landmarks added on 27 Nov 2026 (South Bank, the Story Bridge's landing, The Star) keep clear too. */
+const inLandmark = (x: number, z: number) => {
+    const { wheel, sand, letters } = SOUTH_BANK;
+    const { bridge, star } = RIVERSIDE;
+    return (
+        Math.hypot(x - wheel.x, z - wheel.z) < 11 ||
+        (x > sand.minX - 1 && x < sand.maxX + 1 && z > sand.minZ - 1 && z < sand.maxZ + 2) ||
+        (x > letters.x0 - 2 && x < letters.x0 + 23 && z > letters.z - 3 && z < letters.z + 3) ||
+        (Math.abs(x - bridge.x) < bridge.width && z < bridge.z0 + 2) ||
+        Math.hypot(x - star.x, z - star.z) < star.r + 3.5
+    );
+};
+
 const inWalkable = (x: number, z: number) => x > WALKABLE.minX && x < WALKABLE.maxX && z > WALKABLE.minZ && z < WALKABLE.maxZ;
 
 /** Open ground in a disc of radius r (the walk grid has every solid already, grown for a body). */
@@ -83,8 +96,11 @@ export function scatterVegetation(nav: Nav): VegetationSet {
     const clear = (x: number, z: number, r: number) => taken.every(([tx, tz, tr]) => Math.hypot(x - tx, z - tz) > r + tr);
 
     const STEP = 2.4;
-    for (let gz = WALKABLE.minZ - 2; gz < 64; gz += STEP)
-        for (let gx = -52; gx < 52; gx += STEP) {
+    // Each cell draws from its own seeded stream (since 27 Nov 2026), so adding a building or a
+    // landmark only reshuffles the plants beside it, not every plant after it in scan order.
+    for (let iz = 0, gz = WALKABLE.minZ - 2; gz < 84; iz++, gz += STEP)
+        for (let ix = 0, gx = -52; gx < 52; ix++, gx += STEP) {
+            const rnd = random(20261126 + iz * 7919 + ix * 104729);
             const x = gx + (rnd() - 0.5) * STEP * 0.9;
             const z = gz + (rnd() - 0.5) * STEP * 0.9;
             const land = sdRoundBox(x, z, BRISBANE_LAND);
@@ -138,7 +154,9 @@ export function scatterVegetation(nav: Nav): VegetationSet {
             rocks.push({ x: p.x + p.nx * 0.2, z: p.z + p.nz * 0.2, scale: 0.5 + rnd() * 0.8, rot: rnd() * 6.28, tone: rnd() });
         }
 
-    return { trees, bushes, flowers, rocks };
+    // The landmarks' footprints (South Bank, the bridge's landing, The Star) are cleared last.
+    const off = (p: Plant) => !inLandmark(p.x, p.z);
+    return { trees: trees.map((t) => t.filter(off)), bushes: bushes.filter(off), flowers: flowers.filter(off), rocks: rocks.filter(off) };
 }
 
 /** Trunks and bushes become solid in the walk grid. */

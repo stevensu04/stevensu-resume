@@ -63,7 +63,8 @@ const ARCADE = { x: 3.5, z: 13.2 };
 
 const STATIC_BOXES: BoxSpec[] = [
     // 1 · StarLens: a shutter pulled down over the front (§4: confidential stays closed).
-    box([-22, 1.6, -14.15], [4.2, 3.2, 0.25], PALETTE.slate),
+    // Wide enough to cover the glass doors, which sit right of centre now the building faces the street.
+    box([-21.2, 1.6, -14.15], [5.6, 3.2, 0.25], PALETTE.slate),
     // 3 · Finance Forms: the padlock on the frosted door (the glass itself is translucent, below).
     box([27, 1.4, -11.65], [0.5, 0.6, 0.2], PALETTE.accent),
     // 2 · The volunteer noticeboard at the UQ corner.

@@ -308,6 +308,7 @@ export default function Landmarks({ still }: { still: boolean }) {
             <TennisMesh />
             <Emblem url="/world/brand/uq-crest.webp" width={2.6} height={3} position={[UQ.x, UQ.crestY, UQ.front + 0.12]} />
             <EsunSign />
+            <StarTradeSign />
             <Flag still={still} pole={FLAGPOLES.australian} kind="australian" />
             <Flag still={still} pole={FLAGPOLES.aboriginal} kind="aboriginal" />
             <Olie still={still} />
@@ -379,6 +380,63 @@ function EsunSign() {
                 <circleGeometry args={[ESUN.r, 36]} />
             </mesh>
         </>
+    );
+}
+
+/**
+ * Star Trade's mark on the StarLens building's street front (27 Nov 2026, Steven's choice, §4 rule 4,
+ * like E.SUN's): the bolt of two slanted bars, light blue over blue, with the navy triangle where they
+ * cross. Drawn here rather than loaded, because the supplied logo carries the Chinese name and the
+ * wordmark, and Steven asked for neither: the mark alone, on a white plate. StarLens is confidential,
+ * so the shutter stays down below it; the mark says whose building it is, nothing more.
+ */
+const STAR_TRADE = { x: -22, y: 5.4, front: -14.15, size: 2.1 };
+
+function starTradeTexture(): CanvasTexture {
+    const S = 256;
+    const c = document.createElement("canvas");
+    c.width = c.height = S;
+    const g = c.getContext("2d")!;
+    g.fillStyle = "#f6f7f9";
+    g.beginPath();
+    g.roundRect(0, 0, S, S, 36);
+    g.fill();
+    // The mark, from the supplied logo's proportions: two parallelograms leaning right.
+    const upper: [number, number][] = [[90, 29], [222, 29], [152, 161], [33, 161]];
+    const lower: [number, number][] = [[137, 96], [222, 96], [163, 227], [75, 227]];
+    const path = (pts: [number, number][]) => {
+        g.beginPath();
+        pts.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y)));
+        g.closePath();
+    };
+    path(upper);
+    g.fillStyle = "#8fd0ea";
+    g.fill();
+    path(lower);
+    g.fillStyle = "#3a7bd5";
+    g.fill();
+    // Where they overlap: navy.
+    g.save();
+    path(upper);
+    g.clip();
+    path(lower);
+    g.fillStyle = "#183f86";
+    g.fill();
+    g.restore();
+    const t = new CanvasTexture(c);
+    t.colorSpace = SRGBColorSpace;
+    t.anisotropy = 4;
+    return t;
+}
+
+function StarTradeSign() {
+    const mat = useMemo(() => withWorldShader(new MeshLambertMaterial({ map: starTradeTexture(), transparent: true, alphaTest: 0.5 })), []);
+    const { x, y, front, size } = STAR_TRADE;
+    // The building was turned to face the street (+z), so its front is at `front` and the sign faces +z.
+    return (
+        <mesh position={[x, y, front + 0.06]} material={mat} raycast={() => null}>
+            <planeGeometry args={[size, size]} />
+        </mesh>
     );
 }
 

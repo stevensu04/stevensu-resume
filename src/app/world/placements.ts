@@ -48,7 +48,9 @@ export const PLACEMENTS: Placement[] = [
     ...connectors,
 
     // 1 · Ferry landing: E.SUN is hand-made (EsunBank.tsx; its round mark is in Landmarks) and StarLens (shuttered, see Props).
-    { model: "building-a", x: -22, z: -18, solid: true },
+    // Turned round on 27 Nov 2026: the kit model's glass doors are on its −z side, so at rot 0 they faced
+    // the river. At rot 2 they face the street, under StarLens's shutter (Props.tsx), and its mark (Landmarks.tsx).
+    { model: "building-a", x: -22, z: -18, rot: 2, solid: true },
 
     // 2 · UQ corner, with the EventNow stall out front (live, so open and lit, §4).
     // The sandstone building is hand-made (GreatCourt.tsx), in place of Kenney's building-j.
@@ -114,8 +116,7 @@ export const PLACEMENTS: Placement[] = [
     { model: "tree-small", x: -31, z: 45, solid: true },
     { model: "tree-small", x: -4.5, z: 46.2, solid: true },
     // The margins the ring road runs through, north of the streets: a few trees so they aren't bare.
-    { model: "tree-large", x: 43, z: -15, solid: true },
-    { model: "tree-small", x: 45.5, z: -20, solid: true },
+    // (Two trees stood here at x 43 and 45.5 until The Star took the north-east corner: Riverside.tsx.)
     { model: "tree-large", x: -43, z: -15, solid: true },
     { model: "tree-small", x: -45.5, z: -20, solid: true },
     // Street furniture along the night street's north footpath.
@@ -202,6 +203,14 @@ export const PROP_SOLIDS: { x: number; z: number; w: number; d: number }[] = [
     { x: -25, z: 24.5, w: 2, d: 2 }, // ParkEase plinth
     { x: -20, z: 24.5, w: 2, d: 2 }, // JourneyMate plinth
     { x: -36, z: 43, w: 4.4, d: 0.6 }, // exit noticeboard, on the block's south-west corner
+    // South Bank and the riverside (27 Nov 2026; SouthBank.tsx, Riverside.tsx). The sand is walkable; the lagoon isn't.
+    { x: -6, z: 68.5, w: 22.4, d: 10.4 }, // Streets Beach's lagoon
+    { x: 25.3, z: 75, w: 19, d: 1 }, // the BRISBANE letters
+    { x: -30.4, z: 65.4, w: 3.6, d: 3.6 }, // the Wheel's feet, east pair
+    { x: -39.6, z: 74.6, w: 3.6, d: 3.6 }, // and west pair
+    { x: -28.5, z: 75.5, w: 2.6, d: 1.8 }, // its ticket booth
+    { x: 41, z: -21.9, w: 4.6, d: 2.2 }, // the Story Bridge's Brisbane abutment
+    { x: 41.5, z: -13.8, w: 10.8, d: 10.8 }, // The Star
     { x: 0, z: 23.5, w: 12.4, d: 8 }, // the gallery (Landmarks.tsx)
     { x: -4.6, z: 29.1, w: 1.7, d: 1.7 }, // its sculpture
     { x: 10.4, z: -10.7, w: 0.8, d: 0.8 }, // UQ flagpoles: Aboriginal
