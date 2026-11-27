@@ -310,7 +310,7 @@ approved. At four sentences and ~73 words it's over the card limits, which this 
 
 ### 4 · Shopfront
 
-> **Formosa Bauhaus** · Selected · UQ Illuminate 2026
+> **Formosa Bauhaus** · Winner · Smart Tech Award · UQ Illuminate 2026
 > Single-image 3D generators turn one product photo into a whole mesh, so most of what a shopper
 > rotates was never photographed — it was inferred. Our storefront labels which surfaces came from
 > evidence and which the AI invented. Team of six; I built the merchant console and the store's
@@ -1081,7 +1081,8 @@ because the content files point at it).
   construction fence, cones and barrier. Those three Kenney models are still in `kit.glb`. Dropping
   them needs the kit rebuilt from the Kenney zips, which aren't in the repo.
 - **Illuminate isn't in the geometry.** The card prints `status.label` ("Selected · UQ Illuminate
-  2026"), and §4 rule 4 keeps marks to the ones Steven chose.
+  2026" then; "Winner · Smart Tech Award · UQ Illuminate 2026" since the award on 27 Nov 2026),
+  and §4 rule 4 keeps marks to the ones Steven chose.
 - **Draw calls:** +6 (one merged static mesh, the crown, the hatching, two fascias and the sign),
   −1 for the crane's jib.
 - **Poster re-rendered**, and its copy `public/projects/World.webp` with it: 2560 × 1600, WebP

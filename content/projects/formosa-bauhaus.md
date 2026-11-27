@@ -22,12 +22,13 @@ tech:
   - AWS
   - Meshy API
 
-# Supervisor-nominated, accepted 16 Nov 2026, team confirmed. It's a judged exhibition, not a
-# competition final: never "finalist" or "award-nominated", and no prize money until it's won.
-# After the event: "Winner · …" if it places, otherwise "Exhibited · UQ Illuminate 2026".
+# Supervisor-nominated, selected 16 Nov 2026, and won the Smart Tech Award on 27 Nov 2026
+# (certificate signed by the Executive Dean of EAIT; the on-stage slide read "Electrical
+# Engineering & Computer Science · Smart Tech Award · Partnered by Optiver"). Optiver partnered
+# the award; it isn't named on the certificate, so never write "Optiver Award" or imply a job link.
 status:
-  label: Selected · UQ Illuminate 2026
-  tone: blue
+  label: Winner · Smart Tech Award · UQ Illuminate 2026
+  tone: green
 
 # Repo is private to the course org (Studio3Build-2026s2) and has six authors — no public link.
 # The EC2 deployment (3.25.135.82) is the team's, on plain HTTP, and can go away at any time, so
@@ -38,12 +39,12 @@ meta:
     value: Full-Stack Developer
   - label: Context
     value: UQ DECO7381 Capstone (Part 2) · team of 6
-  # Few readers will know the event, so the value says what it is. Update the tense after it.
+  # Few readers will know the event, so the value says what it is.
   - label: Recognition
-    value: Nominated by our supervisor and selected to exhibit at UQ Illuminate 2026, the industry-judged end-of-year showcase of UQ's School of EECS and School of Architecture, Design and Planning
+    value: Winner of the Smart Tech Award (Electrical Engineering & Computer Science, partnered by Optiver) at UQ Illuminate 2026, the industry-judged end-of-year showcase of UQ's School of EECS and School of Architecture, Design and Planning. Nominated to exhibit by our supervisor.
     wide: true
   - label: Timeline
-    value: Semester 2, 2026 · submitted 23 Oct · showcased 26 Oct
+    value: Semester 2, 2026 · submitted 23 Oct · showcased 26 Oct · award 27 Nov
     badge: green
     wide: true
   - label: Architecture
@@ -65,17 +66,21 @@ solution: |
   seven-stage pipeline (cutout, Meshy generation, pose, grounding bake, texturing, optimisation,
   storage) turns it into a model, and the merchant reviews that grounding before publishing it to
   a walkable 3D store, where shoppers can switch to a view that keeps colour only where a
-  photograph saw the product. My part: I joined the merchant console (Upload, Review, Inventory)
+  photograph saw the product. In the fitting room, an AR mirror lays the garments from the bag
+  over the shopper's live camera image or an uploaded photo; body tracking runs in the browser, so
+  no image leaves the device, and the mirror says plainly that it shows drape on a reference body,
+  not the shopper's size. My part: I joined the merchant console (Upload, Review, Inventory)
   to the live API and ran the first photo through it end to end; built the shopper's side of the
   store — sign-in with role-gated routes, picking a product up to turn it and read its
-  photographed share, the bag and the footstep sound; wrote the tool that moves finished products
+  photographed share, the bag and the footstep sound; fixed how accurately the AR mirror's
+  garments follow the body; wrote the tool that moves finished products
   between deployments without paying for generation again; and wrote ADRs 008, 014 and 015, the
   Sprint 3 plan, and assembled the final team report.
 
 result: |
   Submitted on 23 Oct and shown at the UQ showcase on 26 Oct, with 15 products published on the
-  team's AWS deployment. Our supervisor then nominated it for UQ Illuminate 2026, where it was
-  selected to exhibit before industry judges. Three evaluators finished every storefront task; the bag and fitting-room
+  team's AWS deployment. Our supervisor then nominated it for UQ Illuminate 2026, where on 27 Nov
+  it won the Smart Tech Award, partnered by Optiver. Three evaluators finished every storefront task; the bag and fitting-room
   counters that confused them were fixed before the code freeze. The shop assistant answered 16 of
   20 test questions correctly and invented no products. Not met: on the reference Android phone
   the store's 95th-percentile frame time stayed near 50 ms against a 22 ms target.
@@ -123,11 +128,17 @@ gallery:
   - src: /projects/formosa/bag.jpg
     alt: The shopping bag panel open over the 3D garden, listing three garments with a total of $197.00 and a Try on everything button.
     caption: The bag (built with Kaike). Collect garments, then try everything on at once. Checkout is out of scope, and the panel says so.
+  - src: /projects/formosa/ar-mirror.jpg
+    alt: The fitting room's AR mirror. A webcam image of a person wearing a green polo shirt, cap and orange backpack overlaid from the bag, beside a panel reading Wearing 4 of 4.
+    caption: The fitting room's AR mirror. Everything ticked in the bag is laid over the live camera image and follows the body, arms and legs. Tracking runs in the browser and nothing is uploaded.
   - src: /projects/formosa/architecture.jpg
     alt: C4 container diagram. A React app served by Nginx on one EC2 host, a FastAPI application, a generation worker, RDS PostgreSQL, private S3 and the Meshy API.
     caption: The deployed architecture. One EC2 host behind Nginx, with RDS PostgreSQL and private S3. The generation worker is off on the public deployment. Cloud work by Bob.
+  - src: /projects/formosa/illuminate-award.jpg
+    alt: Our exhibition desk at UQ Illuminate 2026. A monitor shows the walkable store, a laptop shows its garden, and an Illuminate Winner Smart Tech Award sign stands beside the award certificate.
+    caption: Our stand at UQ Illuminate 2026 on 27 Nov, after the project won the Smart Tech Award (Electrical Engineering & Computer Science, partnered by Optiver).
 
-mediaCredit: Film and screens from Team 41's build (DECO7381, The University of Queensland, 2026). Product photos from Vecteezy under its Free License. 3D product models generated with Meshy. Architecture diagram from the team's final report.
+mediaCredit: Film and screens from Team 41's build (DECO7381, The University of Queensland, 2026). Product photos from Vecteezy under its Free License. 3D product models generated with Meshy. Architecture diagram from the team's final report. People in the background of the AR mirror screenshot are blurred.
 
 # The project's card in /world (WORLD.md §7, §8). Title, status and URLs come from the fields above.
 world:

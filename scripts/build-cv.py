@@ -172,6 +172,10 @@ PROJECTS = [
         "UQ Capstone · team of 6",
         "Aug – Oct 2026",
         [
+            # Same wording as content/projects/formosa-bauhaus.md. Optiver partnered the award;
+            # naming it is a credential, not an application target (rule 1).
+            "Won the Smart Tech Award, partnered by Optiver, at UQ Illuminate 2026, UQ's "
+            "industry-judged end-of-year showcase.",
             "Top contributor — 160 of 589 commits — on a React/Three.js and FastAPI/PostgreSQL "
             "storefront that labels which surfaces of an AI-generated 3D model were photographed "
             "and which the generator inferred; deployed on AWS behind Nginx.",
@@ -179,7 +183,8 @@ PROJECTS = [
             "between deployments that share no database or storage: SHA-256 manifests, dry-run and "
             "per-SKU modes, S3 or local storage, IDs reassigned on import.",
             "Built sign-in and the shopper/staff role ladder, the cart, and storefront navigation "
-            "and fitting-room interactions; wrote ~30 Vitest and pytest suites plus the committed "
+            "and fitting-room interactions, and fixed how accurately the AR mirror's garments follow "
+            "the body; wrote ~30 Vitest and pytest suites plus the committed "
             "coverage and smoke reports.",
         ],
     ),
