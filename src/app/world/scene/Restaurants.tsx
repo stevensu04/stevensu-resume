@@ -56,6 +56,19 @@ function tracked(g: CanvasRenderingContext2D, text: string, cx: number, cy: numb
     });
 }
 
+/**
+ * Sets the font at `size`, then shrinks it until the text (with its tracking) fits `max` pixels.
+ * The system font the stack falls to is wider on some machines than others; without this, signs
+ * were cut off at their edges (27 Nov 2026).
+ */
+function fit(g: CanvasRenderingContext2D, text: string, font: (px: number) => string, size: number, max: number, spacing = 0): number {
+    let px = size;
+    const width = () => [...text].reduce((n, ch) => n + g.measureText(ch).width, 0) + spacing * (text.length - 1);
+    do g.font = font(px);
+    while (width() > max && --px > 10);
+    return px;
+}
+
 /** Breeze block: a grid of round holes in off-white, two by two per tile. */
 function blockTexture(): CanvasTexture {
     const t = canvasTexture(128, 128, (g) => {
@@ -83,9 +96,9 @@ function seoulSign(): CanvasTexture {
         g.fillStyle = "#3b2a22";
         g.fillRect(0, 0, 1024, 256);
         g.fillStyle = "#ff5fb0";
-        g.font = `800 112px ${SANS}`;
+        fit(g, "SEOUL GARDEN", (px) => `800 ${px}px ${SANS}`, 112, 960, 8);
         tracked(g, "SEOUL GARDEN", 512, 96, 8);
-        g.font = `700 52px ${SANS}`;
+        fit(g, "KOREAN BBQ BUFFET", (px) => `700 ${px}px ${SANS}`, 52, 940, 10);
         tracked(g, "KOREAN BBQ BUFFET", 512, 196, 10);
     });
 }
@@ -93,11 +106,13 @@ function seoulSign(): CanvasTexture {
 function allYouCanEat(): CanvasTexture {
     return canvasTexture(256, 192, (g) => {
         g.fillStyle = "#e0372e";
-        g.font = `900 78px ${SANS}`;
         g.textAlign = "left";
         g.textBaseline = "middle";
-        g.fillText("ALL YOU", 6, 56);
-        g.fillText("CAN EAT", 6, 136);
+        // Both lines at the size the wider one fits, so they stay a matched pair.
+        const font = (px: number) => `900 ${px}px ${SANS}`;
+        g.font = font(Math.min(fit(g, "ALL YOU", font, 78, 238), fit(g, "CAN EAT", font, 78, 238)));
+        g.fillText("ALL YOU", 8, 56);
+        g.fillText("CAN EAT", 8, 136);
     });
 }
 
@@ -106,7 +121,7 @@ function dwSign(): CanvasTexture {
         g.shadowColor = "rgba(255, 214, 120, 0.9)";
         g.shadowBlur = 14;
         g.fillStyle = "#f8dc92";
-        g.font = `700 80px ${SERIF}`;
+        fit(g, "D.W. STEAKHOUSE", (px) => `700 ${px}px ${SERIF}`, 80, 960, 12);
         tracked(g, "D.W. STEAKHOUSE", 512, 58, 12);
     });
 }
@@ -116,7 +131,7 @@ function panel(text: string): CanvasTexture {
         g.fillStyle = "#e8772e";
         g.fillRect(0, 0, 512, 192);
         g.fillStyle = "#ffffff";
-        g.font = `700 64px ${SANS}`;
+        fit(g, text, (px) => `700 ${px}px ${SANS}`, 64, 464);
         g.textAlign = "center";
         g.textBaseline = "middle";
         g.fillText(text, 256, 96);

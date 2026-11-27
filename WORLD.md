@@ -1432,3 +1432,31 @@ Bank, the Story Bridge lit up at night, and The Star (Queen's Wharf). All are sc
   re-cut with sips as `opengraph-image.tsx` describes).
 - **Draw calls:** about +12 (South Bank's static mesh, the turning wheel, gondolas, swimmers; the
   bridge's steel, lamps, halos and reflection; The Star's shell, podium and crown; the Star Trade mark).
+
+### The Riverwalk under the bridge, buses you can't walk through, signs that fit (27 Nov 2026)
+
+Three things Steven found walking the new world:
+
+- **He couldn't get close to the Story Bridge.** The Star's walk-grid footprint was a 10.8 m square,
+  its corners reaching past the round podium, and between it, the government tower's planter and
+  the bridge's abutment the gaps were narrower than a body; the north-east corner was sealed off.
+  Now: The Star is a little slimmer (r 3.8) and east of the bridge's line (x 42.6), its footprint a
+  cross rather than a square, and a **Riverwalk** boardwalk (`RIVERSIDE.riverwalk`; deck, piles and
+  railing in `Riverside.tsx`; walkable through `walk.ts`, like the ferry's gangway) runs along the
+  bank from x 32.5 to a lookout at 47.5, passing **under the bridge** between its abutment and first
+  pier. Checked with the debug pathfinder from the north street, and from South Bank, to beneath the
+  deck. At night you stand under the lit trusses.
+- **He could walk through a bus.** Buses move, so they were never in the walk grid. Transit now writes
+  each bus's body (centres every metre, which follow the articulated bus round the bends) into
+  `ride.ts` every frame, and Player refuses a step into one, unless he is already inside its reach
+  (a bus pulled up on him), so he can always step out. The bus he is riding is left out. Checked
+  headlessly: walking at a bus standing at its stop, he stops 1.5 m from its centreline.
+- **Restaurant signs were cut off** ("ALL YOU CAN EAT", D.W.'s orange panels): the font stack falls to
+  a system font that runs wider on some machines. Every line on those signs now shrinks to fit its
+  plate (`fit` in `Restaurants.tsx`).
+- **The bus came apart on the bends** (seen from inside, looking back): each car and bellows was placed
+  by the route's tangent at its own centre, so on a bend the joints opened. `articulate` in
+  `Transit.tsx` now works back from the nose: each car's two ends sit on the route a straight
+  car-length apart, and each bellows spans from one car's rear to the next car's front, so the joints
+  stay joined and the bus folds round the corner. The rider sits in the front car as it actually lies.
+  Checked headlessly from inside the north-west bend.

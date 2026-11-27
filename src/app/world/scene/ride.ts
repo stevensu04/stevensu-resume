@@ -31,3 +31,24 @@ export type RideInfo =
 
 /** The floor of the bus, metres: Steven's feet, so first person's eye rides at this + 1.6. */
 export const BUS_FLOOR = 0.78;
+
+/**
+ * Where the buses' bodies are this frame, so Steven can't walk through one (27 Nov 2026). Transit
+ * writes centres every metre along each bus that he isn't riding; Player reads them before a step.
+ * Circles rather than boxes, so the articulated bus is followed round the bends.
+ */
+export const BUS_BODY = { xz: new Float32Array(2 * 128), count: 0 };
+/** Half the bus's width plus Steven's own radius, metres. */
+export const BUS_REACH = 1.55;
+
+/** Is (x, z) inside a bus? */
+export function insideBus(x: number, z: number): boolean {
+    const { xz, count } = BUS_BODY;
+    const r2 = BUS_REACH * BUS_REACH;
+    for (let i = 0; i < count; i++) {
+        const dx = x - xz[2 * i];
+        const dz = z - xz[2 * i + 1];
+        if (dx * dx + dz * dz < r2) return true;
+    }
+    return false;
+}

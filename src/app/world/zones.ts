@@ -84,6 +84,14 @@ export const RIVERSIDE = {
     /** Deck centreline x; from the Brisbane bank (z0) to the Taipei bank (z1). */
     bridge: { x: 41, z0: -21.5, z1: -44.6, width: 3.2 },
     /** The Star's round tower: centre and radius, on a slightly wider podium. */
-    star: { x: 41.5, z: -13.8, r: 4.2 },
+    // East of the bridge's line and a little slimmer than first built, so the way down to the bank
+    // between it and the government tower's planter stays open for Explore.
+    star: { x: 42.6, z: -13.8, r: 3.8 },
+    /**
+     * The Riverwalk (added the same day): a boardwalk along the bank, out over the water, that passes
+     * under the bridge between its Brisbane abutment and first pier, so Explore can stand beneath it.
+     * Its deck joins the bank, so walk.ts adds it to the walkable ground (like the ferry's gangway).
+     */
+    riverwalk: { minX: 32.5, maxX: 47.5, minZ: -25.4 },
 };
 

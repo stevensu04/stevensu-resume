@@ -126,6 +126,31 @@ function bridgeParts(): BufferGeometry[] {
     return out;
 }
 
+/**
+ * The Riverwalk: a timber boardwalk along the bank, out over the water, passing under the bridge
+ * between the Brisbane abutment and the first pier. Piles into the river every 2.5 m, a railing on
+ * the water side and across the east end, where it stops at a small lookout.
+ */
+function riverwalkParts(): BufferGeometry[] {
+    const { minX, maxX, minZ } = RIVERSIDE.riverwalk;
+    const maxZ = -23.4; // tucked under the bank's edge, so the deck meets the grass
+    const out: BufferGeometry[] = [];
+    const cx = (minX + maxX) / 2;
+    const cz = (minZ + maxZ) / 2;
+    out.push(paint(new BoxGeometry(maxX - minX, 0.22, maxZ - minZ).translate(cx, -0.06, cz), "#a9825c"));
+    // Board lines across the deck.
+    for (let x = minX + 0.6; x < maxX; x += 0.6) out.push(paint(new BoxGeometry(0.04, 0.01, maxZ - minZ - 0.1).translate(x, 0.055, cz), "#8e6b48"));
+    // Piles.
+    for (let x = minX + 0.4; x <= maxX; x += 2.5) out.push(paint(new BoxGeometry(0.22, 1.2, 0.22).translate(x, -0.6, minZ + 0.2), "#6f5640"));
+    // The railing: posts and a top rail along the water side, and across the east end.
+    for (let x = minX + 0.2; x <= maxX - 0.1; x += 1.25) out.push(paint(new BoxGeometry(0.08, 1.0, 0.08).translate(x, 0.55, minZ + 0.12), "#e9e4da"));
+    out.push(paint(new BoxGeometry(maxX - minX, 0.07, 0.1).translate(cx, 1.05, minZ + 0.12), "#e9e4da"));
+    out.push(paint(new BoxGeometry(maxX - minX, 0.05, 0.06).translate(cx, 0.6, minZ + 0.12), "#e9e4da"));
+    for (let z = minZ + 0.12; z <= maxZ; z += 1.0) out.push(paint(new BoxGeometry(0.08, 1.0, 0.08).translate(maxX - 0.12, 0.55, z), "#e9e4da"));
+    out.push(paint(new BoxGeometry(0.1, 0.07, maxZ - minZ).translate(maxX - 0.12, 1.05, cz), "#e9e4da"));
+    return out;
+}
+
 /** Where the lamps go: along both top chords and both deck edges, about every 0.42 m. */
 function lampPoints(): { p: Vector3; s: number }[] {
     const { x, width } = bridge;
@@ -257,7 +282,7 @@ function step(current: number, night: boolean, still: boolean, dt: number): numb
 }
 
 export default function Riverside({ night, still }: { night: boolean; still: boolean }) {
-    const steel = useMemo(() => mergeParts(bridgeParts()), []);
+    const steel = useMemo(() => mergeParts([...bridgeParts(), ...riverwalkParts()]), []);
     const material = useMemo(() => withWorldShader(new MeshLambertMaterial({ vertexColors: true })), []);
     const lamps = useMemo(() => lampPoints(), []);
     const lampMat = useMemo(() => new MeshBasicMaterial({ toneMapped: false }), []);

@@ -70,6 +70,7 @@ const inLandmark = (x: number, z: number) => {
         (x > sand.minX - 1 && x < sand.maxX + 1 && z > sand.minZ - 1 && z < sand.maxZ + 2) ||
         (x > letters.x0 - 2 && x < letters.x0 + 23 && z > letters.z - 3 && z < letters.z + 3) ||
         (Math.abs(x - bridge.x) < bridge.width && z < bridge.z0 + 2) ||
+        (x > RIVERSIDE.riverwalk.minX - 1 && x < RIVERSIDE.riverwalk.maxX + 1 && z > RIVERSIDE.riverwalk.minZ - 1 && z < -22) ||
         Math.hypot(x - star.x, z - star.z) < star.r + 3.5
     );
 };

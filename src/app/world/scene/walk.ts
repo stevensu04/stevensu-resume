@@ -1,11 +1,12 @@
 import { TERMINAL } from "../placements";
-import { WALKABLE } from "../zones";
+import { RIVERSIDE, WALKABLE } from "../zones";
 
 /** A rectangle on the ground, metres. */
 export type GroundRect = { minX: number; maxX: number; minZ: number; maxZ: number };
 
 /**
- * The ground Steven may stand on: the main rectangle plus the ferry terminal's gangway and pontoon. What stands on it, and the
+ * The ground Steven may stand on: the main rectangle plus the ferry terminal's gangway and pontoon,
+ * and the Riverwalk under the Story Bridge. What stands on it, and the
  * routes round it, are nav.ts's job.
  */
 export const AREAS: GroundRect[] = [
@@ -14,6 +15,8 @@ export const AREAS: GroundRect[] = [
     { minX: TERMINAL.gangway.x - TERMINAL.gangway.w / 2 + 0.4, maxX: TERMINAL.gangway.x + TERMINAL.gangway.w / 2 - 0.4, minZ: TERMINAL.pontoon.maxZ - 0.5, maxZ: WALKABLE.minZ + 0.01 },
     // The pontoon's deck.
     { minX: TERMINAL.pontoon.minX + 0.4, maxX: TERMINAL.pontoon.maxX - 0.4, minZ: TERMINAL.pontoon.minZ + 0.4, maxZ: TERMINAL.pontoon.maxZ },
+    // The Riverwalk's deck, inside its railing, from the bank out under the Story Bridge (Riverside.tsx).
+    { minX: RIVERSIDE.riverwalk.minX + 0.3, maxX: RIVERSIDE.riverwalk.maxX - 0.3, minZ: RIVERSIDE.riverwalk.minZ + 0.35, maxZ: WALKABLE.minZ + 0.01 },
 ];
 
 /** The nearest point on the ground, for a tap that lands in the river or off the slab. */

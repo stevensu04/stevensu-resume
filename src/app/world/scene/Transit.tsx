@@ -7,7 +7,7 @@ import { mergeParts, paint } from "./shading";
 import { withWorldShader } from "./worldShader";
 import { PALETTE } from "./Props";
 import { nearestFree, type Nav } from "./nav";
-import { BUS_FLOOR, type RideInfo, type RideState } from "./ride";
+import { BUS_BODY, BUS_FLOOR, type RideInfo, type RideState } from "./ride";
 import { RING } from "../zones";
 
 /**
@@ -433,6 +433,48 @@ function busPieces(): { geometry: BufferGeometry; offset: number }[] {
     return pieces;
 }
 
+/**
+ * Where each piece of an articulated bus is (27 Nov 2026), in `busPieces` order: the cars rear to
+ * front, then the bellows. Worked back from the nose: each car's front and rear ends both sit on the
+ * route, a straight car-length apart, and each bellows spans the gap from one car's rear to the next
+ * car's front. So the joints stay joined and the bus folds round a bend, where placing every piece
+ * by its own centre's tangent pulled the cars apart (they looked as if the bus were coming apart).
+ */
+function articulate(route: Route, u: number): Pose[] {
+    const cars: Pose[] = [];
+    const bellows: Pose[] = [];
+    let front = u + NOSE;
+    let pf = route.place(front);
+    /** The route distance behind `sf` whose point is a straight `len` from `p`. */
+    const behind = (sf: number, p: Pose, len: number) => {
+        let sr = sf - len;
+        for (let k = 0; k < 4; k++) {
+            const q = route.place(sr);
+            sr -= len - Math.hypot(p.x - q.x, p.z - q.z);
+        }
+        return sr;
+    };
+    const span = (a: Pose, b: Pose): Pose => {
+        const dx = a.x - b.x;
+        const dz = a.z - b.z;
+        const d = Math.hypot(dx, dz) || 1;
+        return { x: (a.x + b.x) / 2, z: (a.z + b.z) / 2, hx: dx / d, hz: dz / d };
+    };
+    for (let i = CARS.length - 1; i >= 0; i--) {
+        const rear = behind(front, pf, CARS[i]);
+        const pr = route.place(rear);
+        cars[i] = span(pf, pr);
+        if (i > 0) {
+            const next = behind(rear, pr, BELLOWS);
+            const pn = route.place(next);
+            bellows[i - 1] = span(pr, pn);
+            front = next;
+            pf = pn;
+        }
+    }
+    return [...cars, ...bellows];
+}
+
 /** A shelter at each stop, with a bench and a bus-stop sign. */
 function shelterGeometry(): BufferGeometry {
     return mergeParts(
@@ -612,10 +654,11 @@ export default function Transit({
                     }
                 }
             }
-            pieces.forEach(({ offset }, pi) => {
+            const poses = articulate(bus.route, st.u);
+            pieces.forEach((_, pi) => {
                 const g = groups.current[bi][pi];
                 if (!g) return;
-                const at = bus.route.place(st.u + offset);
+                const at = poses[pi];
                 g.position.set(at.x, 0, at.z);
                 // The bus's nose is +x; rotating by θ about y turns +x towards (cos θ, −sin θ).
                 g.rotation.y = Math.atan2(-at.hz, at.hx);
@@ -624,6 +667,20 @@ export default function Transit({
             });
         });
         if (shadowMesh.current) shadowMesh.current.instanceMatrix.needsUpdate = true;
+
+        // The bodies Steven can't walk through: every bus but the one he is riding (ride.ts).
+        let n = 0;
+        BUSES.forEach((bus, bi) => {
+            if (bi === ride.bus) return;
+            const st = states.current[bi];
+            for (let s = -NOSE + 0.6; s <= NOSE - 0.6 && n < BUS_BODY.xz.length / 2; s += 1) {
+                const at = bus.route.place(st.u + s);
+                BUS_BODY.xz[2 * n] = at.x;
+                BUS_BODY.xz[2 * n + 1] = at.z;
+                n++;
+            }
+        });
+        BUS_BODY.count = n;
 
         // Each bus's display: "Next stop" while it runs, "Doors open" at a stop, and the cord's answer
         // for the bus Steven is on. Redrawn only when the words change.
@@ -682,7 +739,9 @@ export default function Transit({
             const st = states.current[ride.bus];
             const stopped = st.dwell > 0 && st.v === 0;
             const here = stopped ? lastStop(bus, st) : null;
-            const at = bus.route.place(st.u + pieces[RIDE_CAR].offset - RIDE_BACK);
+            // In the front car as it actually lies (articulate), so he turns with it round a bend.
+            const car = articulate(bus.route, st.u)[RIDE_CAR];
+            const at = { x: car.x - car.hx * RIDE_BACK, z: car.z - car.hz * RIDE_BACK, hx: car.hx, hz: car.hz };
             p.set(at.x, BUS_FLOOR, at.z);
             ride.heading = Math.atan2(-at.hx, -at.hz);
             // Pulling the cord asks for the next stop; at a stop it means "get off now".

@@ -7,7 +7,7 @@ import { ACCENT, shadedBox } from "./shading";
 import { canStandAt, findPath, nearestFree, type Nav } from "./nav";
 import { worldUniforms } from "./worldShader";
 import { RACQUET } from "../placements";
-import type { RideState } from "./ride";
+import { insideBus, type RideState } from "./ride";
 import Avatar from "./Avatar";
 import { RUN_DISTANCE, RUN_SPEED, WALK_SPEED, type Motion, type MovementInput } from "./input";
 
@@ -92,7 +92,10 @@ export default function Player({
         const az = viewAzimuth.current;
 
         const nav = navRef.current;
-        const standable = (x: number, z: number) => (nav ? canStandAt(nav, x, z) : true);
+        // A bus is in the way too (ride.ts), unless he is already inside one's reach (it pulled up on
+        // him), so he can always step back out rather than being stuck.
+        const inBus = insideBus(p.x, p.z);
+        const standable = (x: number, z: number) => (nav ? canStandAt(nav, x, z) : true) && (inBus || !insideBus(x, z));
         // Never leave him on a blocked cell: every step he could take would land on one too, and he could
         // not move at all (a keyboard step is a few centimetres; a tap's route starts from the nearest free cell).
         if (nav && !standable(p.x, p.z)) {

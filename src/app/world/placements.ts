@@ -210,7 +210,8 @@ export const PROP_SOLIDS: { x: number; z: number; w: number; d: number }[] = [
     { x: -39.6, z: 74.6, w: 3.6, d: 3.6 }, // and west pair
     { x: -28.5, z: 75.5, w: 2.6, d: 1.8 }, // its ticket booth
     { x: 41, z: -21.9, w: 4.6, d: 2.2 }, // the Story Bridge's Brisbane abutment
-    { x: 41.5, z: -13.8, w: 10.8, d: 10.8 }, // The Star
+    { x: 42.6, z: -13.8, w: 10.1, d: 7 }, // The Star's round podium, as a cross rather than a square,
+    { x: 42.6, z: -13.8, w: 7, d: 10.1 }, // so its corners don't block the way down to the bridge
     { x: 0, z: 23.5, w: 12.4, d: 8 }, // the gallery (Landmarks.tsx)
     { x: -4.6, z: 29.1, w: 1.7, d: 1.7 }, // its sculpture
     { x: 10.4, z: -10.7, w: 0.8, d: 0.8 }, // UQ flagpoles: Aboriginal
